@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sacabollos Águila Blanca — Sistema de Gestión</title>
+<style>
+  :root {
+    --blue-dark: #123a6b;
+    --blue: #1c4f8c;
+    --blue-light: #2f6bb3;
+    --red: #c0272d;
+    --paper: #f7f5f1;
+    --ink: #1b1b1b;
+    --muted: #5a6472;
+    --border: #e1ded6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  header {
+    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color: white;
+    padding: 56px 24px 64px;
+    text-align: center;
+  }
+  header img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    background: white;
+    border-radius: 50%;
+    padding: 10px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  }
+  header h1 {
+    margin: 20px 0 6px;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    letter-spacing: 0.02em;
+  }
+  header h1 span { color: #ffd166; }
+  header p.tagline {
+    margin: 0 auto;
+    max-width: 640px;
+    color: #dce6f2;
+    font-size: 1.05rem;
+  }
+  .status-pill {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 6px 16px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  main {
+    max-width: 980px;
+    margin: -32px auto 0;
+    padding: 0 20px 60px;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 10px rgba(20,30,50,0.05);
+  }
+  .card h2 {
+    margin-top: 0;
+    color: var(--blue-dark);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-top: 18px;
+  }
+  @media (max-width: 640px) { .flow { grid-template-columns: 1fr; } }
+  .flow .branch {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .flow .branch h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: var(--red);
+  }
+  .flow .branch ol {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+  .phases {
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .phase {
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: start;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .phase .num {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--blue);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .phase .name { font-weight: 600; }
+  .phase .desc { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
+  .phase .badge {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #eef2f6;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .stack-item {
+    background: #f2f6fb;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  .stack-item strong { display: block; color: var(--blue-dark); margin-bottom: 2px; }
+  footer {
+    text-align: center;
+    padding: 30px 20px 50px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+  footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
+  footer a:hover { text-decoration: underline; }
+  .note {
+    background: #fff8e6;
+    border: 1px solid #f0dca0;
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.92rem;
+    color: #6b5300;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="assets/logo-aguila-blanca.jpg" alt="Águila Blanca Sacabollos">
+  <h1>Águila Blanca <span>Sacabollos</span></h1>
+  <p class="tagline">Sistema de gestión y control para el taller — reemplazando papel por un circuito único de ingreso, reparación y cobro.</p>
+  <div class="status-pill">📋 En planificación — Fase 1 de 6</div>
+</header>
+
+<main>
+
+  <div class="card">
+    <h2>🎯 De qué se trata</h2>
+    <p>Águila Blanca hoy gestiona todo su circuito de reparación de bollos (PDR) en papel: agenda física, fichas sueltas y control manual de facturación. Este proyecto construye una web app propia — con infraestructura y base de datos separadas de cualquier otro negocio — para que dueño, recepción y taller trabajen sobre un único sistema, usable desde tablet en el taller y desde PC en la oficina.</p>
+    <div class="note">Esta página muestra el estado actual del proyecto: contexto, investigación de dominio y roadmap ya definidos. La construcción de la aplicación todavía no arrancó — el próximo paso es la Fase 1 (Fundaciones).</div>
+  </div>
+
+  <div class="card">
+    <h2>🔁 El flujo del negocio</h2>
+    <div class="flow">
+      <div class="branch">
+        <h3>Canal Seguro</h3>
+        <ol>
+          <li>Denuncia + número de siniestro</li>
+          <li>Inspección, presupuesto y fotos</li>
+          <li>Envío a la compañía por mail</li>
+          <li>Compañía envía la orden de trabajo</li>
+          <li>Turno → ingreso → reparación → firma</li>
+          <li>Factura → cobro o reclamo a la compañía</li>
+        </ol>
+      </div>
+      <div class="branch">
+        <h3>Canal Particular</h3>
+        <ol>
+          <li>Presupuesto y fotos</li>
+          <li>Cliente acepta → turno</li>
+          <li>Cliente no acepta → se guarda contacto</li>
+          <li>Ingreso → reparación → firma</li>
+          <li>Factura → cobro</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🗺️ Roadmap — 6 fases (MVP vertical)</h2>
+    <ul class="phases">
+      <li class="phase">
+        <div class="num">1</div>
+        <div>
+          <div class="name">Fundaciones</div>
+          <div class="desc">Login con roles (dueño / recepción / taller) y app usable en tablet y PC</div>
+        </div>
+        <div class="badge">Próxima</div>
+      </li>
+      <li class="phase">
+        <div class="num">2</div>
+        <div>
+          <div class="name">Caso de Seguro</div>
+          <div class="desc">Flujo completo desde la denuncia hasta el ingreso del auto al taller</div>
+        </div>
+        <div class="badge">Planificado</div>
+      </li>
+      <li class="phase">
+        <div class="num">3</div>
+        <div>
+          <div class="name">Caso Particular</div>
+          <div class="desc">Presupuesto y turno para clientes particulares</div>
+        </div>
+        <div class="badge">Planificado</div>
+      </li>
+      <li class="phase">
+        <div class="num">4</div>
+        <div>
+          <div class="name">Reparación y Stock</div>
+          <div class="desc">Ficha de trabajo, repuestos faltantes y listado de materiales</div>
+        </div>
+        <div class="badge">Planificado</div>
+      </li>
+      <li class="phase">
+        <div class="num">5</div>
+        <div>
+          <div class="name">Facturación y Cobros</div>
+          <div class="desc">Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora</div>
+        </div>
+        <div class="badge">Planificado</div>
+      </li>
+      <li class="phase">
+        <div class="num">6</div>
+        <div>
+          <div class="name">CRM</div>
+          <div class="desc">Clientes, aseguradoras y productores con historial de casos</div>
+        </div>
+        <div class="badge">Planificado</div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>🧱 Stack elegido</h2>
+    <div class="stack-grid">
+      <div class="stack-item"><strong>Frontend</strong>React + Vite (PWA)</div>
+      <div class="stack-item"><strong>Backend</strong>Supabase (Postgres + Auth + Storage + Realtime)</div>
+      <div class="stack-item"><strong>Hosting</strong>Vercel / Netlify</div>
+      <div class="stack-item"><strong>Infraestructura</strong>100% separada de otros proyectos</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Documentación completa, investigación de dominio y roadmap detallado en el repositorio:<br>
+  <a href="https://github.com/PabloIan92/sacabollos-aguila-blanca">github.com/PabloIan92/sacabollos-aguila-blanca</a>
+</footer>
+
+</body>
+</html>

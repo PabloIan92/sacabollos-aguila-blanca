@@ -3,294 +3,1116 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sacabollos Águila Blanca — Sistema de Gestión</title>
+<title>Águila Blanca Sacabollos - Demo del sistema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --blue-dark: #123a6b;
+    --graphite: #1b1d21;
+    --steel-100: #eef1f3;
+    --steel-300: #d3d9de;
+    --navy: #123a6b;
     --blue: #1c4f8c;
-    --blue-light: #2f6bb3;
     --red: #c0272d;
-    --paper: #f7f5f1;
-    --ink: #1b1b1b;
-    --muted: #5a6472;
-    --border: #e1ded6;
+    --brass: #b3792f;
+    --green: #3f7d4f;
+    --white: #ffffff;
+    --shadow: 0 16px 36px rgba(27, 29, 33, 0.12);
   }
+
   * { box-sizing: border-box; }
+
+  html { color-scheme: light; }
+
   body {
     margin: 0;
-    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height: 1.55;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", Arial, sans-serif;
+    background:
+      linear-gradient(90deg, rgba(18, 58, 107, 0.04) 1px, transparent 1px) 0 0 / 24px 24px,
+      linear-gradient(0deg, rgba(27, 29, 33, 0.035) 1px, transparent 1px) 0 0 / 24px 24px,
+      var(--steel-100);
+    color: var(--graphite);
   }
-  header {
-    background: linear-gradient(135deg, var(--blue-dark), var(--blue));
-    color: white;
-    padding: 56px 24px 64px;
-    text-align: center;
+
+  button, a {
+    font: inherit;
   }
-  header img {
-    width: 120px;
-    height: 120px;
-    object-fit: contain;
-    background: white;
-    border-radius: 50%;
-    padding: 10px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+
+  button {
+    color: inherit;
   }
-  header h1 {
-    margin: 20px 0 6px;
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    letter-spacing: 0.02em;
+
+  button:focus-visible,
+  a:focus-visible,
+  .work-order:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 4px;
   }
-  header h1 span { color: #ffd166; }
-  header p.tagline {
-    margin: 0 auto;
-    max-width: 640px;
-    color: #dce6f2;
-    font-size: 1.05rem;
-  }
-  .status-pill {
-    display: inline-block;
-    margin-top: 18px;
-    padding: 6px 16px;
-    border-radius: 999px;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.35);
-    font-size: 0.85rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
-  main {
-    max-width: 980px;
-    margin: -32px auto 0;
-    padding: 0 20px 60px;
-  }
-  .card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 28px 30px;
-    margin-bottom: 28px;
-    box-shadow: 0 2px 10px rgba(20,30,50,0.05);
-  }
-  .card h2 {
-    margin-top: 0;
-    color: var(--blue-dark);
-    font-size: 1.3rem;
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 76px;
+    padding: 12px clamp(16px, 4vw, 42px);
+    background: var(--navy);
+    color: var(--white);
+    box-shadow: 0 8px 24px rgba(18, 58, 107, 0.22);
   }
-  .flow {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    margin-top: 18px;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 12px;
   }
-  @media (max-width: 640px) { .flow { grid-template-columns: 1fr; } }
-  .flow .branch {
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 16px 18px;
+
+  .brand img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    border: 2px solid var(--steel-300);
+    background: var(--white);
   }
-  .flow .branch h3 {
-    margin: 0 0 8px;
-    font-size: 1rem;
-    color: var(--red);
-  }
-  .flow .branch ol {
+
+  .brand-title {
     margin: 0;
-    padding-left: 20px;
-    color: var(--muted);
-    font-size: 0.92rem;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: clamp(1.1rem, 3vw, 1.55rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0;
   }
-  .phases {
-    list-style: none;
-    margin: 18px 0 0;
-    padding: 0;
+
+  .brand-subtitle {
+    display: block;
+    margin-top: 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .top-actions {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
     gap: 10px;
+    flex-wrap: wrap;
   }
-  .phase {
+
+  .role-chip {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    padding: 8px 10px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .ghost-button,
+  .tab-button,
+  .case-button,
+  .close-button {
+    border: 1px solid var(--steel-300);
+    background: var(--white);
+    cursor: pointer;
+  }
+
+  .ghost-button {
+    border-color: rgba(255, 255, 255, 0.32);
+    background: transparent;
+    color: var(--white);
+    padding: 8px 10px;
+    font-weight: 600;
+  }
+
+  .ghost-button:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .roadmap-link {
+    position: fixed;
+    right: 18px;
+    bottom: 14px;
+    z-index: 30;
+    color: var(--navy);
+    background: rgba(238, 241, 243, 0.92);
+    border: 1px solid var(--steel-300);
+    padding: 7px 10px;
+    text-decoration: none;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .roadmap-link:hover {
+    color: var(--blue);
+    text-decoration: underline;
+  }
+
+  main {
+    width: min(1180px, calc(100% - 28px));
+    margin: 0 auto;
+    padding: 28px 0 64px;
+  }
+
+  .screen[hidden] {
+    display: none !important;
+  }
+
+  .login-screen {
     display: grid;
-    grid-template-columns: 34px 1fr auto;
-    align-items: start;
-    gap: 14px;
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
+    min-height: calc(100vh - 76px);
+    align-content: center;
+    gap: 28px;
+    padding-bottom: 44px;
   }
-  .phase .num {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--blue);
-    color: white;
+
+  .login-heading {
+    max-width: 760px;
+  }
+
+  .kicker {
+    margin: 0 0 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--red);
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: clamp(2.25rem, 8vw, 5.6rem);
+    line-height: 0.95;
+    letter-spacing: 0;
+    text-transform: uppercase;
+  }
+
+  .login-heading p {
+    max-width: 620px;
+    margin: 16px 0 0;
+    color: #4e5964;
+    font-size: 1.03rem;
+  }
+
+  .role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+
+  .role-card {
+    position: relative;
+    display: grid;
+    min-height: 210px;
+    padding: 22px;
+    border: 2px solid var(--graphite);
+    background: var(--white);
+    box-shadow: 8px 8px 0 rgba(18, 58, 107, 0.18);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .role-card:hover {
+    border-color: var(--blue);
+    transform: translate(-2px, -2px);
+  }
+
+  .role-card::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed var(--steel-300);
+    pointer-events: none;
+  }
+
+  .role-card strong {
+    align-self: end;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 2.1rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .role-card span {
+    max-width: 24ch;
+    color: #4e5964;
+    font-weight: 600;
+  }
+
+  .dashboard-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 18px;
+    margin-bottom: 20px;
+  }
+
+  .dashboard-title h2 {
+    font-size: clamp(2rem, 6vw, 4.2rem);
+  }
+
+  .dashboard-title p {
+    margin: 8px 0 0;
+    color: #4e5964;
+  }
+
+  .tabs {
     display: flex;
+    align-items: stretch;
+    border: 1px solid var(--steel-300);
+    background: var(--white);
+  }
+
+  .tab-button {
+    min-width: 116px;
+    border: 0;
+    border-right: 1px solid var(--steel-300);
+    padding: 12px 14px;
+    font-weight: 800;
+  }
+
+  .tab-button:last-child {
+    border-right: 0;
+  }
+
+  .tab-button[aria-pressed="true"] {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .case-list {
+    display: grid;
+    gap: 14px;
+  }
+
+  .work-order {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.8fr) 152px;
+    gap: 16px;
+    align-items: center;
+    width: 100%;
+    min-height: 142px;
+    padding: 20px;
+    border: 2px solid var(--graphite);
+    background:
+      linear-gradient(90deg, rgba(211, 217, 222, 0.58) 1px, transparent 1px) 0 0 / 18px 18px,
+      var(--white);
+    box-shadow: 6px 6px 0 rgba(27, 29, 33, 0.08);
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .work-order:hover {
+    border-color: var(--blue);
+  }
+
+  .work-order::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    background: var(--navy);
+  }
+
+  .case-code {
+    margin: 0 0 8px 0;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(1.35rem, 4vw, 2.15rem);
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .case-client {
+    margin: 0;
+    color: #4e5964;
+    font-weight: 700;
+  }
+
+  .case-meta {
+    display: grid;
+    gap: 8px;
+  }
+
+  .meta-line {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #4e5964;
+    font-size: 0.92rem;
+    font-weight: 700;
+  }
+
+  .channel-mark {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 0.9rem;
+    width: 28px;
+    height: 22px;
+    flex: 0 0 28px;
+    border: 2px solid currentColor;
+    color: var(--navy);
   }
-  .phase .name { font-weight: 600; }
-  .phase .desc { color: var(--muted); font-size: 0.9rem; margin-top: 2px; }
-  .phase .badge {
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    padding: 4px 10px;
-    border-radius: 999px;
-    background: #eef2f6;
-    color: var(--muted);
-    white-space: nowrap;
+
+  .channel-mark.wallet {
+    width: 27px;
+    border-radius: 3px;
   }
-  .stack-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px;
-    margin-top: 16px;
+
+  .channel-mark.wallet::after {
+    content: "";
+    width: 5px;
+    height: 5px;
+    margin-left: 12px;
+    border-radius: 50%;
+    background: currentColor;
   }
-  .stack-item {
-    background: #f2f6fb;
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 0.9rem;
+
+  .channel-mark.mail {
+    position: relative;
   }
-  .stack-item strong { display: block; color: var(--blue-dark); margin-bottom: 2px; }
-  footer {
+
+  .channel-mark.mail::before,
+  .channel-mark.mail::after {
+    content: "";
+    position: absolute;
+    top: 9px;
+    width: 16px;
+    height: 2px;
+    background: currentColor;
+  }
+
+  .channel-mark.mail::before {
+    left: 2px;
+    transform: rotate(31deg);
+  }
+
+  .channel-mark.mail::after {
+    right: 2px;
+    transform: rotate(-31deg);
+  }
+
+  .mono {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+  }
+
+  .stamp {
+    --stamp-color: var(--graphite);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    min-width: 118px;
+    min-height: 76px;
+    padding: 10px 14px;
+    border: 5px solid var(--stamp-color);
+    color: var(--stamp-color);
+    background: rgba(255, 255, 255, 0.55);
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 1.12rem;
+    font-weight: 700;
+    line-height: 0.96;
     text-align: center;
-    padding: 30px 20px 50px;
-    color: var(--muted);
-    font-size: 0.88rem;
+    text-transform: uppercase;
+    transform: rotate(var(--stamp-rotation, -7deg));
+    text-wrap: balance;
   }
-  footer a { color: var(--blue); text-decoration: none; font-weight: 600; }
-  footer a:hover { text-decoration: underline; }
-  .note {
-    background: #fff8e6;
-    border: 1px solid #f0dca0;
-    border-radius: 10px;
-    padding: 14px 18px;
-    font-size: 0.92rem;
-    color: #6b5300;
+
+  .stamp.circle {
+    min-width: 92px;
+    min-height: 92px;
+    border-radius: 50%;
+  }
+
+  .stamp.big {
+    min-width: 158px;
+    min-height: 104px;
+    font-size: 1.42rem;
+  }
+
+  .stamp-gray { --stamp-color: #68737d; }
+  .stamp-navy { --stamp-color: var(--navy); }
+  .stamp-blue { --stamp-color: var(--blue); }
+  .stamp-brass { --stamp-color: var(--brass); }
+  .stamp-green { --stamp-color: var(--green); }
+  .stamp-red { --stamp-color: var(--red); }
+
+  .stamp-pop {
+    animation: stamp-pop 360ms cubic-bezier(.2, .9, .2, 1.2) both;
+  }
+
+  @keyframes stamp-pop {
+    from { opacity: 0; transform: scale(1.38) rotate(-18deg); }
+    to { opacity: 1; transform: scale(1) rotate(var(--stamp-rotation, -7deg)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.001ms !important;
+    }
+
+    .stamp-pop {
+      animation: none;
+    }
+  }
+
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(27, 29, 33, 0.42);
+  }
+
+  .drawer-backdrop[hidden] {
+    display: none !important;
+  }
+
+  .drawer {
+    width: min(620px, 100%);
+    height: 100%;
+    overflow: auto;
+    background: var(--steel-100);
+    border-left: 3px solid var(--graphite);
+    box-shadow: -16px 0 40px rgba(27, 29, 33, 0.24);
+  }
+
+  .drawer-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 18px 20px;
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .drawer-head h3 {
+    margin: 0;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 2rem;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+
+  .close-button {
+    width: 42px;
+    height: 42px;
+    border-color: rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: var(--white);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  .drawer-body {
+    display: grid;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .ticket-panel {
+    border: 2px solid var(--graphite);
+    background: var(--white);
+    padding: 18px;
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .field {
+    border-bottom: 1px solid var(--steel-300);
+    padding-bottom: 8px;
+  }
+
+  .field span {
+    display: block;
+    margin-bottom: 3px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #68737d;
+    text-transform: uppercase;
+  }
+
+  .field strong {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.95rem;
+  }
+
+  .visual-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .car-sketch {
+    width: 100%;
+    min-height: 230px;
+    border: 1px solid var(--steel-300);
+    background: #f8fafb;
+  }
+
+  .photos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .photo-placeholder {
+    display: grid;
+    place-items: center;
+    min-height: 70px;
+    border: 1px dashed #87919a;
+    background: #e5e9ed;
+  }
+
+  .camera-icon {
+    position: relative;
+    width: 34px;
+    height: 24px;
+    border: 3px solid #68737d;
+  }
+
+  .camera-icon::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: -8px;
+    width: 12px;
+    height: 6px;
+    border: 3px solid #68737d;
+    border-bottom: 0;
+  }
+
+  .camera-icon::after {
+    content: "";
+    position: absolute;
+    left: 10px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+    border: 3px solid #68737d;
+    border-radius: 50%;
+  }
+
+  .billing {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    border-color: var(--navy);
+  }
+
+  .billing .field {
+    border-bottom: 0;
+    padding: 12px;
+    background: var(--steel-100);
+  }
+
+  .empty-state {
+    border: 2px dashed var(--steel-300);
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #4e5964;
+    font-weight: 700;
+  }
+
+  @media (max-width: 820px) {
+    .topbar {
+      position: static;
+      align-items: flex-start;
+    }
+
+    .top-actions {
+      align-items: flex-end;
+    }
+
+    .role-grid,
+    .dashboard-head,
+    .work-order,
+    .visual-grid,
+    .billing {
+      grid-template-columns: 1fr;
+    }
+
+    .work-order {
+      min-height: 0;
+    }
+
+    .stamp {
+      justify-self: start;
+    }
+
+    .tabs {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .tab-button {
+      min-width: 110px;
+      flex: 1 0 auto;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .topbar {
+      display: grid;
+    }
+
+    .role-chip,
+    .ghost-button {
+      font-size: 0.74rem;
+    }
+
+    main {
+      width: min(100% - 20px, 1180px);
+      padding-top: 18px;
+    }
+
+    .role-card {
+      min-height: 178px;
+      padding: 18px;
+    }
+
+    .detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .roadmap-link {
+      position: static;
+      display: inline-block;
+      margin: 0 10px 14px;
+    }
   }
 </style>
 </head>
 <body>
-
-<header>
-  <img src="assets/logo-aguila-blanca.jpg" alt="Águila Blanca Sacabollos">
-  <h1>Águila Blanca <span>Sacabollos</span></h1>
-  <p class="tagline">Sistema de gestión y control para el taller — reemplazando papel por un circuito único de ingreso, reparación y cobro.</p>
-  <div class="status-pill">📋 En planificación — Fase 1 de 6</div>
-</header>
-
-<main>
-
-  <div class="card">
-    <h2>🎯 De qué se trata</h2>
-    <p>Águila Blanca hoy gestiona todo su circuito de reparación de bollos (PDR) en papel: agenda física, fichas sueltas y control manual de facturación. Este proyecto construye una web app propia — con infraestructura y base de datos separadas de cualquier otro negocio — para que dueño, recepción y taller trabajen sobre un único sistema, usable desde tablet en el taller y desde PC en la oficina.</p>
-    <div class="note">Esta página muestra el estado actual del proyecto: contexto, investigación de dominio y roadmap ya definidos. La construcción de la aplicación todavía no arrancó — el próximo paso es la Fase 1 (Fundaciones).</div>
-  </div>
-
-  <div class="card">
-    <h2>🔁 El flujo del negocio</h2>
-    <div class="flow">
-      <div class="branch">
-        <h3>Canal Seguro</h3>
-        <ol>
-          <li>Denuncia + número de siniestro</li>
-          <li>Inspección, presupuesto y fotos</li>
-          <li>Envío a la compañía por mail</li>
-          <li>Compañía envía la orden de trabajo</li>
-          <li>Turno → ingreso → reparación → firma</li>
-          <li>Factura → cobro o reclamo a la compañía</li>
-        </ol>
-      </div>
-      <div class="branch">
-        <h3>Canal Particular</h3>
-        <ol>
-          <li>Presupuesto y fotos</li>
-          <li>Cliente acepta → turno</li>
-          <li>Cliente no acepta → se guarda contacto</li>
-          <li>Ingreso → reparación → firma</li>
-          <li>Factura → cobro</li>
-        </ol>
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo-aguila-blanca.jpg" alt="Águila Blanca Sacabollos">
+      <div>
+        <h1 class="brand-title">Águila Blanca Sacabollos</h1>
+        <span class="brand-subtitle">Órdenes de trabajo PDR</span>
       </div>
     </div>
-  </div>
-
-  <div class="card">
-    <h2>🗺️ Roadmap — 6 fases (MVP vertical)</h2>
-    <ul class="phases">
-      <li class="phase">
-        <div class="num">1</div>
-        <div>
-          <div class="name">Fundaciones</div>
-          <div class="desc">Login con roles (dueño / recepción / taller) y app usable en tablet y PC</div>
-        </div>
-        <div class="badge">Próxima</div>
-      </li>
-      <li class="phase">
-        <div class="num">2</div>
-        <div>
-          <div class="name">Caso de Seguro</div>
-          <div class="desc">Flujo completo desde la denuncia hasta el ingreso del auto al taller</div>
-        </div>
-        <div class="badge">Planificado</div>
-      </li>
-      <li class="phase">
-        <div class="num">3</div>
-        <div>
-          <div class="name">Caso Particular</div>
-          <div class="desc">Presupuesto y turno para clientes particulares</div>
-        </div>
-        <div class="badge">Planificado</div>
-      </li>
-      <li class="phase">
-        <div class="num">4</div>
-        <div>
-          <div class="name">Reparación y Stock</div>
-          <div class="desc">Ficha de trabajo, repuestos faltantes y listado de materiales</div>
-        </div>
-        <div class="badge">Planificado</div>
-      </li>
-      <li class="phase">
-        <div class="num">5</div>
-        <div>
-          <div class="name">Facturación y Cobros</div>
-          <div class="desc">Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora</div>
-        </div>
-        <div class="badge">Planificado</div>
-      </li>
-      <li class="phase">
-        <div class="num">6</div>
-        <div>
-          <div class="name">CRM</div>
-          <div class="desc">Clientes, aseguradoras y productores con historial de casos</div>
-        </div>
-        <div class="badge">Planificado</div>
-      </li>
-    </ul>
-  </div>
-
-  <div class="card">
-    <h2>🧱 Stack elegido</h2>
-    <div class="stack-grid">
-      <div class="stack-item"><strong>Frontend</strong>React + Vite (PWA)</div>
-      <div class="stack-item"><strong>Backend</strong>Supabase (Postgres + Auth + Storage + Realtime)</div>
-      <div class="stack-item"><strong>Hosting</strong>Vercel / Netlify</div>
-      <div class="stack-item"><strong>Infraestructura</strong>100% separada de otros proyectos</div>
+    <div class="top-actions" id="topActions" hidden>
+      <span class="role-chip" id="activeRoleLabel">Rol: -</span>
+      <button class="ghost-button" type="button" id="changeRoleButton">Cambiar rol</button>
+      <button class="ghost-button" type="button" id="logoutButton">Cerrar sesión</button>
     </div>
+  </header>
+
+  <main>
+    <section class="screen login-screen" id="loginScreen">
+      <div class="login-heading">
+        <p class="kicker">Demo clickeable sin backend</p>
+        <h2>Elegir puesto de trabajo</h2>
+        <p>La misma ficha cambia según quien entra: el taller ve reparación, recepción ve datos operativos y el dueño también ve facturación.</p>
+      </div>
+
+      <div class="role-grid" aria-label="Selección de rol">
+        <button class="role-card" type="button" data-role="dueno">
+          <span>Control completo, facturación, cobros y reclamos.</span>
+          <strong>Dueño</strong>
+        </button>
+        <button class="role-card" type="button" data-role="recepcion">
+          <span>Ingreso de casos, turnos, clientes y aseguradoras.</span>
+          <strong>Recepción</strong>
+        </button>
+        <button class="role-card" type="button" data-role="taller">
+          <span>Autos ingresados, daños, fotos y estado de reparación.</span>
+          <strong>Taller</strong>
+        </button>
+      </div>
+    </section>
+
+    <section class="screen" id="dashboardScreen" hidden>
+      <div class="dashboard-head">
+        <div class="dashboard-title">
+          <p class="kicker">Tablero de fichas</p>
+          <h2>Casos activos</h2>
+          <p id="dashboardHint">Fichas de taller con estado sellado y datos clave del caso.</p>
+        </div>
+
+        <div class="tabs" role="group" aria-label="Filtrar casos por canal">
+          <button class="tab-button" type="button" data-filter="todos" aria-pressed="true">Todos</button>
+          <button class="tab-button" type="button" data-filter="seguro" aria-pressed="false">Seguro</button>
+          <button class="tab-button" type="button" data-filter="particular" aria-pressed="false">Particular</button>
+        </div>
+      </div>
+
+      <div class="case-list" id="caseList"></div>
+    </section>
+  </main>
+
+  <a class="roadmap-link" href="proyecto.html">Ver plan y roadmap del proyecto &rarr;</a>
+
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden>
+      <aside class="drawer" aria-label="Detalle del caso" aria-modal="true" role="dialog">
+      <div class="drawer-head">
+        <h3 id="drawerTitle">Detalle</h3>
+        <button class="close-button" type="button" id="closeDrawerButton" aria-label="Cerrar detalle">x</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </aside>
   </div>
 
-</main>
+<script>
+  const stateStyles = {
+    "borrador": { color: "gray", shape: "rect" },
+    "enviado a la aseguradora": { color: "gray", shape: "rect" },
+    "aprobado": { color: "navy", shape: "circle" },
+    "turno coordinado": { color: "navy", shape: "circle" },
+    "ingresado": { color: "navy", shape: "rect" },
+    "esperando repuesto": { color: "brass", shape: "rect" },
+    "en reparación": { color: "blue", shape: "rect" },
+    "listo para firma": { color: "blue", shape: "circle" },
+    "firmado": { color: "blue", shape: "rect" },
+    "facturado": { color: "green", shape: "rect" },
+    "cobrado": { color: "green", shape: "circle" },
+    "cerrado": { color: "green", shape: "rect" },
+    "reclamo a la compañía": { color: "red", shape: "rect" },
+    "cancelado": { color: "red", shape: "rect" }
+  };
 
-<footer>
-  Documentación completa, investigación de dominio y roadmap detallado en el repositorio:<br>
-  <a href="https://github.com/PabloIan92/sacabollos-aguila-blanca">github.com/PabloIan92/sacabollos-aguila-blanca</a>
-</footer>
+  const roleLabels = {
+    dueno: "Dueño",
+    recepcion: "Recepción",
+    taller: "Taller"
+  };
 
+  const cases = [
+    {
+      id: "OT-1028",
+      patente: "AB123CD",
+      cliente: "Marcelo Peralta",
+      canal: "seguro",
+      aseguradora: "San Cristóbal",
+      estado: "enviado a la aseguradora",
+      siniestro: "SC-883120",
+      turno: "Pendiente",
+      facturado: 0,
+      cobrado: 0,
+      danos: [{ x: 32, y: 47 }, { x: 61, y: 42 }, { x: 72, y: 58 }]
+    },
+    {
+      id: "OT-1029",
+      patente: "LNM482",
+      cliente: "Patricia Gómez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "turno coordinado",
+      siniestro: "-",
+      turno: "22/08 09:30",
+      facturado: 420000,
+      cobrado: 150000,
+      danos: [{ x: 45, y: 40 }, { x: 48, y: 55 }]
+    },
+    {
+      id: "OT-1030",
+      patente: "AE742FP",
+      cliente: "Juan Ignacio Ruiz",
+      canal: "seguro",
+      aseguradora: "Federación Patronal",
+      estado: "esperando repuesto",
+      siniestro: "FP-441908",
+      turno: "Ingresado",
+      facturado: 820000,
+      cobrado: 0,
+      danos: [{ x: 27, y: 54 }, { x: 30, y: 45 }]
+    },
+    {
+      id: "OT-1031",
+      patente: "HRA219",
+      cliente: "Silvina Acosta",
+      canal: "seguro",
+      aseguradora: "Mercantil Andes",
+      estado: "en reparación",
+      siniestro: "MA-220177",
+      turno: "En box 2",
+      facturado: 610000,
+      cobrado: 0,
+      danos: [{ x: 58, y: 37 }, { x: 63, y: 50 }, { x: 68, y: 39 }]
+    },
+    {
+      id: "OT-1032",
+      patente: "AF511MP",
+      cliente: "Carlos Benitez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "listo para firma",
+      siniestro: "-",
+      turno: "Retira hoy",
+      facturado: 290000,
+      cobrado: 0,
+      danos: [{ x: 39, y: 52 }]
+    },
+    {
+      id: "OT-1033",
+      patente: "MCD673",
+      cliente: "Gabriela Molina",
+      canal: "seguro",
+      aseguradora: "Triunfo",
+      estado: "facturado",
+      siniestro: "TR-550821",
+      turno: "Finalizado",
+      facturado: 735000,
+      cobrado: 0,
+      danos: [{ x: 74, y: 48 }, { x: 77, y: 57 }]
+    },
+    {
+      id: "OT-1034",
+      patente: "AG204TN",
+      cliente: "Ricardo Sosa",
+      canal: "seguro",
+      aseguradora: "Sancor",
+      estado: "reclamo a la compañía",
+      siniestro: "SA-773019",
+      turno: "Reclamo abierto",
+      facturado: 960000,
+      cobrado: 430000,
+      danos: [{ x: 35, y: 36 }, { x: 49, y: 44 }, { x: 52, y: 58 }]
+    },
+    {
+      id: "OT-1035",
+      patente: "DQS914",
+      cliente: "Laura Fernández",
+      canal: "seguro",
+      aseguradora: "Cooperativa de Seguros",
+      estado: "cobrado",
+      siniestro: "CS-119040",
+      turno: "Cerrado",
+      facturado: 510000,
+      cobrado: 510000,
+      danos: [{ x: 24, y: 52 }, { x: 66, y: 43 }]
+    },
+    {
+      id: "OT-1036",
+      patente: "AC888JV",
+      cliente: "Diego Álvarez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "cancelado",
+      siniestro: "-",
+      turno: "Sin turno",
+      facturado: 0,
+      cobrado: 0,
+      danos: [{ x: 70, y: 40 }]
+    }
+  ];
+
+  let activeRole = null;
+  let activeFilter = "todos";
+  const animatedStamps = new Set();
+
+  const loginScreen = document.getElementById("loginScreen");
+  const dashboardScreen = document.getElementById("dashboardScreen");
+  const topActions = document.getElementById("topActions");
+  const activeRoleLabel = document.getElementById("activeRoleLabel");
+  const caseList = document.getElementById("caseList");
+  const drawerBackdrop = document.getElementById("drawerBackdrop");
+  const drawerTitle = document.getElementById("drawerTitle");
+  const drawerBody = document.getElementById("drawerBody");
+  const closeDrawerButton = document.getElementById("closeDrawerButton");
+
+  function formatMoney(value) {
+    return "$" + value.toLocaleString("es-AR");
+  }
+
+  function stampHtml(status, sizeClass = "", id = "") {
+    const style = stateStyles[status] || stateStyles.borrador;
+    const shapeClass = style.shape === "circle" ? "circle" : "";
+    const animationClass = id && !animatedStamps.has(id) ? "stamp-pop" : "";
+    if (id) animatedStamps.add(id);
+    return `<span class="stamp stamp-${style.color} ${shapeClass} ${sizeClass} ${animationClass}" style="--stamp-rotation:${status.length % 2 ? "-8deg" : "6deg"}">${status}</span>`;
+  }
+
+  function channelIcon(channel) {
+    return channel === "seguro"
+      ? '<span class="channel-mark mail" aria-hidden="true"></span>'
+      : '<span class="channel-mark wallet" aria-hidden="true"></span>';
+  }
+
+  function renderCases() {
+    const visibleCases = cases.filter((item) => activeFilter === "todos" || item.canal === activeFilter);
+    if (!visibleCases.length) {
+      caseList.innerHTML = '<div class="empty-state">No hay fichas para este filtro.</div>';
+      return;
+    }
+
+    caseList.innerHTML = visibleCases.map((item) => `
+      <button class="work-order case-button" type="button" data-case-id="${item.id}">
+        <div>
+          <p class="case-code">${item.patente}</p>
+          <p class="case-client">${item.cliente}</p>
+        </div>
+        <div class="case-meta">
+          <div class="meta-line">${channelIcon(item.canal)} <span>${item.canal === "seguro" ? "Seguro" : "Particular"}</span></div>
+          ${item.aseguradora ? `<div class="meta-line"><span class="mono">${item.aseguradora}</span></div>` : '<div class="meta-line"><span class="mono">Pago directo</span></div>'}
+          <div class="meta-line"><span class="mono">${item.id}</span></div>
+        </div>
+        ${stampHtml(item.estado, "", item.id)}
+      </button>
+    `).join("");
+  }
+
+  function carSvg(caseItem) {
+    const dots = caseItem.danos.map((dot) => `<circle cx="${dot.x}" cy="${dot.y}" r="3.8" fill="#c0272d" stroke="#ffffff" stroke-width="1.5" />`).join("");
+    return `
+      <svg class="car-sketch" viewBox="0 0 100 72" role="img" aria-label="Bosquejo del auto con daños marcados">
+        <rect x="1" y="1" width="98" height="70" fill="#f8fafb" stroke="#d3d9de" />
+        <path d="M18 46 L26 31 C29 25 35 22 45 22 L61 22 C68 22 73 26 78 33 L86 45 L88 52 L13 52 Z" fill="none" stroke="#123a6b" stroke-width="3" stroke-linejoin="round" />
+        <path d="M33 31 L45 27 L59 27 L70 35 L31 35 Z" fill="none" stroke="#1c4f8c" stroke-width="2" />
+        <circle cx="28" cy="54" r="6" fill="none" stroke="#1b1d21" stroke-width="3" />
+        <circle cx="73" cy="54" r="6" fill="none" stroke="#1b1d21" stroke-width="3" />
+        ${dots}
+      </svg>
+    `;
+  }
+
+  function renderDrawer(caseItem) {
+    const difference = caseItem.facturado - caseItem.cobrado;
+    drawerTitle.textContent = `${caseItem.patente} · ${caseItem.id}`;
+    drawerBody.innerHTML = `
+      <section class="ticket-panel">
+        <div class="detail-grid">
+          <div class="field"><span>Cliente</span><strong>${caseItem.cliente}</strong></div>
+          <div class="field"><span>Canal</span><strong>${caseItem.canal === "seguro" ? "Seguro" : "Particular"}</strong></div>
+          <div class="field"><span>Aseguradora</span><strong>${caseItem.aseguradora || "No aplica"}</strong></div>
+          <div class="field"><span>Siniestro</span><strong>${caseItem.siniestro}</strong></div>
+        <div class="field"><span>Turno / ubicación</span><strong>${caseItem.turno}</strong></div>
+          <div class="field"><span>Patente</span><strong>${caseItem.patente}</strong></div>
+        </div>
+      </section>
+
+      <section class="ticket-panel visual-grid">
+        ${carSvg(caseItem)}
+        <div class="photos" aria-label="Fotos del caso">
+          <div class="photo-placeholder"><span class="camera-icon" aria-hidden="true"></span></div>
+          <div class="photo-placeholder"><span class="camera-icon" aria-hidden="true"></span></div>
+          <div class="photo-placeholder"><span class="camera-icon" aria-hidden="true"></span></div>
+        </div>
+      </section>
+
+      <section class="ticket-panel">
+        <div class="detail-grid">
+          <div>
+            <p class="kicker">Estado actual</p>
+            ${stampHtml(caseItem.estado, "big")}
+          </div>
+          <div class="field"><span>Próxima acción</span><strong>${nextAction(caseItem.estado)}</strong></div>
+        </div>
+      </section>
+
+      ${activeRole === "dueno" ? `
+        <section class="ticket-panel billing" aria-label="Facturación del caso">
+          <div class="field"><span>Facturado</span><strong>${formatMoney(caseItem.facturado)}</strong></div>
+          <div class="field"><span>Cobrado</span><strong>${formatMoney(caseItem.cobrado)}</strong></div>
+          <div class="field"><span>Diferencia</span><strong>${formatMoney(difference)}</strong></div>
+        </section>
+      ` : ""}
+    `;
+    drawerBackdrop.hidden = false;
+    closeDrawerButton.focus();
+  }
+
+  function nextAction(status) {
+    const actions = {
+      "borrador": "Completar datos y fotos",
+      "enviado a la aseguradora": "Esperar orden de trabajo",
+      "aprobado": "Coordinar turno",
+      "turno coordinado": "Recibir vehículo",
+      "ingresado": "Asignar box",
+      "esperando repuesto": "Registrar llegada de repuesto",
+      "en reparación": "Actualizar avance",
+      "listo para firma": "Tomar firma del cliente",
+      "firmado": "Preparar facturación",
+      "facturado": "Controlar cobro",
+      "cobrado": "Cerrar caso",
+      "cerrado": "Archivar",
+      "reclamo a la compañía": "Reclamar diferencia",
+      "cancelado": "Sin acción pendiente"
+    };
+    return actions[status] || "Revisar caso";
+  }
+
+  function enterApp(role) {
+    activeRole = role;
+    activeRoleLabel.textContent = `Rol: ${roleLabels[role]}`;
+    loginScreen.hidden = true;
+    dashboardScreen.hidden = false;
+    topActions.hidden = false;
+    renderCases();
+  }
+
+  function showLogin() {
+    activeRole = null;
+    drawerBackdrop.hidden = true;
+    dashboardScreen.hidden = true;
+    topActions.hidden = true;
+    loginScreen.hidden = false;
+  }
+
+  document.querySelectorAll("[data-role]").forEach((button) => {
+    button.addEventListener("click", () => enterApp(button.dataset.role));
+  });
+
+  document.querySelectorAll("[data-filter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.filter;
+      document.querySelectorAll("[data-filter]").forEach((tab) => {
+        tab.setAttribute("aria-pressed", String(tab === button));
+      });
+      renderCases();
+    });
+  });
+
+  caseList.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-case-id]");
+    if (!button) return;
+    const caseItem = cases.find((item) => item.id === button.dataset.caseId);
+    if (caseItem) renderDrawer(caseItem);
+  });
+
+  closeDrawerButton.addEventListener("click", () => {
+    drawerBackdrop.hidden = true;
+  });
+
+  drawerBackdrop.addEventListener("click", (event) => {
+    if (event.target === drawerBackdrop) drawerBackdrop.hidden = true;
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !drawerBackdrop.hidden) {
+      drawerBackdrop.hidden = true;
+    }
+  });
+
+  document.getElementById("changeRoleButton").addEventListener("click", showLogin);
+  document.getElementById("logoutButton").addEventListener("click", showLogin);
+</script>
 </body>
 </html>
