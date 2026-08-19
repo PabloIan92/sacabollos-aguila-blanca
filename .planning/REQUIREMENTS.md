@@ -84,31 +84,31 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| CASOS-01 | TBD | Pending |
-| CASOS-02 | TBD | Pending |
-| CASOS-03 | TBD | Pending |
-| CASOS-04 | TBD | Pending |
-| CASOS-05 | TBD | Pending |
-| FICHAS-01 | TBD | Pending |
-| FICHAS-02 | TBD | Pending |
-| FICHAS-03 | TBD | Pending |
-| FICHAS-04 | TBD | Pending |
-| REPARACION-01 | TBD | Pending |
-| REPARACION-02 | TBD | Pending |
-| FACTURACION-01 | TBD | Pending |
-| FACTURACION-02 | TBD | Pending |
-| CRM-01 | TBD | Pending |
-| CRM-02 | TBD | Pending |
-| CRM-03 | TBD | Pending |
-| STOCK-01 | TBD | Pending |
-| DISPOSITIVO-01 | TBD | Pending |
+| AUTH-01 | Phase 1 | Pending |
+| DISPOSITIVO-01 | Phase 1 | Pending |
+| CASOS-01 | Phase 2 | Pending |
+| CASOS-02 | Phase 2 | Pending |
+| CASOS-04 | Phase 2 | Pending |
+| CASOS-05 | Phase 2 | Pending |
+| FICHAS-01 | Phase 2 | Pending |
+| FICHAS-02 | Phase 2 | Pending |
+| FICHAS-04 | Phase 2 | Pending |
+| CASOS-03 | Phase 3 | Pending |
+| FICHAS-03 | Phase 4 | Pending |
+| REPARACION-01 | Phase 4 | Pending |
+| REPARACION-02 | Phase 4 | Pending |
+| STOCK-01 | Phase 4 | Pending |
+| FACTURACION-01 | Phase 5 | Pending |
+| FACTURACION-02 | Phase 5 | Pending |
+| AUTH-02 | Phase 5 | Pending |
+| CRM-01 | Phase 6 | Pending |
+| CRM-02 | Phase 6 | Pending |
+| CRM-03 | Phase 6 | Pending |
 
 **Coverage:**
 - v1 requirements: 20 total
-- Mapped to phases: 0 (pendiente de roadmap)
-- Unmapped: 20 ⚠️
+- Mapped to phases: 20
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-08-19*
