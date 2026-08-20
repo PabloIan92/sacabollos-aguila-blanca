@@ -26,10 +26,10 @@ Web app propia para gestionar el taller de reparación de bollos (PDR - paintles
 
 | Technology | Version | Purpose | Why Recommended |
 |------------|---------|---------|------------------|
-| React + Vite | React 18, Vite 5 | Frontend SPA/PWA | Ecosistema grande, arranque rápido, buen soporte PWA para uso en tablet con conectividad intermitente |
+| React + Vite | React 19, Vite 8 | Frontend SPA/PWA | Ecosistema grande, arranque rápido, buen soporte PWA para uso en tablet con conectividad intermitente. Versión actualizada por `01-RESEARCH.md` (2026-08-20, verificada contra npm) — reemplaza el estimado inicial de React 18/Vite 5 |
 | TypeScript | 5.x | Tipado del frontend y de las Edge Functions | Comparte tipos generados de la base con `supabase gen types typescript`, reduce errores en formularios de fichas |
 | Supabase | plataforma gestionada (Postgres 15+) | Backend as a service: base de datos, auth, storage, realtime, edge functions | Cubre en un solo servicio todo lo que pidió el dueño (DB nueva, separada de Lemmon) sin mantener servidor propio; incluye Row Level Security para los 3 roles |
-| Tailwind CSS | 3.x | Estilos | Rápido de aplicar de forma consistente en formularios largos (fichas) y responsive tablet/PC |
+| Tailwind CSS | v4 | Estilos | Rápido de aplicar de forma consistente en formularios largos (fichas) y responsive tablet/PC. Versión actualizada por `01-RESEARCH.md` — reemplaza el estimado inicial de Tailwind 3 |
 | Vercel (o Netlify) | — | Hosting del frontend | Deploy directo desde GitHub, gratis para este volumen de tráfico, totalmente separado de la infraestructura de Lemmon |
 
 ### Supporting Libraries
@@ -37,7 +37,7 @@ Web app propia para gestionar el taller de reparación de bollos (PDR - paintles
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | @supabase/supabase-js | 2.x | Cliente de Supabase (DB, auth, storage, realtime) | Todas las pantallas que leen/escriben datos |
-| React Router | 6.x | Ruteo y rutas protegidas por rol | Separar vistas de dueño/recepción/taller |
+| react-router | 8.x (paquete `react-router`, NO `react-router-dom`) | Ruteo y rutas protegidas por rol | Separar vistas de dueño/recepción/taller. `react-router-dom` es ahora un espejo legacy fijado en v7 — usar `react-router` directo para proyectos nuevos (confirmado en reactrouter.com/upgrading/v7, `01-RESEARCH.md`) |
 | TanStack Query | 5.x | Cache y sincronización de datos con Supabase | Listado de casos, semáforo de estado, evita refetch manual |
 | React Hook Form + Zod | RHF 7.x / Zod 3.x | Formularios de las 3 fichas + validación | Fichas tienen muchos campos obligatorios (ver PITFALLS.md); Zod valida también en Edge Functions |
 | Fabric.js (o `react-konva`) | 5.x / 18.x | Canvas para el bosquejo del auto con marcado de daños | Pantalla de ficha de inspección y ficha de trabajo |
@@ -84,8 +84,8 @@ Web app propia para gestionar el taller de reparación de bollos (PDR - paintles
 | Package A | Compatible With | Notes |
 |-----------|------------------|-------|
 | @supabase/supabase-js 2.x | Supabase Postgres 15+ | Verificar versión de Postgres al crear el proyecto en Supabase |
-| React 18 | React Router 6, TanStack Query 5 | Combinación estándar, sin conflictos conocidos |
-| Vite 5 | Node 18+ | Usar Node LTS vigente para el entorno de desarrollo |
+| React 19 | react-router 8, TanStack Query 5 | Combinación estándar, sin conflictos conocidos (actualizado por `01-RESEARCH.md`) |
+| Vite 8 | Node 22.x | Fijar Node 22.x explícitamente en Vercel (actualizado por `01-RESEARCH.md`) |
 
 ## Sources
 

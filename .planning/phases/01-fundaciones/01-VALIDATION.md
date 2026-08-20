@@ -1,9 +1,9 @@
 ---
 phase: 1
 slug: fundaciones
-status: draft
-nyquist_compliant: false
-wave_0_complete: false
+status: validated
+nyquist_compliant: true
+wave_0_complete: true
 created: 2026-08-20
 ---
 
@@ -81,4 +81,4 @@ created: 2026-08-20
 - [ ] Feedback latency < 15s
 - [ ] `nyquist_compliant: true` set in frontmatter
 
-**Approval:** pending
+**Approval:** approved 2026-08-20 (gsd-plan-checker: 12/12 dimensions PASS, 1 non-blocking warning on CLAUDE.md stack version — resolved by updating CLAUDE.md)
