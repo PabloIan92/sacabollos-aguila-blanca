@@ -183,7 +183,7 @@
   <img src="assets/logo-aguila-blanca.jpg" alt="Águila Blanca Sacabollos">
   <h1>Águila Blanca <span>Sacabollos</span></h1>
   <p class="tagline">Sistema de gestión y control para el taller — reemplazando papel por un circuito único de ingreso, reparación y cobro.</p>
-  <div class="status-pill">📋 En planificación — Fase 1 de 6</div>
+  <div class="status-pill">🔧 En construcción — Fase 1 de 6 (scaffold listo)</div>
 </header>
 
 <main>
@@ -191,7 +191,7 @@
   <div class="card">
     <h2>🎯 De qué se trata</h2>
     <p>Águila Blanca hoy gestiona todo su circuito de reparación de bollos (PDR) en papel: agenda física, fichas sueltas y control manual de facturación. Este proyecto construye una web app propia — con infraestructura y base de datos separadas de cualquier otro negocio — para que dueño, recepción y taller trabajen sobre un único sistema, usable desde tablet en el taller y desde PC en la oficina.</p>
-    <div class="note">Esta página muestra el estado actual del proyecto: contexto, investigación de dominio y roadmap ya definidos. La construcción de la aplicación todavía no arrancó — el próximo paso es la Fase 1 (Fundaciones).</div>
+    <div class="note">Esta página muestra el estado actual del proyecto. La Fase 1 (Fundaciones) está en construcción: el scaffold real (React 19 + Vite 8 + Tailwind v4, con el mismo lenguaje visual de la <a href="index.html" style="color:var(--blue-dark);font-weight:600;">demo clickeable</a>) ya está commiteado en el repo. Falta crear el proyecto Supabase y el proyecto Vercel para tener el login real desplegado — recién ahí queda cerrada esta fase.</div>
   </div>
 
   <div class="card">
@@ -228,9 +228,9 @@
         <div class="num">1</div>
         <div>
           <div class="name">Fundaciones</div>
-          <div class="desc">Login con roles (dueño / recepción / taller) y app usable en tablet y PC</div>
+          <div class="desc">Login con roles (dueño / recepción / taller) y app usable en tablet y PC — scaffold listo, falta Supabase + Vercel</div>
         </div>
-        <div class="badge">Próxima</div>
+        <div class="badge" style="background:#fdf1e0;color:var(--blue-dark);">En construcción</div>
       </li>
       <li class="phase">
         <div class="num">2</div>
@@ -278,9 +278,9 @@
   <div class="card">
     <h2>🧱 Stack elegido</h2>
     <div class="stack-grid">
-      <div class="stack-item"><strong>Frontend</strong>React + Vite (PWA)</div>
+      <div class="stack-item"><strong>Frontend</strong>React 19 + Vite 8 + Tailwind v4</div>
       <div class="stack-item"><strong>Backend</strong>Supabase (Postgres + Auth + Storage + Realtime)</div>
-      <div class="stack-item"><strong>Hosting</strong>Vercel / Netlify</div>
+      <div class="stack-item"><strong>Hosting</strong>Vercel (auto-deploy desde GitHub)</div>
       <div class="stack-item"><strong>Infraestructura</strong>100% separada de otros proyectos</div>
     </div>
   </div>
@@ -288,7 +288,7 @@
 </main>
 
 <footer>
-  Documentación completa, investigación de dominio y roadmap detallado en el repositorio:<br>
+  <a href="index.html">Ver la demo clickeable</a> · Documentación completa, investigación de dominio y roadmap detallado en el repositorio:<br>
   <a href="https://github.com/PabloIan92/sacabollos-aguila-blanca">github.com/PabloIan92/sacabollos-aguila-blanca</a>
 </footer>
 
