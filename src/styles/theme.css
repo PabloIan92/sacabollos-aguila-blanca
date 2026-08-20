@@ -9,6 +9,7 @@
   --color-red: #c0272d;
   --color-brass: #b3792f;
   --color-green: #3f7d4f;
+  --color-gray: #68737d;
 
   --font-display: "Oswald", sans-serif;
   --font-sans: "IBM Plex Sans", sans-serif;
@@ -36,6 +37,7 @@
   --color-red: #c0272d;
   --color-brass: #b3792f;
   --color-green: #3f7d4f;
+  --color-gray: #68737d;
 }
 
 * {
