@@ -28,12 +28,13 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
   1. Dueño, recepción y taller inician sesión cada uno con su propio usuario
   2. Cada rol ve solo las secciones de menú que le corresponden
   3. La app se ve y se usa bien tanto en una tablet como en una PC/notebook
-**Plans**: 3 plans
+**Plans**: 4 plans
 
 Plans:
-- [ ] 01-01: Proyecto Supabase nuevo (separado de Lemmon Internet) con Auth y roles
-- [ ] 01-02: Shell de la app — routing por rol y layout responsive
-- [ ] 01-03: Login y pantallas de inicio por rol
+- [ ] 01-01-PLAN.md — Esqueleto caminante: proyecto Supabase nuevo con `profiles`+RLS, login real con email+contraseña y app desplegada en Vercel
+- [ ] 01-02-PLAN.md — Shell responsive: routing con guardia de rol, sidebar en PC y barra inferior táctil en tablet
+- [ ] 01-03-PLAN.md — Pantallas de inicio por rol (dueño, recepción, taller) con sus estados vacíos
+- [ ] 01-04-PLAN.md — Alta de usuarios desde la app: Edge Function `invite-user` con re-validación de rol del lado del servidor
 
 ### Phase 2: Caso de Seguro
 **Goal**: Un caso de seguro se puede seguir de punta a punta, desde la denuncia hasta que el auto ingresa al taller
@@ -123,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|-----------------|--------|-----------|
-| 1. Fundaciones | 0/3 | Not started | - |
+| 1. Fundaciones | 0/4 | Planned | - |
 | 2. Caso de Seguro | 0/4 | Not started | - |
 | 3. Caso Particular | 0/2 | Not started | - |
 | 4. Reparación y Stock | 0/3 | Not started | - |
