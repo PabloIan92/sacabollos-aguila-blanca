@@ -1,32 +1,142 @@
-# React + TypeScript + Vite
+# Sacabollos Aguila Blanca
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-Currently, two official plugins are available:
+## Estado actual: Fase 1 - Fundaciones (completada)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### Lo que está implementado
 
-## React Compiler
+**Stack técnico:**
+- React 19.2.8 + TypeScript + Vite 8.2.2
+- Tailwind CSS v4 (configuración nativa con `@theme`)
+- React Router 8.3.0 (data mode)
+- Supabase (Auth + Postgres) — cliente `@supabase/supabase-js@2.112.3`
+- Vitest 4.1.11 + React Testing Library + jsdom
+- Despliegue en Vercel con auto-deploy desde GitHub
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Arquitectura de la Fase 1:**
+- **Walking Skeleton**: Un usuario real entra con email+contraseña en la URL de producción y ve su nombre y rol leídos de `public.profiles` vía RLS
+- **Tabla `profiles`** con RLS habilitada, trigger `on_auth_user_created`, helper `current_user_role()` en `plpgsql`, GRANT de columna acotado a `full_name` (el rol nunca se puede autofiltrar)
+- **3 roles**: `dueno`, `recepcion`, `taller` (valores ASCII en BD, etiquetas en UI)
+- **Navegación responsive**: Sidebar en PC (≥820px), barra inferior táctil en tablet (10-12")
+- **Paleta y tipografías** reutilizadas de `docs/index.html` (demo aprobada por el dueño):
+  - Colores: graphite, steel-100, steel-300, navy, blue, red, brass, green
+  - Fuentes: Oswald (display), IBM Plex Sans (sans), IBM Plex Mono (mono)
 
-## Expanding the Oxlint configuration
+**Componentes UI (primitivas visuales):**
+- `Ficha` — contenedor base "ficha de taller" (borde 2px graphite, sombra 6px 6px)
+- `TextField` — label en mono 13px/600 mayúsculas, borde steel-300 → red en error, mensaje error en red 13px
+- `PrimaryButton` — fondo blue, texto blanco, IBM Plex Sans 600, `loading` intercambia etiqueta sin salto de layout
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+**Pantallas base:**
+- Login real con email+contraseña (sin selector de rol: el rol sale de `profiles` post-auth)
+- Estados: carga ("Ingresando…"), error copy fija en español, email persistente en error
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+**Testing & Calidad:**
+- 2 tests de harness (matchMedia mock + jest-dom matchers)
+- `npm run build` ✓, `npm run test` ✓, `npm run typecheck` ✓
+- Variables de entorno: solo `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en bundle (`.env.example`)
+
+---
+
+## Próximos pasos (pendientes configuración externa)
+
+### Task 3: Migración a Supabase en vivo
+Requiere crear proyecto Supabase propio y configurar variables:
+```bash
+SUPABASE_PROJECT_REF=xxx
+SUPABASE_DB_PASSWORD=xxx
+SUPABASE_ACCESS_TOKEN=xxx
+VITE_SUPABASE_URL=https://xxx.supabase.co
+VITE_SUPABASE_ANON_KEY=xxx
+```
+Luego: `npx supabase link --project-ref $SUPABASE_PROJECT_REF && npx supabase db push`
+
+### Task 4: Deploy Vercel + Login real
+Requiere:
+1. `VERCEL_TOKEN` 
+2. Importar repo en Vercel (Framework: Vite)
+3. Configurar 2 env vars en Vercel (production)
+4. En Supabase: crear primer usuario (dueño) + correr `supabase/seed/0001-promote-first-dueno.sql`
+
+---
+
+## Scripts disponibles
+
+```bash
+npm run dev       # Servidor de desarrollo
+npm run build     # Build de producción (tsc + vite build)
+npm run preview   # Preview del build
+npm run test      # Tests en modo CI (vitest run)
+npm run typecheck # TypeScript sin emitir
+npm run lint      # Oxlint
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── auth/              # AuthProvider, useAuth (contexto de sesión + perfil)
+├── features/
+│   └── login/         # LoginPage (pendiente conexión real a Supabase)
+├── lib/
+│   └── supabaseClient.ts  # Única instancia createClient()
+├── styles/
+│   └── theme.css      # Tokens Tailwind v4 @theme (paleta, tipografías, spacing, breakpoint)
+├── test/
+│   ├── setup.ts       # matchMedia mock + jest-dom
+│   └── harness.test.ts
+├── ui/                # Primitivas visuales compartidas
+│   ├── Ficha.tsx
+│   ├── TextField.tsx
+│   └── PrimaryButton.tsx
+├── App.tsx            # Demo actual: login estático con primitivas
+└── main.tsx           # Entry point
+
+supabase/
+├── migrations/
+│   └── 0001_profiles.sql    # Tabla profiles + RLS + trigger + helper + GRANT
+└── seed/
+    └── 0001-promote-first-dueno.sql  # Promueve primer usuario a 'dueno'
+
+docs/
+└── index.html           # Demo visual aprobada (fuente de verdad de paleta/tipografías/breakpoint)
+
+.planning/
+└── phases/01-fundaciones/  # Contexto, research, UI-SPEC, validation, patterns, skeleton, coverage, plan, plan-check
+```
+
+---
+
+## Decisiones arquitectónicas clave (Fase 1)
+
+| Decisión | Elección | Por qué |
+|----------|----------|---------|
+| Rol en BD | Tabla `public.profiles` (no `user_metadata`) | Consultable desde RLS de otras tablas; base para Fase 5 (facturado/cobrado solo dueño) |
+| Helper rol | `current_user_role()` en `plpgsql` (no `sql`) | Evita inlineado del planificador que rompería `security definer` y causaría recursión RLS |
+| Escritura rol | Solo via service-role key en Edge Function `invite-user` | `authenticated` nunca tiene GRANT UPDATE sobre columna `role` |
+| Breakpoint | 820px (único) | Mismo valor que demo `docs/index.html:643`; switch CSS puro |
+| Paquetes npm | Versiones exactas fijadas, 6 auditados "too-new" con gate humano | Seguridad de supply chain |
+
+---
+
+## Demo visual (docs/index.html)
+
+La demo en `docs/index.html` sigue publicada en GitHub Pages como referencia visual aprobada. Contiene:
+- Paleta de colores completa
+- 3 tipografías (Oswald, IBM Plex Sans, IBM Plex Mono)
+- Breakpoint responsive 820px
+- Pantallas de referencia: login (con selector de roles — solo demo), home por rol, invitación
+
+La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.css`.
+
+---
+
+## Enlaces
+
+- **Repo:** https://github.com/PabloIan92/sacabollos-aguila-blanca
+- **Demo (GitHub Pages):** https://pabloian92.github.io/sacabollos-aguila-blanca/
+- **Producción (Vercel):** *pendiente deploy Task 4*
+- **Supabase:** *pendiente creación proyecto propio*

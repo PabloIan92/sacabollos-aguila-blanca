@@ -66,6 +66,28 @@
     box-shadow: 0 8px 24px rgba(18, 58, 107, 0.22);
   }
 
+  .phase-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .phase-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+
   .brand {
     display: flex;
     align-items: center;
@@ -723,14 +745,19 @@
       <button class="ghost-button" type="button" id="changeRoleButton">Cambiar rol</button>
       <button class="ghost-button" type="button" id="logoutButton">Cerrar sesión</button>
     </div>
+    <div class="phase-badge" title="Fase 1: Fundaciones - Scaffold completado, pendiente Supabase + Vercel">
+      <span class="phase-dot" aria-hidden="true"></span>
+      <span>Fase 1: Fundaciones ✓</span>
+    </div>
   </header>
 
   <main>
     <section class="screen login-screen" id="loginScreen">
       <div class="login-heading">
-        <p class="kicker">Demo clickeable sin backend</p>
+        <p class="kicker">Fase 1 completada · Scaffold real desplegable</p>
         <h2>Elegir puesto de trabajo</h2>
         <p>La misma ficha cambia según quien entra: el taller ve reparación, recepción ve datos operativos y el dueño también ve facturación.</p>
+        <p style="margin-top:12px;font-size:0.85rem;color:#68737d;">App real: <a href="https://github.com/PabloIan92/sacabollos-aguila-blanca" style="color:var(--navy);text-decoration:underline;">GitHub</a> · Stack: React 19 + Vite 8 + Tailwind 4 + Supabase + Vercel</p>
       </div>
 
       <div class="role-grid" aria-label="Selección de rol">
