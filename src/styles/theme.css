@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-graphite: #1b1d21;
+  --color-steel-100: #eef1f3;
+  --color-steel-300: #d3d9de;
+  --color-navy: #123a6b;
+  --color-blue: #1c4f8c;
+  --color-red: #c0272d;
+  --color-brass: #b3792f;
+  --color-green: #3f7d4f;
+
+  --font-display: "Oswald", sans-serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  --breakpoint-tablet: 820px;
+
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+
+  --shadow-ficha: 6px 6px 0 rgba(27, 29, 33, 0.08);
+}
+
+:root {
+  --color-graphite: #1b1d21;
+  --color-steel-100: #eef1f3;
+  --color-steel-300: #d3d9de;
+  --color-navy: #123a6b;
+  --color-blue: #1c4f8c;
+  --color-red: #c0272d;
+  --color-brass: #b3792f;
+  --color-green: #3f7d4f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  background:
+    linear-gradient(90deg, rgba(18, 58, 107, 0.04) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(0deg, rgba(27, 29, 33, 0.035) 1px, transparent 1px) 0 0 / 24px 24px,
+    var(--color-steel-100);
+  color: var(--color-graphite);
+}
+
+button, a {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--color-red);
+}

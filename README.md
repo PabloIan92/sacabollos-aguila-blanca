@@ -1,24 +1,32 @@
-# Sacabollos Águila Blanca — Sistema de Gestión
+# React + TypeScript + Vite
 
-Web app de gestión y control para el taller de reparación de bollos (PDR) **Águila Blanca**, que hoy trabaja 100% en papel. Reemplaza fichas, agenda y control de facturación por un sistema único, usable desde tablet (taller) y PC (oficina), con 3 roles: dueño, recepción y taller.
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-Proyecto gestionado con [GSD](https://github.com/opengsd/gsd-core) (get-shit-done). Infraestructura y base de datos **totalmente separadas** de Lemmon Internet por decisión explícita del dueño.
+Currently, two official plugins are available:
 
-## Cómo continuar desde otra PC
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-1. Cloná este repo: `gh repo clone PabloIan92/sacabollos-aguila-blanca`
-2. Instalá GSD si no lo tenés: `npx @opengsd/gsd-core@latest --claude --global`
-3. Revisá el estado actual: `.planning/STATE.md` (o corré `/gsd-progress` / `/gsd-next` en Claude Code)
-4. Documentos clave:
-   - `.planning/PROJECT.md` — contexto y alcance del proyecto
-   - `.planning/REQUIREMENTS.md` — requisitos v1 (cuando exista)
-   - `.planning/ROADMAP.md` — fases del proyecto (cuando exista)
-   - `docs/flujos-originales/TRANSCRIPCION.md` — transcripción de las anotaciones a mano originales del dueño (fotos también en esa carpeta)
-   - `assets/logo-aguila-blanca.jpg` — logo de la empresa
+## React Compiler
 
-## Contexto rápido
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- Dos canales de trabajo: **Seguro** (denuncia → presupuesto → orden de trabajo de la aseguradora → reparación → factura → cobro) y **Particular** (presupuesto → turno)
-- 3 fichas digitales con fotos: inspección pre-ingreso, inspección de ingreso, ficha de trabajo/reparación
-- Facturación: diferencia formal vs. total cobrado (visible solo para el rol dueño)
-- Bot de atención por WhatsApp queda **fuera de alcance** de este milestone — requiere un servidor propio nuevo, separado del de Lemmon Internet
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
