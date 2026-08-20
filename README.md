@@ -2,7 +2,21 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-## Estado actual: Fase 1 - Fundaciones (completada)
+![Phase](https://img.shields.io/badge/Phase-1%20Fundaciones-blue)
+![Status](https://img.shields.io/badge/Status-Tasks%201--2%20%E2%9C%85%20%7C%20Tasks%203--4%20%E2%8F%B3-yellow)
+
+## Estado actual: Fase 1 - Fundaciones (parcial — Tasks 1-2 ✅, Tasks 3-4 ⏳ bloqueadas)
+
+**Completado (Tasks 1-2):**
+- Gate de legitimidad de 6 paquetes npm auditados "too-new" ✅
+- Scaffold Vite+React+TS+Tailwind v4 + UI primitives (`Ficha`, `TextField`, `PrimaryButton`) + tests ✅
+- `npm run build` ✓, `npm run test` ✓, `npm run typecheck` ✓
+
+**Bloqueado (Tasks 3-4) — requiere configuración externa:**
+- **Task 3**: Migración `profiles` a Supabase vivo + RLS + push — necesita proyecto Supabase propio + 5 env vars
+- **Task 4**: Login real deployado en Vercel + verificación humano tablet/PC — necesita `VERCEL_TOKEN` + importar repo + crear usuario dueño
+
+> Ver sección "Próximos pasos" abajo para detalles de variables necesarias.
 
 ### Lo que está implementado
 
