@@ -148,6 +148,62 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 
 ---
 
+## Changelog — Sesión 2026-08-23 (Prototipo Planilla de Control)
+
+**Objetivo:** El cliente no sabía lo que quería, mandó video de un Excel de control de stock. Se propuso y construyó un prototipo de "Planilla de Control" tipo Excel de **solo lectura** que refleja el estado real del proceso (cada celda se pinta sola cuando el responsable completa su ficha), sin romper el control por roles.
+
+### Cambios realizados
+| Archivo | Acción | Detalle |
+|---------|--------|---------|
+| `docs/tablero.html` | **Nuevo** | Prototipo autocontenido (~650 líneas). Tabla densa 12 casos × 9 etapas (semáforo CASOS-04), KPIs, solapa Stock (STOCK-01), drawer con bosquejo + timeline 9 etapas + facturación. Estética idéntica a demo aprobada (paleta, fuentes, breakpoint 820px, estilo "ficha de taller"). |
+| `docs/index.html` | **Modificado** | Agregados 2 accesos prominentes: botón en topbar (brass, activo) + banner en login con llamada a la acción. |
+| `README.md` | **Actualizado** | Sección "Demos visuales" con link a tablero.html; estructura `docs/` actualizada; esta sección de changelog. |
+| `.claude/CLAUDE.md` | **Actualizado** | Convención añadida: "Actualizar README y reflejar en demo GitHub Pages (docs/) tras cada cambio". |
+
+### Qué muestra la Planilla (tablero.html)
+- **12 casos mock** cubriendo todas las etapas reales: `borrador` → `enviado a la aseguradora` → `aprobado` → `turno coordinado` → `ingresado` → `esperando repuesto` (con nombre del repuesto) → `en reparación` → `listo para firma` → `firmado` → `facturado` → `cobrado` / `reclamo a la compañía` / `cancelado`.
+- **Semáforo visual** por celda: ✓ verde = completado · ● azul = en proceso activo · ◐ brass = espera externa · REP brass = falta repuesto · ✖ rojo = reclamo · — gris = pendiente.
+- **Columna "Días"**: roja bold si ≥5 días trabados en la misma etapa (casos OT-1028, OT-1033, OT-1034 destacados).
+- **KPIs arriba**: Autos en taller, Esperando repuesto, Casos trabados (≥5d), Reclamos a Cías., Facturado sin cobrar (solo dueño).
+- **Solapa Stock**: 8 ítems (consumibles, herramientas, repuestos) con estados OK/Bajo/Faltante.
+- **Click en fila** → panel lateral con bosquejo SVG daños, timeline 9 etapas coloreado por responsable (Recepción/Taller/Dueño), facturación con diferencial.
+- **Filtros**: Todos / Seguro / Particular / "Solo trabados (≥5d)".
+- **Concepto vendido al cliente**: *"Es tu Excel, pero se llena solo"* — nadie edita la planilla a mano; cada celda cambia de color cuando el responsable aprueba su parte en su pantalla.
+
+### Estado actual tras esta sesión
+- **Fase 1 (Fundaciones)**: Tasks 1-2 ✅ (scaffold, UI primitives, tema visual, tests). Tasks 3-4 ⏳ bloqueadas (requieren Supabase + Vercel propios).
+- **Demo Fichas**: https://pabloian92.github.io/sacabollos-aguila-blanca/
+- **Demo Planilla (nueva)**: https://pabloian92.github.io/sacabollos-aguila-blanca/tablero.html
+- **Commits**: `f94bff3` — "feat: add Planilla de Control (tablero.html) demo with semáforo + stock"
+
+### Próximos pasos inmediatos (para continuar desde otra PC)
+
+1. **Clonar y arrancar local**
+   ```bash
+   git clone https://github.com/PabloIan92/sacabollos-aguila-blanca.git
+   cd sacabollos-aguila-blanca
+   npm ci
+   npm run dev
+   ```
+
+2. **Validar planilla con el dueño** (ya desplegada en GitHub Pages):
+   - Compartir `tablero.html` → el dueño ve todo en una pantalla tipo Excel.
+   - Si aprueba estética → **se implementa de verdad en la app React** (Fase 2, plan 02-04 "Semáforo de estado visual en el listado de casos").
+
+3. **Desbloquear Tasks 3-4 (Fase 1)**:
+   - Crear proyecto Supabase propio → obtener 5 env vars (ver sección "Próximos pasos" arriba).
+   - `npx supabase link --project-ref $REF && npx supabase db push`
+   - Crear `VERCEL_TOKEN` → importar repo en Vercel (Framework: Vite) → 2 env vars en producción.
+   - En Supabase: crear primer usuario dueño + correr `supabase/seed/0001-promote-first-dueno.sql`.
+
+4. **Fase 2 (Caso de Seguro)** — cuando login real esté vivo:
+   - Modelo de datos y máquina de estados del caso (02-01).
+   - Ficha de inspección pre-ingreso con fotos + bosquejo (02-02).
+   - Turno + ficha de ingreso (02-03).
+   - **Semáforo de estado real conectado a BD** (02-04) — reutilizando el diseño validado en `tablero.html`.
+
+---
+
 ## Enlaces
 
 - **Repo:** https://github.com/PabloIan92/sacabollos-aguila-blanca
