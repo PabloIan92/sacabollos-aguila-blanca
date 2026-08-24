@@ -99,7 +99,7 @@ Web app propia para gestionar el taller de reparación de bollos (PDR - paintles
 
 ## Conventions
 
-Conventions not yet established. Will populate as patterns emerge during development.
+- **Actualización de documentación y demo:** Cada vez que se actualice cualquier funcionalidad, pantalla o prototipo, actualizar inmediatamente el `README.md` y asegurarse de que los cambios queden reflejados en la demo publicada en GitHub Pages (`docs/`).
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->

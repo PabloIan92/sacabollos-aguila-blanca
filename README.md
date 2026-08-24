@@ -116,7 +116,9 @@ supabase/
     └── 0001-promote-first-dueno.sql  # Promueve primer usuario a 'dueno'
 
 docs/
-└── index.html           # Demo visual aprobada (fuente de verdad de paleta/tipografías/breakpoint)
+├── index.html           # Demo visual aprobada (fichas individuales por rol)
+├── tablero.html         # Prototipo Planilla de Control (vista tabular tipo Excel con semáforo y stock)
+└── proyecto.html        # Resumen del proyecto y roadmap visible en la demo
 
 .planning/
 └── phases/01-fundaciones/  # Contexto, research, UI-SPEC, validation, patterns, skeleton, coverage, plan, plan-check
@@ -136,13 +138,11 @@ docs/
 
 ---
 
-## Demo visual (docs/index.html)
+## Demos visuales (GitHub Pages)
 
-La demo en `docs/index.html` sigue publicada en GitHub Pages como referencia visual aprobada. Contiene:
-- Paleta de colores completa
-- 3 tipografías (Oswald, IBM Plex Sans, IBM Plex Mono)
-- Breakpoint responsive 820px
-- Pantallas de referencia: login (con selector de roles — solo demo), home por rol, invitación
+Publicadas en GitHub Pages como referencia visual aprobada:
+- **`docs/index.html`** (Fichas de taller): login con selector de roles, vista de fichas con sellos y detalle interactivo.
+- **`docs/tablero.html`** (Planilla de Control): vista tabular compacta tipo Excel con semáforo de 9 etapas por caso (CASOS-04) y solapa de control de stock simple (STOCK-01). Muestra cómo el proceso se actualiza automáticamente sin perder la aprobación por rol.
 
 La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.css`.
 
@@ -151,6 +151,7 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 ## Enlaces
 
 - **Repo:** https://github.com/PabloIan92/sacabollos-aguila-blanca
-- **Demo (GitHub Pages):** https://pabloian92.github.io/sacabollos-aguila-blanca/
+- **Demo Fichas (GitHub Pages):** https://pabloian92.github.io/sacabollos-aguila-blanca/
+- **Demo Planilla / Tablero (GitHub Pages):** https://pabloian92.github.io/sacabollos-aguila-blanca/tablero.html
 - **Producción (Vercel):** *pendiente deploy Task 4*
 - **Supabase:** *pendiente creación proyecto propio*

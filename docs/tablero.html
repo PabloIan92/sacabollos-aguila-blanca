@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Águila Blanca Sacabollos - Planilla de Control (Tablero)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --graphite: #1b1d21;
+    --steel-100: #eef1f3;
+    --steel-200: #e2e7ec;
+    --steel-300: #d3d9de;
+    --navy: #123a6b;
+    --blue: #1c4f8c;
+    --red: #c0272d;
+    --brass: #b3792f;
+    --green: #3f7d4f;
+    --white: #ffffff;
+    --shadow: 0 16px 36px rgba(27, 29, 33, 0.12);
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "IBM Plex Sans", Arial, sans-serif;
+    background:
+      linear-gradient(90deg, rgba(18, 58, 107, 0.04) 1px, transparent 1px) 0 0 / 24px 24px,
+      linear-gradient(0deg, rgba(27, 29, 33, 0.035) 1px, transparent 1px) 0 0 / 24px 24px,
+      var(--steel-100);
+    color: var(--graphite);
+  }
+
+  button, a { font: inherit; color: inherit; }
+
+  button:focus-visible,
+  a:focus-visible,
+  tr:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 2px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 70px;
+    padding: 10px clamp(16px, 3vw, 36px);
+    background: var(--navy);
+    color: var(--white);
+    box-shadow: 0 8px 24px rgba(18, 58, 107, 0.22);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .brand img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    border: 2px solid var(--steel-300);
+    background: var(--white);
+  }
+
+  .brand-title {
+    margin: 0;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: clamp(1.05rem, 2.5vw, 1.4rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0;
+  }
+
+  .brand-subtitle {
+    display: block;
+    margin-top: 3px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.78);
+  }
+
+  .top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ghost-button {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--white);
+    padding: 7px 12px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ghost-button:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+
+  .ghost-button.active {
+    background: var(--white);
+    color: var(--navy);
+    border-color: var(--white);
+  }
+
+  .phase-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 9px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 999px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .phase-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--brass);
+    box-shadow: 0 0 6px var(--brass);
+  }
+
+  main {
+    width: min(1380px, calc(100% - 24px));
+    margin: 0 auto;
+    padding: 20px 0 60px;
+  }
+
+  .kicker {
+    margin: 0 0 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--red);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .header-banner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .header-banner h2 {
+    margin: 0;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: clamp(1.8rem, 4vw, 3.2rem);
+    line-height: 0.95;
+    text-transform: uppercase;
+  }
+
+  .header-banner p {
+    margin: 6px 0 0;
+    color: #4e5964;
+    font-size: 0.92rem;
+    max-width: 70ch;
+  }
+
+  .concept-callout {
+    background: #fff8e8;
+    border: 2px solid var(--brass);
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: var(--graphite);
+    box-shadow: 4px 4px 0 rgba(179, 121, 47, 0.18);
+    max-width: 480px;
+  }
+
+  .concept-callout strong {
+    font-family: "Oswald", Impact, sans-serif;
+    color: var(--brass);
+    font-size: 1rem;
+    display: block;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  /* KPIs */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+
+  .kpi-card {
+    background: var(--white);
+    border: 2px solid var(--graphite);
+    padding: 12px 14px;
+    box-shadow: 4px 4px 0 rgba(27, 29, 33, 0.08);
+  }
+
+  .kpi-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #68737d;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .kpi-value {
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 1.9rem;
+    line-height: 1;
+    color: var(--navy);
+  }
+
+  .kpi-value.alert { color: var(--red); }
+  .kpi-value.warning { color: var(--brass); }
+  .kpi-value.success { color: var(--green); }
+
+  .kpi-sub {
+    font-size: 0.72rem;
+    color: #4e5964;
+    margin-top: 3px;
+    font-weight: 600;
+  }
+
+  /* Control bar */
+  .controls-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tabs-nav {
+    display: flex;
+    border: 2px solid var(--graphite);
+    background: var(--white);
+    box-shadow: 3px 3px 0 rgba(27, 29, 33, 0.08);
+  }
+
+  .tab-btn {
+    border: 0;
+    border-right: 1px solid var(--steel-300);
+    padding: 9px 16px;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 1.05rem;
+    text-transform: uppercase;
+    background: transparent;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+
+  .tab-btn:last-child { border-right: 0; }
+
+  .tab-btn[aria-selected="true"] {
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .filters-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .filter-pill {
+    border: 1px solid var(--steel-300);
+    background: var(--white);
+    padding: 6px 12px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .filter-pill[aria-pressed="true"] {
+    background: var(--graphite);
+    color: var(--white);
+    border-color: var(--graphite);
+  }
+
+  .stuck-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fde8e8;
+    border: 1px solid var(--red);
+    padding: 5px 10px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--red);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* Sheet Table */
+  .sheet-wrapper {
+    background: var(--white);
+    border: 2px solid var(--graphite);
+    box-shadow: 6px 6px 0 rgba(27, 29, 33, 0.12);
+    overflow: auto;
+    max-height: calc(100vh - 280px);
+    position: relative;
+  }
+
+  table.sheet-table {
+    width: 100%;
+    min-width: 1220px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+  }
+
+  table.sheet-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--navy);
+    color: var(--white);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 8px 6px;
+    border-bottom: 2px solid var(--graphite);
+    border-right: 1px solid rgba(255, 255, 255, 0.18);
+    text-align: center;
+    vertical-align: bottom;
+  }
+
+  table.sheet-table thead th.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 10;
+    background: #0d294d;
+    text-align: left;
+    min-width: 120px;
+    padding-left: 12px;
+  }
+
+  table.sheet-table thead th.th-info {
+    text-align: left;
+    padding: 8px 10px;
+  }
+
+  table.sheet-table thead th.th-stage {
+    width: 72px;
+    min-width: 72px;
+    max-width: 72px;
+    padding: 8px 2px 6px;
+  }
+
+  .th-stage-label {
+    display: block;
+    font-size: 0.68rem;
+    line-height: 1.1;
+  }
+
+  .th-stage-num {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 0.6rem;
+    margin-bottom: 3px;
+  }
+
+  table.sheet-table tbody tr {
+    cursor: pointer;
+    transition: background-color 120ms;
+  }
+
+  table.sheet-table tbody tr:nth-child(even) {
+    background: #f8fafb;
+  }
+
+  table.sheet-table tbody tr:hover {
+    background: #e8f0f8;
+  }
+
+  table.sheet-table tbody tr.row-cancelled {
+    opacity: 0.5;
+    background: #f0f0f0;
+  }
+
+  table.sheet-table tbody td {
+    padding: 7px 6px;
+    border-bottom: 1px solid var(--steel-300);
+    border-right: 1px solid var(--steel-200);
+    vertical-align: middle;
+  }
+
+  table.sheet-table tbody td.sticky-col {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: inherit;
+    border-right: 2px solid var(--graphite);
+    padding-left: 12px;
+  }
+
+  tbody tr:nth-child(even) td.sticky-col {
+    background: #f8fafb;
+  }
+  tbody tr:hover td.sticky-col {
+    background: #e8f0f8;
+  }
+
+  .patente-cell {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+    color: var(--navy);
+    line-height: 1.1;
+  }
+
+  .ot-tag {
+    font-size: 0.65rem;
+    color: #68737d;
+    font-weight: 600;
+    display: block;
+    letter-spacing: 0;
+  }
+
+  .client-name {
+    font-weight: 600;
+    color: var(--graphite);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+  }
+
+  .channel-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+
+  .channel-badge.seguro {
+    background: #edf3f9;
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .channel-badge.particular {
+    background: #fef5ea;
+    border-color: var(--brass);
+    color: var(--brass);
+  }
+
+  .aseg-name {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4e5964;
+    white-space: nowrap;
+  }
+
+  /* Stage Cell semaphores */
+  .stage-cell {
+    text-align: center;
+    padding: 4px 2px !important;
+  }
+
+  .cell-dot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 26px;
+    border: 2px solid;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    border-radius: 2px;
+    line-height: 1;
+    position: relative;
+  }
+
+  /* State styles */
+  .cell-dot.done {
+    background: #e6f4ea;
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .cell-dot.active {
+    background: #e7eff8;
+    border-color: var(--blue);
+    color: var(--blue);
+    box-shadow: 0 0 0 2px rgba(28, 79, 140, 0.2);
+    animation: pulse-subtle 2s infinite ease-in-out;
+  }
+
+  @keyframes pulse-subtle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+  }
+
+  .cell-dot.waiting {
+    background: #fef5ea;
+    border-color: var(--brass);
+    color: var(--brass);
+  }
+
+  .cell-dot.parts {
+    background: #fef0db;
+    border-color: var(--brass);
+    color: var(--brass);
+    border-style: dashed;
+    width: auto;
+    min-width: 36px;
+    padding: 0 4px;
+    font-size: 0.62rem;
+  }
+
+  .cell-dot.blocked {
+    background: #fde8e8;
+    border-color: var(--red);
+    color: var(--red);
+    font-weight: 800;
+  }
+
+  .cell-dot.future {
+    background: #f0f2f4;
+    border-color: var(--steel-300);
+    color: #9aa5af;
+  }
+
+  .cell-dot.cancelled {
+    background: #f0f0f0;
+    border-color: #c4ccd3;
+    color: #a0aab2;
+    text-decoration: line-through;
+  }
+
+  .days-cell {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-align: center;
+    color: #4e5964;
+  }
+
+  .days-cell.stuck {
+    color: var(--red);
+    background: #fde8e8;
+    border-radius: 2px;
+    padding: 2px 4px;
+  }
+
+  /* Stock View */
+  .stock-wrapper {
+    display: none;
+    background: var(--white);
+    border: 2px solid var(--graphite);
+    box-shadow: 6px 6px 0 rgba(27, 29, 33, 0.12);
+    overflow: auto;
+  }
+
+  .stock-wrapper[aria-hidden="false"] {
+    display: block;
+  }
+
+  table.stock-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+
+  table.stock-table th {
+    background: var(--navy);
+    color: var(--white);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--graphite);
+  }
+
+  table.stock-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--steel-300);
+  }
+
+  table.stock-table tr:nth-child(even) { background: #f8fafb; }
+
+  .stock-status {
+    display: inline-block;
+    padding: 3px 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 1px solid;
+  }
+
+  .stock-status.ok { background: #e6f4ea; border-color: var(--green); color: var(--green); }
+  .stock-status.bajo { background: #fef5ea; border-color: var(--brass); color: var(--brass); }
+  .stock-status.faltante { background: #fde8e8; border-color: var(--red); color: var(--red); }
+
+  /* Legend */
+  .legend-card {
+    background: var(--white);
+    border: 2px solid var(--steel-300);
+    padding: 12px 16px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 0.78rem;
+  }
+
+  .legend-title {
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    color: var(--navy);
+  }
+
+  .legend-items {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-weight: 600;
+    color: #4e5964;
+  }
+
+  /* Drawer Modal */
+  .drawer-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    justify-content: flex-end;
+    background: rgba(27, 29, 33, 0.45);
+  }
+
+  .drawer-backdrop[hidden] { display: none !important; }
+
+  .drawer {
+    width: min(640px, 100%);
+    height: 100%;
+    overflow: auto;
+    background: var(--steel-100);
+    border-left: 3px solid var(--graphite);
+    box-shadow: -16px 0 40px rgba(27, 29, 33, 0.24);
+  }
+
+  .drawer-head {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--navy);
+    color: var(--white);
+  }
+
+  .drawer-head h3 {
+    margin: 0;
+    font-family: "Oswald", Impact, sans-serif;
+    font-size: 1.8rem;
+    text-transform: uppercase;
+  }
+
+  .close-button {
+    width: 38px;
+    height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background: transparent;
+    color: var(--white);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .drawer-body {
+    display: grid;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .ticket-panel {
+    border: 2px solid var(--graphite);
+    background: var(--white);
+    padding: 16px;
+    box-shadow: 4px 4px 0 rgba(27, 29, 33, 0.08);
+  }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .field {
+    border-bottom: 1px solid var(--steel-300);
+    padding-bottom: 6px;
+  }
+
+  .field span {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: #68737d;
+    text-transform: uppercase;
+    font-family: "IBM Plex Mono", monospace;
+  }
+
+  .field strong {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.92rem;
+    color: var(--graphite);
+  }
+
+  .pipeline-steps {
+    display: grid;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .pipe-step {
+    display: grid;
+    grid-template-columns: 24px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 8px;
+    background: var(--steel-100);
+    border-left: 3px solid var(--steel-300);
+    font-size: 0.8rem;
+  }
+
+  .pipe-step.done {
+    border-left-color: var(--green);
+    background: #f2f9f4;
+  }
+
+  .pipe-step.current {
+    border-left-color: var(--blue);
+    background: #edf4fb;
+    font-weight: 700;
+  }
+
+  .pipe-step.warning {
+    border-left-color: var(--brass);
+    background: #fdf8ee;
+  }
+
+  .pipe-step.alert {
+    border-left-color: var(--red);
+    background: #fde8e8;
+    font-weight: 700;
+  }
+
+  .car-sketch {
+    width: 100%;
+    min-height: 170px;
+    border: 1px solid var(--steel-300);
+    background: #f8fafb;
+  }
+
+  .billing-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    background: #edf3f9;
+    padding: 12px;
+    border: 1px solid var(--blue);
+  }
+
+  .billing-panel .field { border-bottom: 0; }
+
+  @media (max-width: 820px) {
+    .header-banner { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .topbar { flex-direction: column; align-items: stretch; gap: 8px; }
+    .kpi-grid { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="brand">
+      <img src="assets/logo-aguila-blanca.jpg" alt="Águila Blanca Sacabollos">
+      <div>
+        <h1 class="brand-title">Águila Blanca Sacabollos</h1>
+        <span class="brand-subtitle">Planilla de Control · Vista tipo Excel</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <a class="ghost-button" href="index.html">&larr; Vista Fichas</a>
+      <a class="ghost-button active" href="tablero.html">&#9638; Planilla</a>
+      <a class="ghost-button" href="proyecto.html">Roadmap &rarr;</a>
+    </div>
+    <div class="phase-badge" title="Fase 1: Fundaciones en construcción">
+      <span class="phase-dot" aria-hidden="true"></span>
+      <span>Fase 1 · Demo</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="header-banner">
+      <div>
+        <p class="kicker">Control de procesos en tiempo real</p>
+        <h2>Planilla de Control del Taller</h2>
+        <p>Vista tabular de seguimiento integral de cada vehículo. <strong>Nadie edita esta planilla a mano:</strong> cada celda se actualiza y colorea automáticamente cuando el responsable (Recepción, Taller o Dueño) aprueba o completa su ficha correspondiente.</p>
+      </div>
+      <div class="concept-callout">
+        <strong>&ldquo;Es tu Excel, pero se llena solo&rdquo;</strong>
+        Mantiene el control estricto de aprobaciones por rol sin perder la vista gráfica global y compacta que necesitás para controlar el taller.
+      </div>
+    </section>
+
+    <!-- KPIs -->
+    <section class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card">
+        <div class="kpi-label">Autos en taller</div>
+        <div class="kpi-value" id="kpiInShop">-</div>
+        <div class="kpi-sub">En reparación o ingresados</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Esperando repuesto</div>
+        <div class="kpi-value warning" id="kpiWaitingParts">-</div>
+        <div class="kpi-sub">Freno de taller por proveedor</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Casos trabados (&ge;5 d&iacute;as)</div>
+        <div class="kpi-value alert" id="kpiStuck">-</div>
+        <div class="kpi-sub">Demorados en la misma etapa</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Reclamos a C&iacute;as.</div>
+        <div class="kpi-value alert" id="kpiClaims">-</div>
+        <div class="kpi-sub">Seguros sin pagar a tiempo</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Facturado sin cobrar</div>
+        <div class="kpi-value" id="kpiPendingCash">-</div>
+        <div class="kpi-sub">(Solo visible para Due&ntilde;o)</div>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <div class="controls-bar">
+      <div class="tabs-nav" role="tablist">
+        <button class="tab-btn" id="tabCasos" role="tab" aria-selected="true">Casos de Taller</button>
+        <button class="tab-btn" id="tabStock" role="tab" aria-selected="false">Control de Stock</button>
+      </div>
+
+      <div class="filters-group" id="casosFilters">
+        <button class="filter-pill" type="button" data-filter="todos" aria-pressed="true">Todos</button>
+        <button class="filter-pill" type="button" data-filter="seguro" aria-pressed="false">Seguro</button>
+        <button class="filter-pill" type="button" data-filter="particular" aria-pressed="false">Particular</button>
+        <label class="stuck-toggle">
+          <input type="checkbox" id="stuckOnlyCheckbox" style="accent-color:var(--red);">
+          Solo trabados (&ge;5d)
+        </label>
+      </div>
+    </div>
+
+    <!-- Sheet: Casos -->
+    <section class="sheet-wrapper" id="casosSheetWrapper">
+      <table class="sheet-table" aria-label="Planilla de casos">
+        <thead>
+          <tr>
+            <th class="sticky-col">Patente / OT</th>
+            <th class="th-info" style="min-width:140px;">Cliente</th>
+            <th class="th-info" style="min-width:90px;">Canal</th>
+            <th class="th-info" style="min-width:130px;">Aseguradora</th>
+            <!-- 9 Etapas -->
+            <th class="th-stage" title="1. Registro / Denuncia"><span class="th-stage-num">1</span><span class="th-stage-label">Datos</span></th>
+            <th class="th-stage" title="2. Presupuesto enviado + fotos"><span class="th-stage-num">2</span><span class="th-stage-label">Presup.</span></th>
+            <th class="th-stage" title="3. Orden de trabajo de Cía / Aceptación particular"><span class="th-stage-num">3</span><span class="th-stage-label">Orden/OK</span></th>
+            <th class="th-stage" title="4. Turno coordinado"><span class="th-stage-num">4</span><span class="th-stage-label">Turno</span></th>
+            <th class="th-stage" title="5. Ingresado al taller (Ficha 2)"><span class="th-stage-num">5</span><span class="th-stage-label">Ingreso</span></th>
+            <th class="th-stage" title="6. En reparación / Repuestos"><span class="th-stage-num">6</span><span class="th-stage-label">Reparac.</span></th>
+            <th class="th-stage" title="7. Firma de orden con fotos"><span class="th-stage-num">7</span><span class="th-stage-label">Firma</span></th>
+            <th class="th-stage" title="8. Facturado formalmente"><span class="th-stage-num">8</span><span class="th-stage-label">Factura</span></th>
+            <th class="th-stage" title="9. Cobrado real / Reclamo"><span class="th-stage-num">9</span><span class="th-stage-label">Cobro</span></th>
+            <th class="th-info" style="width:70px; text-align:center;" title="Días transcurridos en la etapa actual">Días</th>
+          </tr>
+        </thead>
+        <tbody id="sheetBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Sheet: Stock -->
+    <section class="stock-wrapper" id="stockSheetWrapper" aria-hidden="true">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>Código / Ítem</th>
+            <th>Categoría</th>
+            <th style="text-align:center;">En Stock</th>
+            <th style="text-align:center;">Mínimo</th>
+            <th>Estado</th>
+            <th>Último Movimiento / Nota</th>
+          </tr>
+        </thead>
+        <tbody id="stockBody"></tbody>
+      </table>
+    </section>
+
+    <!-- Legend -->
+    <section class="legend-card" aria-label="Leyenda de colores">
+      <span class="legend-title">Semáforo:</span>
+      <div class="legend-items">
+        <span class="legend-item"><span class="cell-dot done" style="width:18px;height:18px;font-size:0.6rem;">&check;</span> Completado</span>
+        <span class="legend-item"><span class="cell-dot active" style="width:18px;height:18px;font-size:0.6rem;">&bull;</span> En proceso activo (Taller/Recepción)</span>
+        <span class="legend-item"><span class="cell-dot waiting" style="width:18px;height:18px;font-size:0.6rem;">&bull;</span> En espera externa (Aseguradora/Turno)</span>
+        <span class="legend-item"><span class="cell-dot parts" style="width:auto;height:18px;font-size:0.55rem;padding:0 3px;">REP</span> Falta repuesto proveedor</span>
+        <span class="legend-item"><span class="cell-dot blocked" style="width:18px;height:18px;font-size:0.6rem;">&times;</span> Reclamo / Bloqueado</span>
+        <span class="legend-item"><span class="cell-dot future" style="width:18px;height:18px;font-size:0.6rem;">-</span> Pendiente</span>
+      </div>
+    </section>
+  </main>
+
+  <!-- Drawer Detail -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden>
+    <aside class="drawer" aria-label="Detalle del caso" aria-modal="true" role="dialog">
+      <div class="drawer-head">
+        <h3 id="drawerTitle">Detalle</h3>
+        <button class="close-button" type="button" id="closeDrawerButton" aria-label="Cerrar detalle">&times;</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+    </aside>
+  </div>
+
+<script>
+  const STAGES = [
+    { id: "datos", label: "1. Datos y Denuncia", role: "recepcion" },
+    { id: "presup", label: "2. Presupuesto + Fotos", role: "recepcion" },
+    { id: "orden", label: "3. Orden de Trabajo / OK", role: "recepcion" },
+    { id: "turno", label: "4. Turno Coordinado", role: "recepcion" },
+    { id: "ingreso", label: "5. Ingreso a Taller (Ficha 2)", role: "recepcion" },
+    { id: "reparac", label: "6. Reparación PDR", role: "taller" },
+    { id: "firma", label: "7. Firma con Fotos", role: "taller" },
+    { id: "factura", label: "8. Facturación", role: "dueno" },
+    { id: "cobro", label: "9. Cobro / Cierre", role: "dueno" }
+  ];
+
+  // Map state -> stageIndex (0..8) and stageKind
+  const stateMapping = {
+    "borrador": { idx: 0, kind: "waiting" },
+    "enviado a la aseguradora": { idx: 2, kind: "waiting" },
+    "aprobado": { idx: 3, kind: "waiting" },
+    "presupuesto enviado": { idx: 2, kind: "waiting" },
+    "turno coordinado": { idx: 4, kind: "waiting" },
+    "ingresado": { idx: 5, kind: "active" },
+    "esperando repuesto": { idx: 5, kind: "parts" },
+    "en reparación": { idx: 5, kind: "active" },
+    "listo para firma": { idx: 6, kind: "waiting" },
+    "firmado": { idx: 7, kind: "waiting" },
+    "facturado": { idx: 8, kind: "waiting" },
+    "cobrado": { idx: 9, kind: "done" }, // all 9 completed
+    "cerrado": { idx: 9, kind: "done" },
+    "reclamo a la compañía": { idx: 8, kind: "blocked" },
+    "cancelado": { idx: -1, kind: "cancelled" }
+  };
+
+  const cases = [
+    {
+      id: "OT-1028",
+      patente: "AB123CD",
+      cliente: "Marcelo Peralta",
+      canal: "seguro",
+      aseguradora: "San Cristóbal",
+      estado: "enviado a la aseguradora",
+      siniestro: "SC-883120",
+      turno: "Pendiente Cía.",
+      diasEtapa: 6, // STUCK
+      repuesto: "",
+      facturado: 0,
+      cobrado: 0,
+      danos: [{ x: 32, y: 47 }, { x: 61, y: 42 }, { x: 72, y: 58 }]
+    },
+    {
+      id: "OT-1029",
+      patente: "LNM482",
+      cliente: "Patricia Gómez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "turno coordinado",
+      siniestro: "-",
+      turno: "22/08 09:30",
+      diasEtapa: 1,
+      repuesto: "",
+      facturado: 420000,
+      cobrado: 150000,
+      danos: [{ x: 45, y: 40 }, { x: 48, y: 55 }]
+    },
+    {
+      id: "OT-1030",
+      patente: "AE742FP",
+      cliente: "Juan Ignacio Ruiz",
+      canal: "seguro",
+      aseguradora: "Federación Patronal",
+      estado: "esperando repuesto",
+      siniestro: "FP-441908",
+      turno: "Ingresado (Box 1)",
+      diasEtapa: 4,
+      repuesto: "Farol delantero der.",
+      facturado: 820000,
+      cobrado: 0,
+      danos: [{ x: 27, y: 54 }, { x: 30, y: 45 }]
+    },
+    {
+      id: "OT-1031",
+      patente: "HRA219",
+      cliente: "Silvina Acosta",
+      canal: "seguro",
+      aseguradora: "Mercantil Andes",
+      estado: "en reparación",
+      siniestro: "MA-220177",
+      turno: "En box 2",
+      diasEtapa: 2,
+      repuesto: "",
+      facturado: 610000,
+      cobrado: 0,
+      danos: [{ x: 58, y: 37 }, { x: 63, y: 50 }, { x: 68, y: 39 }]
+    },
+    {
+      id: "OT-1032",
+      patente: "AF511MP",
+      cliente: "Carlos Benitez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "listo para firma",
+      siniestro: "-",
+      turno: "Retira hoy 18hs",
+      diasEtapa: 1,
+      repuesto: "",
+      facturado: 290000,
+      cobrado: 0,
+      danos: [{ x: 39, y: 52 }]
+    },
+    {
+      id: "OT-1033",
+      patente: "MCD673",
+      cliente: "Gabriela Molina",
+      canal: "seguro",
+      aseguradora: "Triunfo",
+      estado: "facturado",
+      siniestro: "TR-550821",
+      turno: "Entregado",
+      diasEtapa: 7, // STUCK
+      repuesto: "",
+      facturado: 735000,
+      cobrado: 0,
+      danos: [{ x: 74, y: 48 }, { x: 77, y: 57 }]
+    },
+    {
+      id: "OT-1034",
+      patente: "AG204TN",
+      cliente: "Ricardo Sosa",
+      canal: "seguro",
+      aseguradora: "Sancor",
+      estado: "reclamo a la compañía",
+      siniestro: "SA-773019",
+      turno: "Reclamo abierto",
+      diasEtapa: 11, // STUCK
+      repuesto: "",
+      facturado: 960000,
+      cobrado: 430000,
+      danos: [{ x: 35, y: 36 }, { x: 49, y: 44 }, { x: 52, y: 58 }]
+    },
+    {
+      id: "OT-1035",
+      patente: "DQS914",
+      cliente: "Laura Fernández",
+      canal: "seguro",
+      aseguradora: "Cooperativa de Seguros",
+      estado: "cobrado",
+      siniestro: "CS-119040",
+      turno: "Cerrado",
+      diasEtapa: 0,
+      repuesto: "",
+      facturado: 510000,
+      cobrado: 510000,
+      danos: [{ x: 24, y: 52 }, { x: 66, y: 43 }]
+    },
+    {
+      id: "OT-1036",
+      patente: "AC888JV",
+      cliente: "Diego Álvarez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "cancelado",
+      siniestro: "-",
+      turno: "Canceló presupuesto",
+      diasEtapa: 0,
+      repuesto: "",
+      facturado: 0,
+      cobrado: 0,
+      danos: [{ x: 70, y: 40 }]
+    },
+    {
+      id: "OT-1037",
+      patente: "AA317QW",
+      cliente: "Fernando Ibáñez",
+      canal: "particular",
+      aseguradora: "",
+      estado: "presupuesto enviado",
+      siniestro: "-",
+      turno: "Esperando confirmación",
+      diasEtapa: 3,
+      repuesto: "",
+      facturado: 380000,
+      cobrado: 0,
+      danos: [{ x: 30, y: 42 }, { x: 60, y: 48 }]
+    },
+    {
+      id: "OT-1038",
+      patente: "KPU775",
+      cliente: "Mónica Ledesma",
+      canal: "seguro",
+      aseguradora: "San Cristóbal",
+      estado: "borrador",
+      siniestro: "SC-901244",
+      turno: "Ingreso datos",
+      diasEtapa: 1,
+      repuesto: "",
+      facturado: 0,
+      cobrado: 0,
+      danos: [{ x: 50, y: 50 }]
+    },
+    {
+      id: "OT-1039",
+      patente: "AD067KR",
+      cliente: "Pablo Correa",
+      canal: "seguro",
+      aseguradora: "Federación Patronal",
+      estado: "aprobado",
+      siniestro: "FP-452100",
+      turno: "Por coordinar turno",
+      diasEtapa: 2,
+      repuesto: "",
+      facturado: 540000,
+      cobrado: 0,
+      danos: [{ x: 40, y: 35 }, { x: 75, y: 45 }]
+    }
+  ];
+
+  const stockItems = [
+    { code: "PEG-01", name: "Barra pegamento caliente PDR (Negra)", cat: "Consumible", stock: 45, min: 20, note: "Consumo normal" },
+    { code: "PEG-02", name: "Barra pegamento caliente (Amarilla - alta temp)", cat: "Consumible", stock: 12, min: 15, note: "Pedir reposición" },
+    { code: "VEN-04", name: "Ventosas plásticas reforzadas 25mm", cat: "Herramienta", stock: 18, min: 10, note: "OK" },
+    { code: "VAR-10", name: "Varillas PDR acero inoxidable 10mm", cat: "Herramienta", stock: 6, min: 4, note: "Kit completo" },
+    { code: "REP-942", name: "Farol delantero derecho Toyota Corolla 2019", cat: "Repuesto auto", stock: 0, min: 1, note: "Asignado a OT-1030 · Pedido 19/08 a Warnes" },
+    { code: "REP-943", name: "Baliza lateral izq. Hilux 2022", cat: "Repuesto auto", stock: 1, min: 1, note: "En estantería B" },
+    { code: "CIN-01", name: "Cinta de enmascarar automotriz 18mm", cat: "Consumible", stock: 4, min: 8, note: "Stock bajo" },
+    { code: "ALC-96", name: "Alcohol isopropílico 96° (bidón 5L)", cat: "Consumible", stock: 2, min: 2, note: "OK" }
+  ];
+
+  let currentFilter = "todos";
+  let onlyStuck = false;
+
+  function formatMoney(value) {
+    return "$" + (value || 0).toLocaleString("es-AR");
+  }
+
+  function renderKpis() {
+    const inShop = cases.filter(c => ["ingresado", "esperando repuesto", "en reparación"].includes(c.estado)).length;
+    const waitingParts = cases.filter(c => c.estado === "esperando repuesto").length;
+    const stuck = cases.filter(c => c.diasEtapa >= 5 && c.estado !== "cancelado" && c.estado !== "cobrado").length;
+    const claims = cases.filter(c => c.estado === "reclamo a la compañía").length;
+    const pendingCash = cases.reduce((acc, c) => {
+      if (c.estado === "cancelado") return acc;
+      return acc + Math.max(0, c.facturado - c.cobrado);
+    }, 0);
+
+    document.getElementById("kpiInShop").textContent = inShop;
+    document.getElementById("kpiWaitingParts").textContent = waitingParts;
+    document.getElementById("kpiStuck").textContent = stuck;
+    document.getElementById("kpiClaims").textContent = claims;
+    document.getElementById("kpiPendingCash").textContent = formatMoney(pendingCash);
+  }
+
+  function getStageCellHtml(caseItem, stageIdx) {
+    const map = stateMapping[caseItem.estado] || { idx: 0, kind: "waiting" };
+
+    if (map.kind === "cancelled") {
+      return '<td class="stage-cell"><span class="cell-dot cancelled">-</span></td>';
+    }
+
+    if (stageIdx < map.idx) {
+      return '<td class="stage-cell"><span class="cell-dot done" title="Completado">&check;</span></td>';
+    } else if (stageIdx === map.idx) {
+      if (map.kind === "parts") {
+        return `<td class="stage-cell"><span class="cell-dot parts" title="Falta: ${caseItem.repuesto}">REP</span></td>`;
+      } else if (map.kind === "active") {
+        return '<td class="stage-cell"><span class="cell-dot active" title="En proceso activo">&bull;</span></td>';
+      } else if (map.kind === "blocked") {
+        return '<td class="stage-cell"><span class="cell-dot blocked" title="Reclamo abierto">&times;</span></td>';
+      } else {
+        return '<td class="stage-cell"><span class="cell-dot waiting" title="En espera">&bull;</span></td>';
+      }
+    } else {
+      return '<td class="stage-cell"><span class="cell-dot future" title="Pendiente">-</span></td>';
+    }
+  }
+
+  function renderCasesSheet() {
+    const tbody = document.getElementById("sheetBody");
+    const filtered = cases.filter(c => {
+      if (currentFilter !== "todos" && c.canal !== currentFilter) return false;
+      if (onlyStuck && (c.diasEtapa < 5 || c.estado === "cancelado" || c.estado === "cobrado")) return false;
+      return true;
+    });
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;padding:24px;color:#68737d;">No hay casos para este filtro.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(c => {
+      const isCancelled = c.estado === "cancelado";
+      const isStuck = c.diasEtapa >= 5 && !isCancelled && c.estado !== "cobrado";
+
+      return `
+        <tr class="${isCancelled ? "row-cancelled" : ""}" data-case-id="${c.id}" tabindex="0" role="button" aria-label="Abrir caso ${c.patente}">
+          <td class="sticky-col">
+            <span class="patente-cell">${c.patente}</span>
+            <span class="ot-tag">${c.id}</span>
+          </td>
+          <td><div class="client-name" title="${c.cliente}">${c.cliente}</div></td>
+          <td><span class="channel-badge ${c.canal}">${c.canal === "seguro" ? "Seguro" : "Partic."}</span></td>
+          <td><span class="aseg-name">${c.aseguradora || "Pago directo"}</span></td>
+          ${STAGES.map((s, idx) => getStageCellHtml(c, idx)).join("")}
+          <td class="days-cell ${isStuck ? "stuck" : ""}">${isCancelled || c.estado === "cobrado" ? "-" : c.diasEtapa + "d"}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderStockSheet() {
+    const tbody = document.getElementById("stockBody");
+    tbody.innerHTML = stockItems.map(item => {
+      let statusClass = "ok";
+      let statusText = "OK";
+      if (item.stock === 0) {
+        statusClass = "faltante";
+        statusText = "Faltante";
+      } else if (item.stock < item.min) {
+        statusClass = "bajo";
+        statusText = "Stock Bajo";
+      }
+
+      return `
+        <tr>
+          <td><strong style="font-family:'IBM Plex Mono',monospace;">${item.code}</strong> &mdash; ${item.name}</td>
+          <td><span class="channel-badge seguro">${item.cat}</span></td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:1rem;">${item.stock}</td>
+          <td style="text-align:center;font-family:'IBM Plex Mono',monospace;color:#68737d;">${item.min}</td>
+          <td><span class="stock-status ${statusClass}">${statusText}</span></td>
+          <td style="font-size:0.8rem;color:#4e5964;">${item.note}</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function carSvg(caseItem) {
+    const dots = (caseItem.danos || []).map((dot) =>
+      `<circle cx="${dot.x}" cy="${dot.y}" r="3.8" fill="#c0272d" stroke="#ffffff" stroke-width="1.5" />`
+    ).join("");
+    return `
+      <svg class="car-sketch" viewBox="0 0 100 72" role="img" aria-label="Bosquejo del auto">
+        <rect x="1" y="1" width="98" height="70" fill="#f8fafb" stroke="#d3d9de" />
+        <path d="M18 46 L26 31 C29 25 35 22 45 22 L61 22 C68 22 73 26 78 33 L86 45 L88 52 L13 52 Z" fill="none" stroke="#123a6b" stroke-width="3" stroke-linejoin="round" />
+        <path d="M33 31 L45 27 L59 27 L70 35 L31 35 Z" fill="none" stroke="#1c4f8c" stroke-width="2" />
+        <circle cx="28" cy="54" r="6" fill="none" stroke="#1b1d21" stroke-width="3" />
+        <circle cx="73" cy="54" r="6" fill="none" stroke="#1b1d21" stroke-width="3" />
+        ${dots}
+      </svg>
+    `;
+  }
+
+  function renderDrawer(caseItem) {
+    const drawerTitle = document.getElementById("drawerTitle");
+    const drawerBody = document.getElementById("drawerBody");
+    const map = stateMapping[caseItem.estado] || { idx: 0, kind: "waiting" };
+
+    drawerTitle.textContent = `${caseItem.patente} · ${caseItem.id}`;
+
+    const stepsHtml = STAGES.map((s, idx) => {
+      let stepClass = "";
+      let icon = "&#9675;"; // open circle
+      let statusNote = "";
+
+      if (map.kind === "cancelled") {
+        stepClass = "cancelled";
+        icon = "&minus;";
+      } else if (idx < map.idx) {
+        stepClass = "done";
+        icon = "&check;";
+        statusNote = "Completado";
+      } else if (idx === map.idx) {
+        if (map.kind === "parts") {
+          stepClass = "warning";
+          icon = "&excl;";
+          statusNote = `Falta repuesto: ${caseItem.repuesto}`;
+        } else if (map.kind === "blocked") {
+          stepClass = "alert";
+          icon = "&times;";
+          statusNote = "Reclamo abierto a Cía.";
+        } else {
+          stepClass = "current";
+          icon = "&bull;";
+          statusNote = "En curso actual";
+        }
+      } else {
+        statusNote = "Pendiente";
+      }
+
+      return `
+        <div class="pipe-step ${stepClass}">
+          <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;">${icon}</span>
+          <span>${s.label} <small style="color:#68737d;">(${s.role})</small></span>
+          <strong style="font-family:'IBM Plex Mono',monospace;font-size:0.75rem;">${statusNote}</strong>
+        </div>
+      `;
+    }).join("");
+
+    drawerBody.innerHTML = `
+      <section class="ticket-panel">
+        <div class="detail-grid">
+          <div class="field"><span>Cliente</span><strong>${caseItem.cliente}</strong></div>
+          <div class="field"><span>Canal</span><strong>${caseItem.canal === "seguro" ? "Seguro" : "Particular"}</strong></div>
+          <div class="field"><span>Aseguradora</span><strong>${caseItem.aseguradora || "No aplica (directo)"}</strong></div>
+          <div class="field"><span>N° Siniestro</span><strong>${caseItem.siniestro}</strong></div>
+          <div class="field"><span>Turno / Ubicación</span><strong>${caseItem.turno}</strong></div>
+          <div class="field"><span>Días en etapa</span><strong style="${caseItem.diasEtapa >= 5 ? "color:var(--red);" : ""}">${caseItem.diasEtapa} días</strong></div>
+        </div>
+      </section>
+
+      <section class="ticket-panel">
+        <span class="kicker">Bosquejo de daños</span>
+        ${carSvg(caseItem)}
+      </section>
+
+      <section class="ticket-panel">
+        <span class="kicker">Cadena de aprobación de 9 etapas</span>
+        <div class="pipeline-steps">
+          ${stepsHtml}
+        </div>
+      </section>
+
+      <section class="ticket-panel">
+        <span class="kicker">Facturación y Cobro (solo Dueño)</span>
+        <div class="billing-panel">
+          <div class="field"><span>Facturado</span><strong>${formatMoney(caseItem.facturado)}</strong></div>
+          <div class="field"><span>Cobrado</span><strong>${formatMoney(caseItem.cobrado)}</strong></div>
+          <div class="field"><span>Diferencia</span><strong style="color:var(--red);">${formatMoney(Math.max(0, caseItem.facturado - caseItem.cobrado))}</strong></div>
+        </div>
+      </section>
+    `;
+
+    document.getElementById("drawerBackdrop").hidden = false;
+    document.getElementById("closeDrawerButton").focus();
+  }
+
+  // Events
+  document.querySelectorAll("[data-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      currentFilter = btn.dataset.filter;
+      document.querySelectorAll("[data-filter]").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
+      renderCasesSheet();
+    });
+  });
+
+  document.getElementById("stuckOnlyCheckbox").addEventListener("change", (e) => {
+    onlyStuck = e.target.checked;
+    renderCasesSheet();
+  });
+
+  const tabCasos = document.getElementById("tabCasos");
+  const tabStock = document.getElementById("tabStock");
+  const sheetWrapper = document.getElementById("casosSheetWrapper");
+  const stockWrapper = document.getElementById("stockSheetWrapper");
+  const casosFilters = document.getElementById("casosFilters");
+
+  tabCasos.addEventListener("click", () => {
+    tabCasos.setAttribute("aria-selected", "true");
+    tabStock.setAttribute("aria-selected", "false");
+    sheetWrapper.style.display = "block";
+    stockWrapper.setAttribute("aria-hidden", "true");
+    casosFilters.style.visibility = "visible";
+  });
+
+  tabStock.addEventListener("click", () => {
+    tabStock.setAttribute("aria-selected", "true");
+    tabCasos.setAttribute("aria-selected", "false");
+    sheetWrapper.style.display = "none";
+    stockWrapper.setAttribute("aria-hidden", "false");
+    casosFilters.style.visibility = "hidden";
+    renderStockSheet();
+  });
+
+  document.getElementById("sheetBody").addEventListener("click", (e) => {
+    const tr = e.target.closest("tr[data-case-id]");
+    if (!tr) return;
+    const caseItem = cases.find(c => c.id === tr.dataset.caseId);
+    if (caseItem) renderDrawer(caseItem);
+  });
+
+  document.getElementById("sheetBody").addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      const tr = e.target.closest("tr[data-case-id]");
+      if (!tr) return;
+      e.preventDefault();
+      const caseItem = cases.find(c => c.id === tr.dataset.caseId);
+      if (caseItem) renderDrawer(caseItem);
+    }
+  });
+
+  document.getElementById("closeDrawerButton").addEventListener("click", () => {
+    document.getElementById("drawerBackdrop").hidden = true;
+  });
+
+  document.getElementById("drawerBackdrop").addEventListener("click", (e) => {
+    if (e.target === document.getElementById("drawerBackdrop")) {
+      document.getElementById("drawerBackdrop").hidden = true;
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !document.getElementById("drawerBackdrop").hidden) {
+      document.getElementById("drawerBackdrop").hidden = true;
+    }
+  });
+
+  // Init
+  renderKpis();
+  renderCasesSheet();
+</script>
+</body>
+</html>
