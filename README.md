@@ -3,18 +3,21 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-1%20Fundaciones-blue)
-![Status](https://img.shields.io/badge/Status-Tasks%201--2%20%E2%9C%85%20%7C%20Tasks%203--4%20%E2%8F%B3-yellow)
+![Status](https://img.shields.io/badge/Status-Tasks%201--3%20%E2%9C%85%20%7C%20Task%204%20%E2%8F%B3-yellow)
 
-## Estado actual: Fase 1 - Fundaciones (parcial — Tasks 1-2 ✅, Tasks 3-4 ⏳ bloqueadas)
+## Estado actual: Fase 1 - Fundaciones (parcial — Tasks 1-3 ✅ en código, Task 4 ⏳ bloqueada)
 
 **Completado (Tasks 1-2):**
 - Gate de legitimidad de 6 paquetes npm auditados "too-new" ✅
 - Scaffold Vite+React+TS+Tailwind v4 + UI primitives (`Ficha`, `TextField`, `PrimaryButton`) + tests ✅
 - `npm run build` ✓, `npm run test` ✓, `npm run typecheck` ✓
 
-**Bloqueado (Tasks 3-4) — requiere configuración externa:**
-- **Task 3**: Migración `profiles` a Supabase vivo + RLS + push — necesita proyecto Supabase propio + 5 env vars
-- **Task 4**: Login real deployado en Vercel + verificación humano tablet/PC — necesita `VERCEL_TOKEN` + importar repo + crear usuario dueño
+**Escrito, falta pushear (Task 3):**
+- `supabase/migrations/0001_profiles.sql` y `supabase/seed/0001-promote-first-dueno.sql` ya están en el repo, siguiendo al pie de la letra el spec de `.planning/phases/01-fundaciones/01-01-PLAN.md` (tabla `profiles` + RLS habilitada en la misma migración + trigger `on_auth_user_created` + helper `current_user_role()` en `plpgsql` + GRANT de columna acotado a `full_name`, sin GRANT de escritura sobre `role`).
+- **Falta correr `npx supabase link` + `npx supabase db push` contra el proyecto Supabase real** — esto requiere `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD` y `SUPABASE_PROJECT_REF`, que no están disponibles en este entorno. Ver sección "Próximos pasos" para los comandos exactos.
+
+**Bloqueado (Task 4) — requiere configuración externa:**
+- **Task 4**: Login real deployado en Vercel + verificación humana tablet/PC — necesita `VERCEL_TOKEN` + importar repo + crear usuario dueño + correr el seed de promoción
 
 > Ver sección "Próximos pasos" abajo para detalles de variables necesarias.
 
@@ -64,10 +67,10 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 | **Región** | `us-east-2` (Ohio) — *nota: ideal migrar a `sa-east-1` (São Paulo) para latencia* |
 | **Dashboard** | https://supabase.com/dashboard/project/tnwrewghcowayuudvxey |
 
-> La migración `profiles` **aún no está pusheada** (ver Task 3 abajo).
+> ✅ La migración `profiles` **ya está escrita y en el repo** (`supabase/migrations/0001_profiles.sql`). Lo único que falta es correr el `link` + `db push` contra el proyecto Supabase real, porque eso requiere tokens que no están disponibles en este entorno.
 
-### Task 3: Migración `profiles` a Supabase vivo + RLS + push
-**Variables que necesitás** (crealas en `.env` local o en Vercel):
+### Task 3: Pushear la migración `profiles` a Supabase vivo
+**Variables que necesitás** (crealas en `.env` local; no se commitean):
 
 | Variable | Dónde sacarla en Supabase Dashboard |
 |----------|--------------------------------------|
@@ -77,36 +80,36 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 | `SUPABASE_ACCESS_TOKEN` | Settings → Access Tokens → Generate new token (o usa `sbp_...` que ya tenés) |
 | `SUPABASE_PROJECT_REF` | `tnwrewghcowayuudvxey` (Settings → General → Reference ID) |
 
-**Comandos para correr mañana (desde otra PC):**
+**Comandos para correr (con las variables de arriba en el entorno):**
 ```bash
-# 1. Clonar repo
+# 1. Clonar repo (o usar el que ya tenés local)
 git clone https://github.com/PabloIan92/sacabollos-aguila-blanca.git
 cd sacabollos-aguila-blanca
 
 # 2. Instalar deps
 npm ci
 
-# 3. Linkear proyecto Supabase (usa el token que tenés guardado)
-npx supabase login          # si no tenés token guardado en la máquina nueva
-# O si ya tenés el Personal Access Token:
-export SUPABASE_ACCESS_TOKEN="sbp_..."
-
-# 4. Link + push migración (crea profiles + RLS + trigger + helper current_user_role + grants)
+# 3. Link + push de la migración ya presente en supabase/migrations/0001_profiles.sql
 npx supabase link --project-ref tnwrewghcowayuudvxey
 npx supabase db push
 
-# 5. Verificar
-npx supabase status
-# Debe mostrar: DB: healthy, y la migración 0001_profiles aplicada
+# 4. Verificar
+npx supabase migration list --linked
+# Debe mostrar 0001_profiles aplicada en remoto
+
+# 5. Confirmar que RLS bloquea al rol anónimo (debe devolver exactamente [])
+curl -s "$VITE_SUPABASE_URL/rest/v1/profiles?select=id" -H "apikey: $VITE_SUPABASE_ANON_KEY"
 ```
 
 **Qué crea la migración (`supabase/migrations/0001_profiles.sql`):**
-- Tabla `public.profiles` (id, full_name, role ∈ {dueno,recepcion,taller}, timestamps)
-- RLS habilitado con policies: usuario ve su perfil, dueño ve todos, dueño inserta (para invite-user)
-- Trigger `on_auth_user_created` → auto-crea perfil en signup con rol por defecto `recepcion`
-- Helper `public.current_user_role()` en plpgsql (security definer) — evita recursión RLS
-- GRANT EXECUTE en helper a `authenticated`
-- Trigger `updated_at` automático
+- Tabla `public.profiles` (`id` FK a `auth.users`, `full_name`, `role` ∈ {dueno,recepcion,taller}, `created_at`)
+- RLS habilitada en la misma migración: `profiles_select_own`, `profiles_update_own`, `profiles_select_all_for_admins` (dueño y recepción ven todos los perfiles)
+- Trigger `on_auth_user_created` → auto-crea perfil al alta en `auth.users`, con rol `taller` (el de menor privilegio) si la metadata no trae un rol válido — nunca asigna `dueno` sin autorización explícita
+- Backfill idempotente para usuarios de Auth creados antes de esta migración
+- Helper `public.current_user_role()` en `plpgsql` (no `sql`, para que el planificador no lo inlinee y rompa el `security definer`) — evita recursión de RLS
+- GRANT: `select` completo + `update` acotado **solo a la columna `full_name`** para `authenticated` — el rol nunca es escribible vía PostgREST
+
+Además ya está `supabase/seed/0001-promote-first-dueno.sql`, para correr una sola vez en el SQL Editor después del push (reemplazando el email placeholder por el del dueño real).
 
 ### Task 4: Deploy Vercel + Login real
 Requiere:
@@ -115,11 +118,8 @@ Requiere:
 3. Configurar 2 env vars en Vercel (Production):
    - `VITE_SUPABASE_URL` = `https://tnwrewghcowayuudvxey.supabase.co`
    - `VITE_SUPABASE_ANON_KEY` = (anon public de Settings → API)
-4. En Supabase Dashboard → Authentication → Users → **Add user** (email del dueño, password, role metadata `{"role": "dueno"}`)
-5. Correr seed: en SQL Editor ejecutar `supabase/seed/0001-promote-first-dueno.sql` (promueve ese usuario a `dueno`)
-
-### Task 3 (alternativa si no tenés CLI en la PC nueva)
-Si no podés correr `npx supabase db push`, podés ejecutar el SQL manualmente en **Supabase Dashboard → SQL Editor** copiando el contenido de `supabase/migrations/0001_profiles.sql` (está en el repo tras el push).
+4. En Supabase Dashboard → Authentication → Users → **Add user** (email del dueño, password, "Auto Confirm User" activado)
+5. Después del push de Task 3, correr `supabase/seed/0001-promote-first-dueno.sql` en el SQL Editor reemplazando el email placeholder (promueve ese usuario a `dueno`)
 
 ---
 
@@ -196,6 +196,23 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 
 ---
 
+## Changelog — Sesión 2026-08-24 (Migración `profiles` escrita, falta push)
+
+**Objetivo:** revisar el repo desde otra máquina y avanzar todo lo que no requiere credenciales de Supabase/Vercel.
+
+### Cambios realizados
+| Archivo | Acción | Detalle |
+|---------|--------|---------|
+| `supabase/migrations/0001_profiles.sql` | **Nuevo** | Tabla `profiles` + RLS habilitada en la misma migración + trigger `on_auth_user_created` (rol `taller` por defecto si la metadata no trae uno válido) + backfill idempotente + helper `current_user_role()` en `plpgsql` + 3 políticas + GRANT acotado a la columna `full_name`. Sigue el spec de `01-01-PLAN.md` Task 3 punto por punto; pasa los greps de verificación automatizada del propio plan. |
+| `supabase/seed/0001-promote-first-dueno.sql` | **Nuevo** | UPDATE de una sola fila para promover el primer usuario a `dueno`, con placeholder de email a reemplazar. |
+| `README.md` | **Actualizado** | Estado de Task 3 pasa de "bloqueada" a "escrita, falta pushear"; instrucciones corregidas para reflejar el rol por defecto real (`taller`, no `recepcion`) y quitada la mención a un trigger `updated_at` que la migración no implementa (no estaba en el spec de `01-01-PLAN.md`). |
+
+**Lo que sigue bloqueado — necesita que Pablo lo corra con sus credenciales:**
+- `npx supabase link --project-ref tnwrewghcowayuudvxey && npx supabase db push` (requiere `SUPABASE_ACCESS_TOKEN` y `SUPABASE_DB_PASSWORD` suyos).
+- Todo Task 4 (Vercel + usuario dueño + seed de promoción).
+
+---
+
 ## Changelog — Sesión 2026-08-23 (Prototipo Planilla de Control)
 
 **Objetivo:** El cliente no sabía lo que quería, mandó video de un Excel de control de stock. Se propuso y construyó un prototipo de "Planilla de Control" tipo Excel de **solo lectura** que refleja el estado real del proceso (cada celda se pinta sola cuando el responsable completa su ficha), sin romper el control por roles.
@@ -238,9 +255,8 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
    - Compartir `tablero.html` → el dueño ve todo en una pantalla tipo Excel.
    - Si aprueba estética → **se implementa de verdad en la app React** (Fase 2, plan 02-04 "Semáforo de estado visual en el listado de casos").
 
-3. **Desbloquear Tasks 3-4 (Fase 1)**:
-   - Crear proyecto Supabase propio → obtener 5 env vars (ver sección "Próximos pasos" arriba).
-   - `npx supabase link --project-ref $REF && npx supabase db push`
+3. **Desbloquear Task 3-4 (Fase 1)**:
+   - La migración (`supabase/migrations/0001_profiles.sql`) y el seed ya están escritos en el repo — falta solo pushearlos: `npx supabase link --project-ref tnwrewghcowayuudvxey && npx supabase db push` (con `SUPABASE_ACCESS_TOKEN` y `SUPABASE_DB_PASSWORD` en el entorno).
    - Crear `VERCEL_TOKEN` → importar repo en Vercel (Framework: Vite) → 2 env vars en producción.
    - En Supabase: crear primer usuario dueño + correr `supabase/seed/0001-promote-first-dueno.sql`.
 
