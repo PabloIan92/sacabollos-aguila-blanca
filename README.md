@@ -55,23 +55,71 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ## Próximos pasos (pendientes configuración externa)
 
-### Task 3: Migración a Supabase en vivo
-Requiere crear proyecto Supabase propio y configurar variables:
+### ✅ Supabase Project — YA CREADO (2026-08-23)
+| Dato | Valor |
+|------|-------|
+| **Project Ref** | `tnwrewghcowayuudvxey` |
+| **Project URL** | `https://tnwrewghcowayuudvxey.supabase.co` |
+| **API URL (REST)** | `https://tnwrewghcowayuudvxey.supabase.co/rest/v1/` |
+| **Región** | `us-east-2` (Ohio) — *nota: ideal migrar a `sa-east-1` (São Paulo) para latencia* |
+| **Dashboard** | https://supabase.com/dashboard/project/tnwrewghcowayuudvxey |
+
+> La migración `profiles` **aún no está pusheada** (ver Task 3 abajo).
+
+### Task 3: Migración `profiles` a Supabase vivo + RLS + push
+**Variables que necesitás** (crealas en `.env` local o en Vercel):
+
+| Variable | Dónde sacarla en Supabase Dashboard |
+|----------|--------------------------------------|
+| `VITE_SUPABASE_URL` | Settings → API → Project URL (`https://tnwrewghcowayuudvxey.supabase.co`) |
+| `VITE_SUPABASE_ANON_KEY` | Settings → API → anon public (publishable key) |
+| `SUPABASE_DB_PASSWORD` | Settings → Database → Database password |
+| `SUPABASE_ACCESS_TOKEN` | Settings → Access Tokens → Generate new token (o usa `sbp_...` que ya tenés) |
+| `SUPABASE_PROJECT_REF` | `tnwrewghcowayuudvxey` (Settings → General → Reference ID) |
+
+**Comandos para correr mañana (desde otra PC):**
 ```bash
-SUPABASE_PROJECT_REF=xxx
-SUPABASE_DB_PASSWORD=xxx
-SUPABASE_ACCESS_TOKEN=xxx
-VITE_SUPABASE_URL=https://xxx.supabase.co
-VITE_SUPABASE_ANON_KEY=xxx
+# 1. Clonar repo
+git clone https://github.com/PabloIan92/sacabollos-aguila-blanca.git
+cd sacabollos-aguila-blanca
+
+# 2. Instalar deps
+npm ci
+
+# 3. Linkear proyecto Supabase (usa el token que tenés guardado)
+npx supabase login          # si no tenés token guardado en la máquina nueva
+# O si ya tenés el Personal Access Token:
+export SUPABASE_ACCESS_TOKEN="sbp_..."
+
+# 4. Link + push migración (crea profiles + RLS + trigger + helper current_user_role + grants)
+npx supabase link --project-ref tnwrewghcowayuudvxey
+npx supabase db push
+
+# 5. Verificar
+npx supabase status
+# Debe mostrar: DB: healthy, y la migración 0001_profiles aplicada
 ```
-Luego: `npx supabase link --project-ref $SUPABASE_PROJECT_REF && npx supabase db push`
+
+**Qué crea la migración (`supabase/migrations/0001_profiles.sql`):**
+- Tabla `public.profiles` (id, full_name, role ∈ {dueno,recepcion,taller}, timestamps)
+- RLS habilitado con policies: usuario ve su perfil, dueño ve todos, dueño inserta (para invite-user)
+- Trigger `on_auth_user_created` → auto-crea perfil en signup con rol por defecto `recepcion`
+- Helper `public.current_user_role()` en plpgsql (security definer) — evita recursión RLS
+- GRANT EXECUTE en helper a `authenticated`
+- Trigger `updated_at` automático
 
 ### Task 4: Deploy Vercel + Login real
 Requiere:
-1. `VERCEL_TOKEN` 
-2. Importar repo en Vercel (Framework: Vite)
-3. Configurar 2 env vars en Vercel (production)
-4. En Supabase: crear primer usuario (dueño) + correr `supabase/seed/0001-promote-first-dueno.sql`
+1. `VERCEL_TOKEN` (crear en https://vercel.com/account/tokens)
+2. Importar repo en Vercel (Framework: Vite, Build: `npm run build`, Output: `dist`)
+3. Configurar 2 env vars en Vercel (Production):
+   - `VITE_SUPABASE_URL` = `https://tnwrewghcowayuudvxey.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY` = (anon public de Settings → API)
+4. En Supabase Dashboard → Authentication → Users → **Add user** (email del dueño, password, role metadata `{"role": "dueno"}`)
+5. Correr seed: en SQL Editor ejecutar `supabase/seed/0001-promote-first-dueno.sql` (promueve ese usuario a `dueno`)
+
+### Task 3 (alternativa si no tenés CLI en la PC nueva)
+Si no podés correr `npx supabase db push`, podés ejecutar el SQL manualmente en **Supabase Dashboard → SQL Editor** copiando el contenido de `supabase/migrations/0001_profiles.sql` (está en el repo tras el push).
 
 ---
 
