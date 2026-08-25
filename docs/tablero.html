@@ -347,6 +347,51 @@
     flex-wrap: wrap;
   }
 
+  .search-box {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 10px;
+    font-size: 0.8rem;
+    color: #9aa5af;
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 220px;
+    border: 1px solid var(--steel-300);
+    background: var(--white);
+    padding: 7px 30px 7px 30px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--graphite);
+  }
+
+  .search-input:focus-visible {
+    outline: 2px solid var(--navy);
+    outline-offset: 1px;
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 6px;
+    border: 0;
+    background: transparent;
+    color: #68737d;
+    font-size: 1rem;
+    line-height: 1;
+    padding: 2px 4px;
+    cursor: pointer;
+  }
+
+  .search-clear:hover {
+    color: var(--red);
+  }
+
   .filter-pill {
     border: 1px solid var(--steel-300);
     background: var(--white);
@@ -1017,6 +1062,11 @@
       </div>
 
       <div class="filters-group" id="casosFilters">
+        <span class="search-box">
+          <span class="search-icon" aria-hidden="true">&#128269;</span>
+          <input type="text" id="searchInput" class="search-input" placeholder="Buscar por patente o cliente..." aria-label="Buscar por patente o cliente">
+          <button type="button" id="clearSearchButton" class="search-clear" hidden aria-label="Limpiar búsqueda">&times;</button>
+        </span>
         <button class="filter-pill" type="button" data-filter="todos" aria-pressed="true">Todos</button>
         <button class="filter-pill" type="button" data-filter="seguro" aria-pressed="false">Seguro</button>
         <button class="filter-pill" type="button" data-filter="particular" aria-pressed="false">Particular</button>
@@ -1349,6 +1399,15 @@
 
   let currentFilter = "todos";
   let onlyStuck = false;
+  let searchQuery = "";
+
+  function normalizeText(value) {
+    return (value || "")
+      .toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(new RegExp("[\\u0300-\\u036f]", "g"), "");
+  }
 
   function formatMoney(value) {
     return "$" + (value || 0).toLocaleString("es-AR");
@@ -1411,6 +1470,11 @@
     const filtered = cases.filter(c => {
       if (currentFilter !== "todos" && c.canal !== currentFilter) return false;
       if (onlyStuck && (c.diasEtapa < 5 || c.estado === "cancelado" || c.estado === "cobrado")) return false;
+      if (searchQuery) {
+        const q = normalizeText(searchQuery);
+        const matches = normalizeText(c.patente).includes(q) || normalizeText(c.cliente).includes(q);
+        if (!matches) return false;
+      }
       return true;
     });
 
@@ -1575,6 +1639,23 @@
       document.querySelectorAll("[data-filter]").forEach(b => b.setAttribute("aria-pressed", String(b === btn)));
       renderCasesSheet();
     });
+  });
+
+  const searchInput = document.getElementById("searchInput");
+  const clearSearchButton = document.getElementById("clearSearchButton");
+
+  searchInput.addEventListener("input", (e) => {
+    searchQuery = e.target.value;
+    clearSearchButton.hidden = searchQuery.length === 0;
+    renderCasesSheet();
+  });
+
+  clearSearchButton.addEventListener("click", () => {
+    searchQuery = "";
+    searchInput.value = "";
+    clearSearchButton.hidden = true;
+    searchInput.focus();
+    renderCasesSheet();
   });
 
   document.getElementById("stuckOnlyCheckbox").addEventListener("change", (e) => {
