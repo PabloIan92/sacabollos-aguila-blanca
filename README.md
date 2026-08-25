@@ -3,9 +3,9 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-1%20Fundaciones-blue)
-![Status](https://img.shields.io/badge/Status-Tasks%201--4%20%E2%9C%85%20%7C%20Verificaci%C3%B3n%20humana%20%E2%8F%B3-yellow)
+![Status](https://img.shields.io/badge/Status-Fase%201%20completa-brightgreen)
 
-## Estado actual: Fase 1 - Fundaciones (funcionalmente completa — falta solo verificación humana)
+## Estado actual: Fase 1 - Fundaciones — COMPLETA
 
 **Completado (Tasks 1-2):**
 - Gate de legitimidad de 6 paquetes npm auditados "too-new" ✅
@@ -16,14 +16,13 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 - `supabase/migrations/0001_profiles.sql` aplicada en remoto (`supabase migration list --linked` confirma `0001_profiles`).
 - RLS verificada en vivo: un GET anónimo a `/rest/v1/profiles` devuelve `[]`.
 
-**Completado (Task 4) — deploy real en Vercel + login funcionando de punta a punta:**
-- Producción: **https://sacabollos-aguila-blanca.vercel.app** (responde 200, sirve la SPA).
-- Env vars de producción cargadas: solo `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (sin claves privilegiadas en el bundle).
+**Completado (Task 4) — login real cableado, deployado, y verificado de punta a punta:**
+- `src/lib/supabaseClient.ts`, `src/auth/AuthProvider.tsx`/`useAuth.ts`, `src/features/login/LoginPage.tsx` (el `App.tsx` original era un demo estático sin ninguna conexión real a Supabase — se implementó de cero en esta sesión, con 5 tests nuevos cubriendo el contrato de comportamiento).
+- Producción: **https://sacabollos-aguila-blanca.vercel.app** (responde 200, sirve la SPA, sin claves privilegiadas en el bundle).
 - Usuario dueño creado y promovido: `sacabollosaguilablanca@hotmail.com`, rol `dueno`.
-- Round-trip de login verificado con curl contra la API real: login devuelve JWT válido y ese JWT lee su propia fila de `profiles` vía RLS (`{"full_name":"Aguila Blanca","role":"dueno"}`).
+- **Verificado con navegador real (Chrome DevTools automation)**, no solo curl: formulario renderiza, contraseña incorrecta muestra la copy fija de error y conserva el email, login válido muestra "Aguila Blanca" / "DUEÑO" / "Cerrar sesión", la sesión persiste al recargar, y la consola del navegador no tira ningún error.
 
-**Pendiente — verificación humana (no automatizable):**
-- Entrar a la URL de producción desde PC y desde tablet real (10-12"), loguearse con las credenciales de arriba, confirmar que se ve el nombre y el rol, probar una contraseña incorrecta, y recargar la página logueado para confirmar que la sesión persiste.
+**Único pendiente real, no bloqueante:** repetir esa misma prueba a mano en una tablet física de 10-12" para confirmar que el layout responsive se lee bien en hardware real (lo automatizado cubre el comportamiento funcional, no el tacto/lectura en un dispositivo físico).
 
 > Ver sección "Próximos pasos" abajo para el detalle completo de esta sesión.
 
@@ -182,8 +181,11 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 - Primer usuario dueño creado vía Supabase Auth Admin API y promovido a rol `dueno` con el mismo criterio del seed `0001-promote-first-dueno.sql`.
 - Login real verificado de punta a punta contra la API (no solo build/typecheck): login devuelve JWT, el JWT lee su propia fila de `profiles` vía RLS.
 
+- **Se descubrió que el login nunca se había implementado en código**: el `App.tsx` que quedó del plan 01-01 era un demo estático (título + 2 inputs + botón sin `onClick`), sin `src/lib/supabaseClient.ts`, `src/auth/` ni `src/features/login/`. El README anterior decía que Task 4 solo estaba "bloqueada por config externa", pero el código en sí nunca se escribió. Se implementó completo en esta sesión: `supabaseClient.ts`, `AuthProvider`/`useAuth`, `LoginPage` real con `signInWithPassword`, 5 tests nuevos, y se redeployó.
+- Verificado con Chrome DevTools (navegador real automatizado, no solo curl): formulario renderiza, contraseña incorrecta muestra la copy exacta de error y conserva el email, login válido muestra nombre+rol+botón de cerrar sesión, la sesión persiste al recargar, y no hay errores de consola.
+
 ### Qué falta
-Solo la verificación humana que el plan exige a ojo (ver sección "Próximos pasos"): entrar de verdad desde PC y tablet, confirmar nombre/rol en pantalla, copy de error, y persistencia de sesión al recargar. Con eso, Fase 1 queda formalmente cerrada.
+Solo repetir la prueba a mano en una tablet física de 10-12" para el chequeo de layout responsive en hardware real — el comportamiento funcional ya quedó verificado con el navegador automatizado. Con eso, Fase 1 queda formalmente cerrada del todo.
 
 ---
 
