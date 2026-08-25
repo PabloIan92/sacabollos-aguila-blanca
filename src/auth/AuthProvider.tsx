@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useEffect, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabaseClient'
 
@@ -12,6 +12,8 @@ export type AuthContextValue = {
   session: Session | null
   profile: Profile | null
   loading: boolean
+  profileError: boolean
+  retryProfile: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -30,6 +32,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [profileError, setProfileError] = useState(false)
+
+  const resolveProfile = useCallback(async (currentSession: Session | null) => {
+    if (!currentSession) {
+      setProfile(null)
+      setProfileError(false)
+      return
+    }
+
+    const loadedProfile = await loadProfile(currentSession.user.id)
+    if (loadedProfile) {
+      setProfile(loadedProfile)
+      setProfileError(false)
+    } else {
+      setProfile(null)
+      setProfileError(true)
+    }
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -37,14 +57,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!active) return
       setSession(session)
-      setProfile(session ? await loadProfile(session.user.id) : null)
+      await resolveProfile(session)
       setLoading(false)
     })
 
     const { data: subscription } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!active) return
       setSession(session)
-      setProfile(session ? await loadProfile(session.user.id) : null)
+      await resolveProfile(session)
       setLoading(false)
     })
 
@@ -52,10 +72,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       active = false
       subscription.subscription.unsubscribe()
     }
-  }, [])
+  }, [resolveProfile])
+
+  const retryProfile = useCallback(() => {
+    resolveProfile(session)
+  }, [resolveProfile, session])
 
   return (
-    <AuthContext.Provider value={{ session, profile, loading }}>
+    <AuthContext.Provider value={{ session, profile, loading, profileError, retryProfile }}>
       {children}
     </AuthContext.Provider>
   )
