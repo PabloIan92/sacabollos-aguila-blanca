@@ -1006,7 +1006,6 @@
     "borrador": { idx: 0, kind: "waiting" },
     "enviado a la aseguradora": { idx: 2, kind: "waiting" },
     "aprobado": { idx: 3, kind: "waiting" },
-    "presupuesto enviado": { idx: 2, kind: "waiting" },
     "turno coordinado": { idx: 4, kind: "waiting" },
     "ingresado": { idx: 5, kind: "active" },
     "esperando repuesto": { idx: 5, kind: "parts" },
@@ -1015,10 +1014,10 @@
     "firmado": { idx: 7, kind: "waiting" },
     "facturado": { idx: 8, kind: "waiting" },
     "cobrado": { idx: 9, kind: "done" }, // all 9 completed
-    "cerrado": { idx: 9, kind: "done" },
     "reclamo a la compañía": { idx: 8, kind: "blocked" },
     "cancelado": { idx: -1, kind: "cancelled" }
   };
+  // Estos son los 13 estados exactos ya implementados en la base real (supabase/migrations/0002_casos.sql)
 
   const cases = [
     {
@@ -1162,7 +1161,7 @@
       cliente: "Fernando Ibáñez",
       canal: "particular",
       aseguradora: "",
-      estado: "presupuesto enviado",
+      estado: "enviado a la aseguradora",
       siniestro: "-",
       turno: "Esperando confirmación",
       diasEtapa: 3,
