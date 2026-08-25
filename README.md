@@ -174,6 +174,21 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 
 ---
 
+## Pendiente: llevar a la app real (Fase 2, plan `02-04`)
+
+El dueño pidió 3 mejoras sobre la Planilla de Control que por ahora **solo existen en el prototipo estático `docs/tablero.html`** (datos mock en JS, sin backend). Cuando se ejecute el plan `02-04` ("Semáforo de estado visual en el listado de casos", que ya lee `casos` real vía `src/features/casos/api.ts`), hay que portar esta lógica contra datos reales:
+
+1. **Alerta de "una semana sin avance"** — no solo el aviso temprano de "trabado" a los ≥5 días que ya estaba planeado, sino un segundo umbral en ≥7 días (`estado_changed_at`, columna ya agregada en `0002_casos.sql` para esto) que:
+   - Suma un KPI separado ("Sin avance ≥7 días") además del de "trabados ≥5 días".
+   - Resalta el **nombre del cliente y la patente** en rojo con un badge de alerta, tanto en la fila de la tabla como en el detalle del caso.
+   - Prototipo de referencia: `docs/tablero.html`, función `stuckLevel()` y el caso mock `KPU775` (a propósito puesto en la etapa inicial "borrador" con 8 días, como ejemplo visual).
+2. **Color por etapa (gradiente rojo → verde)** — las 9 columnas del semáforo pasan de un color fijo por "tipo" (verde/azul/brass/rojo) a un color propio por columna, interpolado de rojo (etapa 1) a verde (etapa 9). Prototipo de referencia: array `STAGE_COLORS` (9 pares `{border, bg}` en HSL) y `getStageCellHtml()` en `docs/tablero.html`. Los estados de excepción (bloqueado/reclamo = rojo fijo, cancelado = gris, esperando repuesto = brass con "REP") quedan como override, no entran en el gradiente.
+3. **Buscador por patente y cliente** — input con normalización de acentos (`normalizeText()` en el prototipo) que filtra el listado en tiempo real, combinado con los filtros de canal y "solo trabados" ya existentes.
+
+Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b222` (alerta 7 días + gradiente), `26e8c69` (caso de ejemplo), `aedad37` (buscador).
+
+---
+
 ## Changelog — Sesión 2026-08-25 (Fase 1 cerrada de punta a punta)
 
 **Objetivo:** terminar Tasks 3 y 4 con las credenciales que fue proveyendo el dueño del proyecto durante la sesión.
