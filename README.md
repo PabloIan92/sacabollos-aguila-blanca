@@ -3,23 +3,29 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-1%20Fundaciones-blue)
-![Status](https://img.shields.io/badge/Status-Tasks%201--3%20%E2%9C%85%20%7C%20Task%204%20%E2%8F%B3-yellow)
+![Status](https://img.shields.io/badge/Status-Tasks%201--4%20%E2%9C%85%20%7C%20Verificaci%C3%B3n%20humana%20%E2%8F%B3-yellow)
 
-## Estado actual: Fase 1 - Fundaciones (parcial — Tasks 1-3 ✅ en código, Task 4 ⏳ bloqueada)
+## Estado actual: Fase 1 - Fundaciones (funcionalmente completa — falta solo verificación humana)
 
 **Completado (Tasks 1-2):**
 - Gate de legitimidad de 6 paquetes npm auditados "too-new" ✅
 - Scaffold Vite+React+TS+Tailwind v4 + UI primitives (`Ficha`, `TextField`, `PrimaryButton`) + tests ✅
 - `npm run build` ✓, `npm run test` ✓, `npm run typecheck` ✓
 
-**Escrito, falta pushear (Task 3):**
-- `supabase/migrations/0001_profiles.sql` y `supabase/seed/0001-promote-first-dueno.sql` ya están en el repo, siguiendo al pie de la letra el spec de `.planning/phases/01-fundaciones/01-01-PLAN.md` (tabla `profiles` + RLS habilitada en la misma migración + trigger `on_auth_user_created` + helper `current_user_role()` en `plpgsql` + GRANT de columna acotado a `full_name`, sin GRANT de escritura sobre `role`).
-- **Falta correr `npx supabase link` + `npx supabase db push` contra el proyecto Supabase real** — esto requiere `SUPABASE_ACCESS_TOKEN`, `SUPABASE_DB_PASSWORD` y `SUPABASE_PROJECT_REF`, que no están disponibles en este entorno. Ver sección "Próximos pasos" para los comandos exactos.
+**Completado (Task 3) — migración `profiles` pusheada a Supabase vivo:**
+- `supabase/migrations/0001_profiles.sql` aplicada en remoto (`supabase migration list --linked` confirma `0001_profiles`).
+- RLS verificada en vivo: un GET anónimo a `/rest/v1/profiles` devuelve `[]`.
 
-**Bloqueado (Task 4) — requiere configuración externa:**
-- **Task 4**: Login real deployado en Vercel + verificación humana tablet/PC — necesita `VERCEL_TOKEN` + importar repo + crear usuario dueño + correr el seed de promoción
+**Completado (Task 4) — deploy real en Vercel + login funcionando de punta a punta:**
+- Producción: **https://sacabollos-aguila-blanca.vercel.app** (responde 200, sirve la SPA).
+- Env vars de producción cargadas: solo `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` (sin claves privilegiadas en el bundle).
+- Usuario dueño creado y promovido: `sacabollosaguilablanca@hotmail.com`, rol `dueno`.
+- Round-trip de login verificado con curl contra la API real: login devuelve JWT válido y ese JWT lee su propia fila de `profiles` vía RLS (`{"full_name":"Aguila Blanca","role":"dueno"}`).
 
-> Ver sección "Próximos pasos" abajo para detalles de variables necesarias.
+**Pendiente — verificación humana (no automatizable):**
+- Entrar a la URL de producción desde PC y desde tablet real (10-12"), loguearse con las credenciales de arriba, confirmar que se ve el nombre y el rol, probar una contraseña incorrecta, y recargar la página logueado para confirmar que la sesión persiste.
+
+> Ver sección "Próximos pasos" abajo para el detalle completo de esta sesión.
 
 ### Lo que está implementado
 
@@ -56,70 +62,37 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ---
 
-## Próximos pasos (pendientes configuración externa)
+## Próximos pasos
 
-### ✅ Supabase Project — YA CREADO (2026-08-23)
+### Infraestructura — YA CONFIGURADA (2026-08-24/25)
 | Dato | Valor |
 |------|-------|
-| **Project Ref** | `tnwrewghcowayuudvxey` |
-| **Project URL** | `https://tnwrewghcowayuudvxey.supabase.co` |
-| **API URL (REST)** | `https://tnwrewghcowayuudvxey.supabase.co/rest/v1/` |
-| **Región** | `us-east-2` (Ohio) — *nota: ideal migrar a `sa-east-1` (São Paulo) para latencia* |
-| **Dashboard** | https://supabase.com/dashboard/project/tnwrewghcowayuudvxey |
+| **Supabase Project Ref** | `tnwrewghcowayuudvxey` |
+| **Supabase Project URL** | `https://tnwrewghcowayuudvxey.supabase.co` |
+| **Supabase Dashboard** | https://supabase.com/dashboard/project/tnwrewghcowayuudvxey |
+| **Vercel Team** | `aguila-blanca` (cuenta separada de la de Pablo, para poder transferirla al dueño más adelante) |
+| **Producción** | https://sacabollos-aguila-blanca.vercel.app |
 
-> ✅ La migración `profiles` **ya está escrita y en el repo** (`supabase/migrations/0001_profiles.sql`). Lo único que falta es correr el `link` + `db push` contra el proyecto Supabase real, porque eso requiere tokens que no están disponibles en este entorno.
+✅ Migración `profiles` pusheada y aplicada en remoto (`supabase migration list --linked` confirma `0001_profiles`), RLS verificada en vivo (GET anónimo devuelve `[]`).
+✅ Deploy de producción en Vercel, con las 2 env vars públicas configuradas.
+✅ Usuario dueño creado en Supabase Auth y promovido a rol `dueno` con el seed (credenciales entregadas por el dueño del taller, no documentadas acá por seguridad).
+✅ Round-trip de login verificado con la API real (login → JWT → lectura de `profiles` vía RLS).
 
-### Task 3: Pushear la migración `profiles` a Supabase vivo
-**Variables que necesitás** (crealas en `.env` local; no se commitean):
+### Único pendiente: verificación humana
+El plan exige confirmar a mano, no solo con curl, que:
+1. Entrando a https://sacabollos-aguila-blanca.vercel.app desde PC y desde tablet (10-12") con las credenciales del dueño, se ve el nombre completo y la etiqueta "Dueño".
+2. Una contraseña incorrecta muestra «No pudimos iniciar sesión» y el email tipeado no se borra.
+3. Recargar la página logueado mantiene la sesión (no vuelve al login, no da 404).
 
-| Variable | Dónde sacarla en Supabase Dashboard |
-|----------|--------------------------------------|
-| `VITE_SUPABASE_URL` | Settings → API → Project URL (`https://tnwrewghcowayuudvxey.supabase.co`) |
-| `VITE_SUPABASE_ANON_KEY` | Settings → API → anon public (publishable key) |
-| `SUPABASE_DB_PASSWORD` | Settings → Database → Database password |
-| `SUPABASE_ACCESS_TOKEN` | Settings → Access Tokens → Generate new token (o usa `sbp_...` que ya tenés) |
-| `SUPABASE_PROJECT_REF` | `tnwrewghcowayuudvxey` (Settings → General → Reference ID) |
+Con eso confirmado, la Fase 1 (Fundaciones) queda cerrada del todo y se puede arrancar la Fase 2.
 
-**Comandos para correr (con las variables de arriba en el entorno):**
-```bash
-# 1. Clonar repo (o usar el que ya tenés local)
-git clone https://github.com/PabloIan92/sacabollos-aguila-blanca.git
-cd sacabollos-aguila-blanca
-
-# 2. Instalar deps
-npm ci
-
-# 3. Link + push de la migración ya presente en supabase/migrations/0001_profiles.sql
-npx supabase link --project-ref tnwrewghcowayuudvxey
-npx supabase db push
-
-# 4. Verificar
-npx supabase migration list --linked
-# Debe mostrar 0001_profiles aplicada en remoto
-
-# 5. Confirmar que RLS bloquea al rol anónimo (debe devolver exactamente [])
-curl -s "$VITE_SUPABASE_URL/rest/v1/profiles?select=id" -H "apikey: $VITE_SUPABASE_ANON_KEY"
-```
-
-**Qué crea la migración (`supabase/migrations/0001_profiles.sql`):**
+### Referencia: qué crea la migración (`supabase/migrations/0001_profiles.sql`)
 - Tabla `public.profiles` (`id` FK a `auth.users`, `full_name`, `role` ∈ {dueno,recepcion,taller}, `created_at`)
 - RLS habilitada en la misma migración: `profiles_select_own`, `profiles_update_own`, `profiles_select_all_for_admins` (dueño y recepción ven todos los perfiles)
 - Trigger `on_auth_user_created` → auto-crea perfil al alta en `auth.users`, con rol `taller` (el de menor privilegio) si la metadata no trae un rol válido — nunca asigna `dueno` sin autorización explícita
 - Backfill idempotente para usuarios de Auth creados antes de esta migración
 - Helper `public.current_user_role()` en `plpgsql` (no `sql`, para que el planificador no lo inlinee y rompa el `security definer`) — evita recursión de RLS
 - GRANT: `select` completo + `update` acotado **solo a la columna `full_name`** para `authenticated` — el rol nunca es escribible vía PostgREST
-
-Además ya está `supabase/seed/0001-promote-first-dueno.sql`, para correr una sola vez en el SQL Editor después del push (reemplazando el email placeholder por el del dueño real).
-
-### Task 4: Deploy Vercel + Login real
-Requiere:
-1. `VERCEL_TOKEN` (crear en https://vercel.com/account/tokens)
-2. Importar repo en Vercel (Framework: Vite, Build: `npm run build`, Output: `dist`)
-3. Configurar 2 env vars en Vercel (Production):
-   - `VITE_SUPABASE_URL` = `https://tnwrewghcowayuudvxey.supabase.co`
-   - `VITE_SUPABASE_ANON_KEY` = (anon public de Settings → API)
-4. En Supabase Dashboard → Authentication → Users → **Add user** (email del dueño, password, "Auto Confirm User" activado)
-5. Después del push de Task 3, correr `supabase/seed/0001-promote-first-dueno.sql` en el SQL Editor reemplazando el email placeholder (promueve ese usuario a `dueno`)
 
 ---
 
@@ -193,6 +166,24 @@ Publicadas en GitHub Pages como referencia visual aprobada:
 - **`docs/tablero.html`** (Planilla de Control): vista tabular compacta tipo Excel con semáforo de 9 etapas por caso (CASOS-04) y solapa de control de stock simple (STOCK-01). Muestra cómo el proceso se actualiza automáticamente sin perder la aprobación por rol.
 
 La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.css`.
+
+---
+
+## Changelog — Sesión 2026-08-25 (Fase 1 cerrada de punta a punta)
+
+**Objetivo:** terminar Tasks 3 y 4 con las credenciales que fue proveyendo el dueño del proyecto durante la sesión.
+
+### Qué se hizo
+- `npx supabase link` + `npx supabase db push` corridos contra el proyecto real (`tnwrewghcowayuudvxey`) — migración `0001_profiles` aplicada en remoto.
+- Verificado con curl que RLS bloquea el acceso anónimo (`GET /rest/v1/profiles` → `[]`).
+- Vercel: se creó una cuenta separada (equipo `aguila-blanca`, login vía Bitbucket con el email del taller) para poder transferirle la propiedad del proyecto al dueño más adelante sin migrar nada.
+- Se detectaron y limpiaron 4 proyectos duplicados en Vercel (quedó solo `sacabollos-aguila-blanca`), producto de varios intentos de import mientras se resolvía el alta de la cuenta.
+- Env vars de producción cargadas (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) y deploy de producción corrido: **https://sacabollos-aguila-blanca.vercel.app**
+- Primer usuario dueño creado vía Supabase Auth Admin API y promovido a rol `dueno` con el mismo criterio del seed `0001-promote-first-dueno.sql`.
+- Login real verificado de punta a punta contra la API (no solo build/typecheck): login devuelve JWT, el JWT lee su propia fila de `profiles` vía RLS.
+
+### Qué falta
+Solo la verificación humana que el plan exige a ojo (ver sección "Próximos pasos"): entrar de verdad desde PC y tablet, confirmar nombre/rol en pantalla, copy de error, y persistencia de sesión al recargar. Con eso, Fase 1 queda formalmente cerrada.
 
 ---
 
@@ -273,5 +264,5 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 - **Repo:** https://github.com/PabloIan92/sacabollos-aguila-blanca
 - **Demo Fichas (GitHub Pages):** https://pabloian92.github.io/sacabollos-aguila-blanca/
 - **Demo Planilla / Tablero (GitHub Pages):** https://pabloian92.github.io/sacabollos-aguila-blanca/tablero.html
-- **Producción (Vercel):** *pendiente deploy Task 4*
-- **Supabase:** *pendiente creación proyecto propio*
+- **Producción (Vercel):** https://sacabollos-aguila-blanca.vercel.app
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/tnwrewghcowayuudvxey
