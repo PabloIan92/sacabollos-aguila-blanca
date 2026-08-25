@@ -579,10 +579,7 @@
   }
 
   .cell-dot.active {
-    background: #e7eff8;
-    border-color: var(--blue);
-    color: var(--blue);
-    box-shadow: 0 0 0 2px rgba(28, 79, 140, 0.2);
+    box-shadow: 0 0 0 2px rgba(27, 29, 33, 0.14);
     animation: pulse-subtle 2s infinite ease-in-out;
   }
 
@@ -636,11 +633,49 @@
     color: #4e5964;
   }
 
-  .days-cell.stuck {
-    color: var(--red);
-    background: #fde8e8;
+  .days-cell.warning {
+    color: var(--brass);
+    background: #fef5ea;
     border-radius: 2px;
     padding: 2px 4px;
+    font-weight: 800;
+  }
+
+  .days-cell.critical {
+    color: var(--white);
+    background: var(--red);
+    border-radius: 2px;
+    padding: 2px 4px;
+    font-weight: 800;
+  }
+
+  .patente-cell.alert-text,
+  .client-name.alert-text {
+    color: var(--red);
+  }
+
+  .stall-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 3px;
+    padding: 1px 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--white);
+    background: var(--red);
+    border-radius: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  tr.row-critical td:not(.sticky-col) {
+    background: #fff3f3;
+  }
+
+  tr.row-critical:hover td {
+    background: #ffe4e4;
   }
 
   /* Stock View */
@@ -958,6 +993,11 @@
         <div class="kpi-sub">Demorados en la misma etapa</div>
       </div>
       <div class="kpi-card">
+        <div class="kpi-label">Sin avance (&ge;7 d&iacute;as)</div>
+        <div class="kpi-value alert" id="kpiNoAdvance">-</div>
+        <div class="kpi-sub">Una semana sin cambiar de etapa</div>
+      </div>
+      <div class="kpi-card">
         <div class="kpi-label">Reclamos a C&iacute;as.</div>
         <div class="kpi-value alert" id="kpiClaims">-</div>
         <div class="kpi-sub">Seguros sin pagar a tiempo</div>
@@ -997,15 +1037,15 @@
             <th class="th-info" style="min-width:90px;">Canal</th>
             <th class="th-info" style="min-width:130px;">Aseguradora</th>
             <!-- 9 Etapas -->
-            <th class="th-stage" title="1. Registro / Denuncia"><span class="th-stage-num">1</span><span class="th-stage-label">Datos</span></th>
-            <th class="th-stage" title="2. Presupuesto enviado + fotos"><span class="th-stage-num">2</span><span class="th-stage-label">Presup.</span></th>
-            <th class="th-stage" title="3. Orden de trabajo de Cía / Aceptación particular"><span class="th-stage-num">3</span><span class="th-stage-label">Orden/OK</span></th>
-            <th class="th-stage" title="4. Turno coordinado"><span class="th-stage-num">4</span><span class="th-stage-label">Turno</span></th>
-            <th class="th-stage" title="5. Ingresado al taller (Ficha 2)"><span class="th-stage-num">5</span><span class="th-stage-label">Ingreso</span></th>
-            <th class="th-stage" title="6. En reparación / Repuestos"><span class="th-stage-num">6</span><span class="th-stage-label">Reparac.</span></th>
-            <th class="th-stage" title="7. Firma de orden con fotos"><span class="th-stage-num">7</span><span class="th-stage-label">Firma</span></th>
-            <th class="th-stage" title="8. Facturado formalmente"><span class="th-stage-num">8</span><span class="th-stage-label">Factura</span></th>
-            <th class="th-stage" title="9. Cobrado real / Reclamo"><span class="th-stage-num">9</span><span class="th-stage-label">Cobro</span></th>
+            <th class="th-stage" title="1. Registro / Denuncia"><span class="th-stage-num" style="background:hsl(0,60%,42%);color:#fff;">1</span><span class="th-stage-label">Datos</span></th>
+            <th class="th-stage" title="2. Presupuesto enviado + fotos"><span class="th-stage-num" style="background:hsl(16,60%,42%);color:#fff;">2</span><span class="th-stage-label">Presup.</span></th>
+            <th class="th-stage" title="3. Orden de trabajo de Cía / Aceptación particular"><span class="th-stage-num" style="background:hsl(31,60%,42%);color:#fff;">3</span><span class="th-stage-label">Orden/OK</span></th>
+            <th class="th-stage" title="4. Turno coordinado"><span class="th-stage-num" style="background:hsl(47,60%,42%);color:#fff;">4</span><span class="th-stage-label">Turno</span></th>
+            <th class="th-stage" title="5. Ingresado al taller (Ficha 2)"><span class="th-stage-num" style="background:hsl(63,55%,38%);color:#fff;">5</span><span class="th-stage-label">Ingreso</span></th>
+            <th class="th-stage" title="6. En reparación / Repuestos"><span class="th-stage-num" style="background:hsl(78,55%,38%);color:#fff;">6</span><span class="th-stage-label">Reparac.</span></th>
+            <th class="th-stage" title="7. Firma de orden con fotos"><span class="th-stage-num" style="background:hsl(94,55%,38%);color:#fff;">7</span><span class="th-stage-label">Firma</span></th>
+            <th class="th-stage" title="8. Facturado formalmente"><span class="th-stage-num" style="background:hsl(109,55%,38%);color:#fff;">8</span><span class="th-stage-label">Factura</span></th>
+            <th class="th-stage" title="9. Cobrado real / Reclamo"><span class="th-stage-num" style="background:hsl(125,55%,38%);color:#fff;">9</span><span class="th-stage-label">Cobro</span></th>
             <th class="th-info" style="width:70px; text-align:center;" title="Días transcurridos en la etapa actual">Días</th>
           </tr>
         </thead>
@@ -1040,6 +1080,19 @@
         <span class="legend-item"><span class="cell-dot parts" style="width:auto;height:18px;font-size:0.55rem;padding:0 3px;">REP</span> Falta repuesto proveedor</span>
         <span class="legend-item"><span class="cell-dot blocked" style="width:18px;height:18px;font-size:0.6rem;">&times;</span> Reclamo / Bloqueado</span>
         <span class="legend-item"><span class="cell-dot future" style="width:18px;height:18px;font-size:0.6rem;">-</span> Pendiente</span>
+      </div>
+      <div class="legend-items" style="margin-top:6px;">
+        <span class="legend-item" style="gap:6px;">
+          <span style="display:inline-flex;">
+            <span style="width:14px;height:14px;background:hsl(0,60%,42%);"></span>
+            <span style="width:14px;height:14px;background:hsl(31,60%,42%);"></span>
+            <span style="width:14px;height:14px;background:hsl(63,55%,38%);"></span>
+            <span style="width:14px;height:14px;background:hsl(94,55%,38%);"></span>
+            <span style="width:14px;height:14px;background:hsl(125,55%,38%);"></span>
+          </span>
+          Color de columna = etapa del proceso (rojo &rarr; verde)
+        </span>
+        <span class="legend-item"><span class="stall-badge" style="margin-top:0;">&#9888; 1 sem.</span> Sin cambio de etapa hace 7+ d&iacute;as</span>
       </div>
     </section>
   </main>
@@ -1086,6 +1139,19 @@
     "cancelado": { idx: -1, kind: "cancelled" }
   };
   // Estos son los 13 estados exactos ya implementados en la base real (supabase/migrations/0002_casos.sql)
+
+  // Gradiente de color por columna: etapa 1 en rojo, etapa 9 en verde (pedido del dueño)
+  const STAGE_COLORS = [
+    { border: "hsl(0,60%,42%)", bg: "hsl(0,65%,93%)" },
+    { border: "hsl(16,60%,42%)", bg: "hsl(16,65%,93%)" },
+    { border: "hsl(31,60%,42%)", bg: "hsl(31,65%,93%)" },
+    { border: "hsl(47,60%,42%)", bg: "hsl(47,65%,93%)" },
+    { border: "hsl(63,55%,38%)", bg: "hsl(63,60%,92%)" },
+    { border: "hsl(78,55%,38%)", bg: "hsl(78,60%,92%)" },
+    { border: "hsl(94,55%,38%)", bg: "hsl(94,60%,92%)" },
+    { border: "hsl(109,55%,38%)", bg: "hsl(109,60%,92%)" },
+    { border: "hsl(125,55%,38%)", bg: "hsl(125,60%,92%)" }
+  ];
 
   const cases = [
     {
@@ -1288,10 +1354,19 @@
     return "$" + (value || 0).toLocaleString("es-AR");
   }
 
+  // "critical" = una semana o más sin cambiar de etapa (pedido del dueño); "warning" = alerta temprana desde los 5 días
+  function stuckLevel(c) {
+    if (c.estado === "cancelado" || c.estado === "cobrado") return "none";
+    if (c.diasEtapa >= 7) return "critical";
+    if (c.diasEtapa >= 5) return "warning";
+    return "none";
+  }
+
   function renderKpis() {
     const inShop = cases.filter(c => ["ingresado", "esperando repuesto", "en reparación"].includes(c.estado)).length;
     const waitingParts = cases.filter(c => c.estado === "esperando repuesto").length;
     const stuck = cases.filter(c => c.diasEtapa >= 5 && c.estado !== "cancelado" && c.estado !== "cobrado").length;
+    const noAdvance = cases.filter(c => stuckLevel(c) === "critical").length;
     const claims = cases.filter(c => c.estado === "reclamo a la compañía").length;
     const pendingCash = cases.reduce((acc, c) => {
       if (c.estado === "cancelado") return acc;
@@ -1301,28 +1376,30 @@
     document.getElementById("kpiInShop").textContent = inShop;
     document.getElementById("kpiWaitingParts").textContent = waitingParts;
     document.getElementById("kpiStuck").textContent = stuck;
+    document.getElementById("kpiNoAdvance").textContent = noAdvance;
     document.getElementById("kpiClaims").textContent = claims;
     document.getElementById("kpiPendingCash").textContent = formatMoney(pendingCash);
   }
 
   function getStageCellHtml(caseItem, stageIdx) {
     const map = stateMapping[caseItem.estado] || { idx: 0, kind: "waiting" };
+    const sc = STAGE_COLORS[stageIdx];
 
     if (map.kind === "cancelled") {
       return '<td class="stage-cell"><span class="cell-dot cancelled">-</span></td>';
     }
 
     if (stageIdx < map.idx) {
-      return '<td class="stage-cell"><span class="cell-dot done" title="Completado">&check;</span></td>';
+      return `<td class="stage-cell"><span class="cell-dot done" style="border-color:${sc.border};color:${sc.border};background:${sc.bg};" title="Completado">&check;</span></td>`;
     } else if (stageIdx === map.idx) {
       if (map.kind === "parts") {
         return `<td class="stage-cell"><span class="cell-dot parts" title="Falta: ${caseItem.repuesto}">REP</span></td>`;
       } else if (map.kind === "active") {
-        return '<td class="stage-cell"><span class="cell-dot active" title="En proceso activo">&bull;</span></td>';
+        return `<td class="stage-cell"><span class="cell-dot active" style="border-color:${sc.border};color:${sc.border};background:${sc.bg};" title="En proceso activo">&bull;</span></td>`;
       } else if (map.kind === "blocked") {
         return '<td class="stage-cell"><span class="cell-dot blocked" title="Reclamo abierto">&times;</span></td>';
       } else {
-        return '<td class="stage-cell"><span class="cell-dot waiting" title="En espera">&bull;</span></td>';
+        return `<td class="stage-cell"><span class="cell-dot waiting" style="border-color:${sc.border};color:${sc.border};background:${sc.bg};border-style:dashed;" title="En espera">&bull;</span></td>`;
       }
     } else {
       return '<td class="stage-cell"><span class="cell-dot future" title="Pendiente">-</span></td>';
@@ -1344,19 +1421,22 @@
 
     tbody.innerHTML = filtered.map(c => {
       const isCancelled = c.estado === "cancelado";
-      const isStuck = c.diasEtapa >= 5 && !isCancelled && c.estado !== "cobrado";
+      const level = stuckLevel(c);
 
       return `
-        <tr class="${isCancelled ? "row-cancelled" : ""}" data-case-id="${c.id}" tabindex="0" role="button" aria-label="Abrir caso ${c.patente}">
+        <tr class="${isCancelled ? "row-cancelled" : ""} ${level === "critical" ? "row-critical" : ""}" data-case-id="${c.id}" tabindex="0" role="button" aria-label="Abrir caso ${c.patente}">
           <td class="sticky-col">
-            <span class="patente-cell">${c.patente}</span>
+            <span class="patente-cell ${level === "critical" ? "alert-text" : ""}">${c.patente}</span>
             <span class="ot-tag">${c.id}</span>
           </td>
-          <td><div class="client-name" title="${c.cliente}">${c.cliente}</div></td>
+          <td>
+            <div class="client-name ${level === "critical" ? "alert-text" : ""}" title="${c.cliente}">${c.cliente}</div>
+            ${level === "critical" ? '<span class="stall-badge" title="Sin cambio de etapa hace 7 días o más">&#9888; 1 sem. sin avance</span>' : ""}
+          </td>
           <td><span class="channel-badge ${c.canal}">${c.canal === "seguro" ? "Seguro" : "Partic."}</span></td>
           <td><span class="aseg-name">${c.aseguradora || "Pago directo"}</span></td>
           ${STAGES.map((s, idx) => getStageCellHtml(c, idx)).join("")}
-          <td class="days-cell ${isStuck ? "stuck" : ""}">${isCancelled || c.estado === "cobrado" ? "-" : c.diasEtapa + "d"}</td>
+          <td class="days-cell ${level !== "none" ? level : ""}">${isCancelled || c.estado === "cobrado" ? "-" : c.diasEtapa + "d"}</td>
         </tr>
       `;
     }).join("");
@@ -1458,7 +1538,7 @@
           <div class="field"><span>Aseguradora</span><strong>${caseItem.aseguradora || "No aplica (directo)"}</strong></div>
           <div class="field"><span>N° Siniestro</span><strong>${caseItem.siniestro}</strong></div>
           <div class="field"><span>Turno / Ubicación</span><strong>${caseItem.turno}</strong></div>
-          <div class="field"><span>Días en etapa</span><strong style="${caseItem.diasEtapa >= 5 ? "color:var(--red);" : ""}">${caseItem.diasEtapa} días</strong></div>
+          <div class="field"><span>Días en etapa</span><strong style="${stuckLevel(caseItem) === "critical" ? "color:var(--red);" : stuckLevel(caseItem) === "warning" ? "color:var(--brass);" : ""}">${caseItem.diasEtapa} días${stuckLevel(caseItem) === "critical" ? ' <span class="stall-badge" style="margin-top:0;">&#9888; 1 sem. sin avance</span>' : ""}</strong></div>
         </div>
       </section>
 
