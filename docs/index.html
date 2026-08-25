@@ -747,10 +747,11 @@
       <button class="ghost-button" type="button" id="logoutButton">Cerrar sesión</button>
     </div>
     <div style="display:flex;align-items:center;gap:8px;">
+      <a class="ghost-button" href="https://sacabollos-aguila-blanca.vercel.app" style="background:var(--green);border-color:var(--green);color:var(--white);font-weight:700;">&#9638; Abrir app real</a>
       <a class="ghost-button" href="tablero.html" style="background:var(--brass);border-color:var(--brass);color:var(--white);font-weight:700;">&#9638; Vista Planilla (Excel)</a>
-      <div class="phase-badge" title="Fase 1: Fundaciones - Scaffold + tema visual listos (2/4 planes); falta crear el proyecto Supabase y el proyecto Vercel para el login real">
-        <span class="phase-dot" aria-hidden="true"></span>
-        <span>Fase 1: en construcción — scaffold listo</span>
+      <div class="phase-badge" title="Fase 1: Fundaciones completa - login real con roles, base de datos con RLS y app en producción">
+        <span class="phase-dot" aria-hidden="true" style="background:var(--green);box-shadow:0 0 8px var(--green);"></span>
+        <span>Fase 1: completa — app real en producción</span>
       </div>
     </div>
   </header>
@@ -758,10 +759,10 @@
   <main>
     <section class="screen login-screen" id="loginScreen">
       <div class="login-heading">
-        <p class="kicker">Demo clickeable sin backend · app real en construcción</p>
+        <p class="kicker">Demo clickeable sin backend · app real ya en producción</p>
         <h2>Elegir puesto de trabajo</h2>
         <p>La misma ficha cambia según quien entra: el taller ve reparación, recepción ve datos operativos y el dueño también ve facturación.</p>
-        <p style="margin-top:12px;font-size:0.85rem;color:#68737d;">Esta pantalla sigue siendo la demo con datos de mentira. La app real (<a href="https://github.com/PabloIan92/sacabollos-aguila-blanca" style="color:var(--navy);text-decoration:underline;">repo en GitHub</a>) ya tiene el scaffold Vite+React+Supabase con el mismo lenguaje visual — falta conectar el login real y desplegarla.</p>
+        <p style="margin-top:12px;font-size:0.85rem;color:#68737d;">Esta pantalla sigue siendo la demo con datos de mentira, de referencia visual. La app real con login funcional y base de datos ya está desplegada: <a href="https://sacabollos-aguila-blanca.vercel.app" style="color:var(--navy);text-decoration:underline;">sacabollos-aguila-blanca.vercel.app</a>. Código fuente en el <a href="https://github.com/PabloIan92/sacabollos-aguila-blanca" style="color:var(--navy);text-decoration:underline;">repo de GitHub</a>.</p>
       </div>
 
       <div class="role-grid" aria-label="Selección de rol">
