@@ -22,7 +22,13 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 - Usuario dueño creado y promovido: `sacabollosaguilablanca@hotmail.com`, rol `dueno`.
 - **Verificado con navegador real (Chrome DevTools automation)**, no solo curl: formulario renderiza, contraseña incorrecta muestra la copy fija de error y conserva el email, login válido muestra "Aguila Blanca" / "DUEÑO" / "Cerrar sesión", la sesión persiste al recargar, y la consola del navegador no tira ningún error.
 
-**Único pendiente real, no bloqueante:** repetir esa misma prueba a mano en una tablet física de 10-12" para confirmar que el layout responsive se lee bien en hardware real (lo automatizado cubre el comportamiento funcional, no el tacto/lectura en un dispositivo físico).
+**Completado (planes 01-02 y 01-03) — shell real + home por rol:**
+Estos dos planes estaban escritos en `.planning/` pero nunca implementados: después de loguearse, la app no hacía nada más que mostrar nombre+rol. Implementado en esta sesión:
+- `src/app/routes.ts` (`navItemsForRole`), `src/auth/RequireRole.tsx` (guardia de ruta por rol), `src/layout/{AppShell,Topbar,Sidebar,BottomTabBar}.tsx` (shell responsive: sidebar de 220px en PC, barra inferior de 56px en tablet, switch en 820px), `src/ui/FullScreenError.tsx` (perfil sin fila → error claro, no shell roto), `src/app/roleHome.ts` + `src/features/{dueno,recepcion,taller}/*Home.tsx` (cada rol aterriza en su propia pantalla con estado vacío).
+- **Bug real encontrado y arreglado probando el build de producción con Chrome DevTools** (no solo con tests mockeados): `/login` nunca redirigía a `/` tras un login exitoso — el usuario se autenticaba correctamente pero se quedaba viendo el formulario. Se agregó `src/auth/RedirectIfAuthenticated.tsx`.
+- Verificado con navegador real en producción: login → shell completo, sidebar en 1280px / barra inferior en 700px (capturas), "Cerrar sesión" con confirmación nombrando al usuario, logout vuelve a `/login`, sesión persiste al recargar, cero errores de consola.
+
+**Único pendiente real, no bloqueante:** repetir la prueba de layout en una tablet física de 10-12" para el chequeo táctil/visual en hardware real (lo automatizado ya cubre el comportamiento funcional y el breakpoint responsive en el navegador).
 
 > Ver sección "Próximos pasos" abajo para el detalle completo de esta sesión.
 
