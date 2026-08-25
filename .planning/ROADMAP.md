@@ -49,10 +49,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01: Modelo de datos y máquina de estados del caso (canal seguro)
-- [ ] 02-02: Ficha de inspección pre-ingreso (formulario + fotos + bosquejo interactivo)
-- [ ] 02-03: Turno y ficha de ingreso al taller
-- [ ] 02-04: Semáforo de estado visual en el listado de casos
+- [ ] 02-01-PLAN.md — Modelo de datos y máquina de estados del caso (canal seguro): tabla `casos`, RLS, bucket de fotos y contratos de tipos
+- [ ] 02-02-PLAN.md — Alta de caso de Seguro + Ficha de inspección pre-ingreso (zonas dañadas por checkbox + 4 fotos obligatorias)
+- [ ] 02-03-PLAN.md — Orden de trabajo recibida, turno coordinado y Ficha de ingreso al taller (Ficha 2)
+- [ ] 02-04-PLAN.md — Semáforo de estado visual + Realtime en el listado de casos de los 3 roles
 
 ### Phase 3: Caso Particular
 **Goal**: Un cliente particular puede recibir presupuesto y pasar a turno sin depender del flujo de seguro
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|-----------------|--------|-----------|
 | 1. Fundaciones | 3/4 | Complete (01-04 diferido) | 2026-08-25 |
-| 2. Caso de Seguro | 0/4 | Not started | - |
+| 2. Caso de Seguro | 0/4 | Planned | - |
 | 3. Caso Particular | 0/2 | Not started | - |
 | 4. Reparación y Stock | 0/3 | Not started | - |
 | 5. Facturación y Cobros | 0/3 | Not started | - |
