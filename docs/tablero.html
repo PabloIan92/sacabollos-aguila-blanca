@@ -145,10 +145,69 @@
     box-shadow: 0 0 6px var(--brass);
   }
 
+  .app-shell {
+    display: flex;
+    align-items: flex-start;
+  }
+
+  /* Este sidebar reproduce el shell REAL ya deployado en produccion
+     (src/layout/Sidebar.tsx) -- mismo ancho, color y trato de item activo. */
+  .sidebar-preview {
+    width: 220px;
+    min-width: 220px;
+    background: var(--navy);
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 4px;
+    position: sticky;
+    top: 70px;
+    align-self: flex-start;
+    min-height: calc(100vh - 70px);
+  }
+
+  .sidebar-note {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0 10px 10px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 10px;
+    font-family: "IBM Plex Sans", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--white);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+  }
+
+  .sidebar-item.active {
+    background: var(--blue);
+  }
+
+  .sidebar-item.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
   main {
+    flex: 1;
+    min-width: 0;
     width: min(1380px, calc(100% - 24px));
     margin: 0 auto;
     padding: 20px 0 60px;
+  }
+
+  @media (max-width: 820px) {
+    .sidebar-preview { display: none; }
   }
 
   .kicker {
@@ -861,6 +920,13 @@
     </div>
   </header>
 
+  <div class="app-shell">
+    <nav class="sidebar-preview" aria-label="Navegación principal (igual a la app real)">
+      <div class="sidebar-note">Así es hoy en producción</div>
+      <a class="sidebar-item active" href="tablero.html">&#128203; Casos</a>
+      <a class="sidebar-item" href="#" onclick="return false;">&#128176; Facturación</a>
+      <a class="sidebar-item disabled" href="#" onclick="return false;" title="Disponible en la próxima entrega">&#128101; Invitar</a>
+    </nav>
   <main>
     <section class="header-banner">
       <div>
@@ -977,6 +1043,7 @@
       </div>
     </section>
   </main>
+  </div>
 
   <!-- Drawer Detail -->
   <div class="drawer-backdrop" id="drawerBackdrop" hidden>
