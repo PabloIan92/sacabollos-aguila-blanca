@@ -10,7 +10,7 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Fundaciones** - Login con roles y app usable en tablet y PC
+- [x] **Phase 1: Fundaciones** - Login con roles y app usable en tablet y PC
 - [ ] **Phase 2: Caso de Seguro** - Flujo completo desde denuncia hasta ingreso del auto al taller
 - [ ] **Phase 3: Caso Particular** - Presupuesto y turno para clientes particulares
 - [ ] **Phase 4: Reparación y Stock** - Ficha de trabajo, repuestos faltantes y listado de materiales
@@ -31,10 +31,10 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
 **Plans**: 4 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Esqueleto caminante: proyecto Supabase nuevo con `profiles`+RLS, login real con email+contraseña y app desplegada en Vercel
-- [ ] 01-02-PLAN.md — Shell responsive: routing con guardia de rol, sidebar en PC y barra inferior táctil en tablet
-- [ ] 01-03-PLAN.md — Pantallas de inicio por rol (dueño, recepción, taller) con sus estados vacíos
-- [ ] 01-04-PLAN.md — Alta de usuarios desde la app: Edge Function `invite-user` con re-validación de rol del lado del servidor
+- [x] 01-01-PLAN.md — Esqueleto caminante: proyecto Supabase nuevo con `profiles`+RLS, login real con email+contraseña y app desplegada en Vercel
+- [x] 01-02-PLAN.md — Shell responsive: routing con guardia de rol, sidebar en PC y barra inferior táctil en tablet
+- [x] 01-03-PLAN.md — Pantallas de inicio por rol (dueño, recepción, taller) con sus estados vacíos
+- [ ] 01-04-PLAN.md — Alta de usuarios desde la app: Edge Function `invite-user` con re-validación de rol del lado del servidor (diferido, no bloquea Fase 2)
 
 ### Phase 2: Caso de Seguro
 **Goal**: Un caso de seguro se puede seguir de punta a punta, desde la denuncia hasta que el auto ingresa al taller
@@ -124,7 +124,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|-----------------|--------|-----------|
-| 1. Fundaciones | 0/4 | Planned | - |
+| 1. Fundaciones | 3/4 | Complete (01-04 diferido) | 2026-08-25 |
 | 2. Caso de Seguro | 0/4 | Not started | - |
 | 3. Caso Particular | 0/2 | Not started | - |
 | 4. Reparación y Stock | 0/3 | Not started | - |
