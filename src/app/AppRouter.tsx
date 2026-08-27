@@ -7,6 +7,7 @@ import { RoleHome } from './roleHome'
 import { CasosListPage } from '../features/casos/CasosListPage'
 import { CasoNuevoPage } from '../features/casos/CasoNuevoPage'
 import { FichaInspeccionPage } from '../features/casos/FichaInspeccionPage'
+import { CasoDetailPage } from '../features/casos/CasoDetailPage'
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
             children: [
               { path: '/casos', element: <CasosListPage /> },
               { path: '/casos/nuevo', element: <CasoNuevoPage /> },
+              { path: '/casos/:id', element: <CasoDetailPage /> },
               { path: '/casos/:id/ficha-inspeccion', element: <FichaInspeccionPage /> },
             ],
           },

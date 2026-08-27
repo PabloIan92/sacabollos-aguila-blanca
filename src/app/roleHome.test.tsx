@@ -1,12 +1,15 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { RoleHome } from './roleHome'
 import { useAuth } from '../auth/useAuth'
+import { listCasos } from '../features/casos/api'
 
 vi.mock('../auth/useAuth')
+vi.mock('../features/casos/api')
 
 const mockedUseAuth = vi.mocked(useAuth)
+const mockedListCasos = vi.mocked(listCasos)
 
 function mockProfile(role: 'dueno' | 'recepcion' | 'taller') {
   mockedUseAuth.mockReturnValue({
@@ -29,6 +32,10 @@ function renderRoleHome() {
   )
 }
 
+beforeEach(() => {
+  mockedListCasos.mockResolvedValue([])
+})
+
 afterEach(() => {
   vi.clearAllMocks()
 })
@@ -42,10 +49,10 @@ describe('RoleHome', () => {
     expect(screen.queryByText('No hay casos en el taller todavía')).not.toBeInTheDocument()
   })
 
-  it('con rol recepcion, renderiza RecepcionHome y ninguna otra', () => {
+  it('con rol recepcion, renderiza RecepcionHome y ninguna otra', async () => {
     mockProfile('recepcion')
     renderRoleHome()
-    expect(screen.getByText('No hay turnos para hoy')).toBeInTheDocument()
+    expect(await screen.findByText('No hay turnos para hoy')).toBeInTheDocument()
     expect(screen.queryByText('Todavía no hay casos cargados')).not.toBeInTheDocument()
     expect(screen.queryByText('No hay casos en el taller todavía')).not.toBeInTheDocument()
   })
@@ -58,10 +65,10 @@ describe('RoleHome', () => {
     expect(screen.queryByText('No hay turnos para hoy')).not.toBeInTheDocument()
   })
 
-  it('el acceso a caso nuevo de recepción ya está habilitado y navega a /casos/nuevo', () => {
+  it('el acceso a caso nuevo de recepción ya está habilitado y navega a /casos/nuevo', async () => {
     mockProfile('recepcion')
     renderRoleHome()
-    const boton = screen.getByRole('button', { name: 'Nuevo caso' })
+    const boton = await screen.findByRole('button', { name: 'Nuevo caso' })
     expect(boton).not.toBeDisabled()
 
     fireEvent.click(boton)
