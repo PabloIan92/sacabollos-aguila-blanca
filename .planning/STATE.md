@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-08-19)
 
 Phase: 1 of 6 (Fundaciones) — complete (plans 01-01, 01-02, 01-03; 01-04 deferred)
 Next: Phase 2 (Caso de Seguro) — not yet planned
-Last activity: 2026-08-25 — Fase 1 completa y verificada en produccion
+Last activity: 2026-08-27 - Completed quick task 260827-rxx: Fix RLS policy casos_fotos_insert: storage.foldername(name)[3] never matches, breaks photo uploads en produccion
 
 Progress: [██░░░░░░░░] ~17%
 
@@ -75,6 +75,12 @@ Recent decisions affecting current work:
 
 - Detalle exacto de plantillas de mail por aseguradora — a definir en discuss-phase de la Fase 2, no bloquea el arranque
 - Campos finales de cada una de las 3 fichas — base sólida ya definida desde las fotos originales, puede afinarse en discuss-phase
+
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 260827-rxx | Fix RLS policy casos_fotos_insert: storage.foldername(name)[3] never matches, breaks photo uploads en produccion | 2026-08-27 | e5927d6 | [260827-rxx-fix-rls-policy-casos-fotos-insert-storag](./quick/260827-rxx-fix-rls-policy-casos-fotos-insert-storag/) |
 
 ## Deferred Items
 
