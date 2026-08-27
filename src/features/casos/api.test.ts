@@ -82,6 +82,7 @@ describe('api', () => {
       turno_fecha: null,
       orden_ingreso_numero: null,
       ingresado_at: null,
+      created_by: 'user-1',
     })
     expect(from).toHaveBeenCalledWith('casos')
     expect(insert).toHaveBeenCalled()

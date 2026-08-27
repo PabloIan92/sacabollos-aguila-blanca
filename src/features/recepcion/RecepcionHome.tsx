@@ -1,15 +1,16 @@
 import { Calendar } from 'lucide-react'
+import { useNavigate } from 'react-router'
 import { EmptyState } from '../../ui/EmptyState'
 import { PrimaryButton } from '../../ui/PrimaryButton'
 
 export function RecepcionHome() {
+  const navigate = useNavigate()
+
   return (
     <div style={{ padding: '24px' }}>
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <h1 className="font-display text-2xl font-bold uppercase">Turnos de hoy</h1>
-        <PrimaryButton disabled title="Disponible en la próxima entrega">
-          Nuevo caso
-        </PrimaryButton>
+        <PrimaryButton onClick={() => navigate('/casos/nuevo')}>Nuevo caso</PrimaryButton>
       </div>
       <EmptyState
         icon={Calendar}

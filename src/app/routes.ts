@@ -12,7 +12,7 @@ export type NavItem = {
 export const navItems: NavItem[] = [
   { to: '/', label: 'Casos', icon: ClipboardList, roles: ['dueno', 'taller'], available: true },
   { to: '/', label: 'Turnos', icon: Calendar, roles: ['recepcion'], available: true },
-  { to: '/casos', label: 'Casos', icon: ClipboardList, roles: ['recepcion'], available: false },
+  { to: '/casos', label: 'Casos', icon: ClipboardList, roles: ['recepcion'], available: true },
   { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['dueno'], available: false },
   { to: '/invitar', label: 'Invitar', icon: UserPlus, roles: ['dueno', 'recepcion'], available: false },
 ]

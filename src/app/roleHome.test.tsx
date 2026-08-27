@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
+import { MemoryRouter, Routes, Route } from 'react-router'
 import { RoleHome } from './roleHome'
 import { useAuth } from '../auth/useAuth'
 
@@ -17,6 +18,17 @@ function mockProfile(role: 'dueno' | 'recepcion' | 'taller') {
   } as unknown as ReturnType<typeof useAuth>)
 }
 
+function renderRoleHome() {
+  return render(
+    <MemoryRouter initialEntries={['/']}>
+      <Routes>
+        <Route path="/" element={<RoleHome />} />
+        <Route path="/casos/nuevo" element={<div>NUEVO CASO</div>} />
+      </Routes>
+    </MemoryRouter>
+  )
+}
+
 afterEach(() => {
   vi.clearAllMocks()
 })
@@ -24,7 +36,7 @@ afterEach(() => {
 describe('RoleHome', () => {
   it('con rol dueno, renderiza DuenoHome y ninguna otra', () => {
     mockProfile('dueno')
-    render(<RoleHome />)
+    renderRoleHome()
     expect(screen.getByText('Todavía no hay casos cargados')).toBeInTheDocument()
     expect(screen.queryByText('No hay turnos para hoy')).not.toBeInTheDocument()
     expect(screen.queryByText('No hay casos en el taller todavía')).not.toBeInTheDocument()
@@ -32,7 +44,7 @@ describe('RoleHome', () => {
 
   it('con rol recepcion, renderiza RecepcionHome y ninguna otra', () => {
     mockProfile('recepcion')
-    render(<RoleHome />)
+    renderRoleHome()
     expect(screen.getByText('No hay turnos para hoy')).toBeInTheDocument()
     expect(screen.queryByText('Todavía no hay casos cargados')).not.toBeInTheDocument()
     expect(screen.queryByText('No hay casos en el taller todavía')).not.toBeInTheDocument()
@@ -40,17 +52,19 @@ describe('RoleHome', () => {
 
   it('con rol taller, renderiza TallerHome y ninguna otra', () => {
     mockProfile('taller')
-    render(<RoleHome />)
+    renderRoleHome()
     expect(screen.getByText('No hay casos en el taller todavía')).toBeInTheDocument()
     expect(screen.queryByText('Todavía no hay casos cargados')).not.toBeInTheDocument()
     expect(screen.queryByText('No hay turnos para hoy')).not.toBeInTheDocument()
   })
 
-  it('el acceso a caso nuevo de recepción está deshabilitado y no es navegable', () => {
+  it('el acceso a caso nuevo de recepción ya está habilitado y navega a /casos/nuevo', () => {
     mockProfile('recepcion')
-    render(<RoleHome />)
+    renderRoleHome()
     const boton = screen.getByRole('button', { name: 'Nuevo caso' })
-    expect(boton).toBeDisabled()
-    expect(boton.closest('a')).toBeNull()
+    expect(boton).not.toBeDisabled()
+
+    fireEvent.click(boton)
+    expect(screen.getByText('NUEVO CASO')).toBeInTheDocument()
   })
 })

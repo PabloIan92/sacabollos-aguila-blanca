@@ -4,6 +4,9 @@ import { RequireRole } from '../auth/RequireRole'
 import { RedirectIfAuthenticated } from '../auth/RedirectIfAuthenticated'
 import { AppShell } from '../layout/AppShell'
 import { RoleHome } from './roleHome'
+import { CasosListPage } from '../features/casos/CasosListPage'
+import { CasoNuevoPage } from '../features/casos/CasoNuevoPage'
+import { FichaInspeccionPage } from '../features/casos/FichaInspeccionPage'
 
 const router = createBrowserRouter([
   {
@@ -19,7 +22,17 @@ const router = createBrowserRouter([
     children: [
       {
         element: <AppShell />,
-        children: [{ index: true, element: <RoleHome /> }],
+        children: [
+          { index: true, element: <RoleHome /> },
+          {
+            element: <RequireRole roles={['recepcion']} />,
+            children: [
+              { path: '/casos', element: <CasosListPage /> },
+              { path: '/casos/nuevo', element: <CasoNuevoPage /> },
+              { path: '/casos/:id/ficha-inspeccion', element: <FichaInspeccionPage /> },
+            ],
+          },
+        ],
       },
     ],
   },

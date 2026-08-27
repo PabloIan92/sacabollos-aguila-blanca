@@ -23,12 +23,12 @@ describe('navItemsForRole', () => {
     }
   })
 
-  it('marca Facturación, el Casos de recepción y Invitar como no disponibles todavía', () => {
+  it('marca Facturación e Invitar como no disponibles todavía; Casos de recepción ya está disponible', () => {
     const dueno = navItemsForRole('dueno')
     expect(dueno.find((item) => item.label === 'Facturación')?.available).toBe(false)
     expect(dueno.find((item) => item.label === 'Invitar')?.available).toBe(false)
 
     const recepcion = navItemsForRole('recepcion')
-    expect(recepcion.find((item) => item.to === '/casos')?.available).toBe(false)
+    expect(recepcion.find((item) => item.to === '/casos')?.available).toBe(true)
   })
 })

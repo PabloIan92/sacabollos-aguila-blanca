@@ -14,7 +14,7 @@ export async function getCaso(id: string) {
 }
 
 export async function createCaso(
-  datos: Omit<Caso, 'id' | 'estado' | 'created_at' | 'updated_at' | 'estado_changed_at' | 'created_by'>
+  datos: Omit<Caso, 'id' | 'estado' | 'created_at' | 'updated_at' | 'estado_changed_at'>
 ) {
   const { data, error } = await supabase.from('casos').insert(datos).select().single()
   if (error) throw error
