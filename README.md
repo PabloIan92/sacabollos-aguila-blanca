@@ -189,6 +189,21 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 
 ---
 
+## Changelog — Sesión 2026-08-26 (Fase 2, plan 02-01 completo)
+
+**Objetivo:** cerrar la Task 3 pendiente del plan `02-01` (compresión de imágenes + hook de fotos de casos), con lo que las 3 tasks del plan quedan completas.
+
+### Qué se hizo
+- `src/lib/imageCompression.ts` — `compressToWebP()` (compresión nativa a WebP vía `createImageBitmap` + `OffscreenCanvas`, sin dependencias externas, máx. 1920px / calidad 0.8) y `buildFotoPath()` (formador único del path `casos/{caseId}/{angulo}.webp`, reusado también por el plan 02-03 con el prefijo `ingreso-`).
+- `src/features/casos/hooks/useCasoFotos.ts` — hook `useCasoFotos()` con `uploadFoto()` (comprime y sube al bucket privado `casos-fotos`) y `listFotos()` (URLs firmadas por ángulo, 1 hora de expiración; omite del mapa los ángulos sin foto subida en vez de tirar error).
+- `npm run build`, `npm run test` (35 tests) y `npm run typecheck` en verde.
+- Ver `.planning/phases/02-caso-de-seguro/02-01-SUMMARY.md` para el detalle completo del plan (tasks 1-3).
+
+### Qué falta
+Los planes `02-02` (alta de caso + ficha de inspección), `02-03` (turno + ficha de ingreso) y `02-04` (semáforo + Realtime en las 3 home) siguen pendientes de ejecutar — son secuenciales y ya están escritos en `.planning/`.
+
+---
+
 ## Changelog — Sesión 2026-08-25 (Fase 1 cerrada de punta a punta)
 
 **Objetivo:** terminar Tasks 3 y 4 con las credenciales que fue proveyendo el dueño del proyecto durante la sesión.
