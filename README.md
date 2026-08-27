@@ -189,6 +189,22 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 
 ---
 
+## Changelog — Sesión 2026-08-26 (Fase 2, plan 02-03 completo)
+
+**Objetivo:** ejecutar el plan `02-03` completo (turno coordinado + Ficha de ingreso al taller).
+
+### Qué se hizo
+- `CasoDetailPage`: "Marcar orden de trabajo recibida" (`'enviado a la aseguradora'` → `'aprobado'`) y confirmación de turno (`'aprobado'` → `'turno coordinado'`, guarda `turno_fecha`). Ningún otro estado muestra controles.
+- `RecepcionHome`: la agenda "Turnos de hoy" ahora es real (filtra `listCasos()` por `turno_fecha` de hoy, ordenado por hora), reemplazando el `EmptyState` fijo de la Fase 1.
+- `FichaIngresoPage` (Ficha 2): solo accesible con sentido para casos en `'turno coordinado'`; reusa `FotoUploader` con los 4 ángulos `ingreso-*` sin pisar las fotos de la Ficha de inspección; "Registrar ingreso" bloqueado hasta 4 fotos + número de orden; confirma y pasa el caso a `'ingresado'`.
+- `npm run build` y `npm run test` (58 tests, 3 corridas seguidas) en verde. Ver `.planning/phases/02-caso-de-seguro/02-03-SUMMARY.md`.
+
+### Qué falta
+- Verificación humana de punta a punta en la app real (turno → ingreso → 4 fotos propias sin pisar las de inspección), no ejecutable desde este entorno.
+- El plan `02-04` (semáforo de estado + Realtime en las 3 home) sigue pendiente.
+
+---
+
 ## Changelog — Sesión 2026-08-26 (Fase 2, plan 02-02 completo)
 
 **Objetivo:** ejecutar el plan `02-02` completo (alta de caso de Seguro + Ficha de inspección pre-ingreso).
