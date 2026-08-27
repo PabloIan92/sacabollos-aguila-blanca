@@ -23,10 +23,11 @@ export function CasosList({ casos }: { casos: Caso[] }) {
         {casos.map((caso) => {
           const dias = diasEnEtapa(caso)
           const trabado = dias >= DIAS_TRABADO
+          const destino = caso.estado === 'borrador' ? `/casos/${caso.id}/ficha-inspeccion` : `/casos/${caso.id}`
           return (
             <tr key={caso.id} className="border-b border-steel-300">
               <td className="p-2">
-                <Link to={`/casos/${caso.id}`} className="text-blue underline">
+                <Link to={destino} className="text-blue underline">
                   {caso.patente}
                 </Link>
               </td>

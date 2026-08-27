@@ -7,6 +7,7 @@ import { listCasos } from '../features/casos/api'
 
 vi.mock('../auth/useAuth')
 vi.mock('../features/casos/api')
+vi.mock('../features/casos/hooks/useCasoRealtime')
 
 const mockedUseAuth = vi.mocked(useAuth)
 const mockedListCasos = vi.mocked(listCasos)
@@ -41,10 +42,10 @@ afterEach(() => {
 })
 
 describe('RoleHome', () => {
-  it('con rol dueno, renderiza DuenoHome y ninguna otra', () => {
+  it('con rol dueno, renderiza DuenoHome y ninguna otra', async () => {
     mockProfile('dueno')
     renderRoleHome()
-    expect(screen.getByText('Todavía no hay casos cargados')).toBeInTheDocument()
+    expect(await screen.findByText('Todavía no hay casos cargados')).toBeInTheDocument()
     expect(screen.queryByText('No hay turnos para hoy')).not.toBeInTheDocument()
     expect(screen.queryByText('No hay casos en el taller todavía')).not.toBeInTheDocument()
   })
@@ -57,10 +58,10 @@ describe('RoleHome', () => {
     expect(screen.queryByText('No hay casos en el taller todavía')).not.toBeInTheDocument()
   })
 
-  it('con rol taller, renderiza TallerHome y ninguna otra', () => {
+  it('con rol taller, renderiza TallerHome y ninguna otra', async () => {
     mockProfile('taller')
     renderRoleHome()
-    expect(screen.getByText('No hay casos en el taller todavía')).toBeInTheDocument()
+    expect(await screen.findByText('No hay casos en el taller todavía')).toBeInTheDocument()
     expect(screen.queryByText('Todavía no hay casos cargados')).not.toBeInTheDocument()
     expect(screen.queryByText('No hay turnos para hoy')).not.toBeInTheDocument()
   })

@@ -6,6 +6,7 @@ import { listCasos } from './api'
 import type { Caso } from './types'
 
 vi.mock('./api')
+vi.mock('./hooks/useCasoRealtime')
 
 const mockedListCasos = vi.mocked(listCasos)
 
@@ -61,12 +62,12 @@ describe('CasosListPage', () => {
     expect(await screen.findByText('No hay casos todavía')).toBeInTheDocument()
   })
 
-  it('lista los casos con patente, cliente y estado', async () => {
+  it('lista los casos con patente, cliente y su semáforo de estado', async () => {
     mockedListCasos.mockResolvedValue([caso({ estado: 'aprobado' })])
     renderPage()
     expect(await screen.findByText('AA123BB')).toBeInTheDocument()
     expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
-    expect(screen.getByText('aprobado')).toBeInTheDocument()
+    expect(screen.getByText('Turno Coordinado')).toBeInTheDocument()
   })
 
   it('un caso en borrador navega a la ficha de inspección al hacer click', async () => {
