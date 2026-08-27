@@ -2,10 +2,18 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-1%20Fundaciones-blue)
-![Status](https://img.shields.io/badge/Status-Fase%201%20completa-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-2%20Caso%20de%20Seguro-blue)
+![Status](https://img.shields.io/badge/Status-Fase%202%20funcionalmente%20completa-brightgreen)
 
-## Estado actual: Fase 1 - Fundaciones — COMPLETA
+## Estado actual: Fase 2 - Caso de Seguro — funcionalmente completa (2026-08-27)
+
+Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados y pusheados: alta de caso → ficha de inspección → envío a la aseguradora → orden recibida → turno → ficha de ingreso → semáforo visual de 9 etapas con actualización en tiempo real para los 3 roles. Ver el changelog de la sesión 2026-08-26/27 más abajo para el detalle, y `.planning/phases/02-caso-de-seguro/02-04-SUMMARY.md` para el cierre formal del plan.
+
+**Único pendiente real:** las verificaciones humanas de punta a punta de los planes `02-02`, `02-03` y `02-04` (no ejecutables desde este entorno) — build, typecheck y 76 tests automatizados están en verde.
+
+---
+
+## Estado histórico: Fase 1 - Fundaciones — COMPLETA
 
 **Completado (Tasks 1-2):**
 - Gate de legitimidad de 6 paquetes npm auditados "too-new" ✅
@@ -186,6 +194,22 @@ El dueño pidió 3 mejoras sobre la Planilla de Control que por ahora **solo exi
 3. **Buscador por patente y cliente** — input con normalización de acentos (`normalizeText()` en el prototipo) que filtra el listado en tiempo real, combinado con los filtros de canal y "solo trabados" ya existentes.
 
 Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b222` (alerta 7 días + gradiente), `26e8c69` (caso de ejemplo), `aedad37` (buscador).
+
+---
+
+## Changelog — Sesión 2026-08-26/27 (Fase 2, plan 02-04 completo — Fase 2 funcionalmente cerrada)
+
+**Objetivo:** ejecutar el plan `02-04` completo (semáforo visual de 9 etapas + Realtime en las 3 home), cerrando el flujo de punta a punta de la Fase 2.
+
+### Qué se hizo
+- `SemaforoBadge`: reproduce fielmente `STAGES`/`stateMapping` de `docs/tablero.html` para los 13 estados (9 etapas, 6 `kind`), con los sentinelas `cobrado`/`cancelado` tratados aparte para no indexar el array fuera de rango.
+- `CasosList`: lista compartida con semáforo + alerta de días trabado (≥5 días sin cambiar de etapa), reutilizada tal cual por Dueño, Taller y Recepción — ninguna de las 3 home vuelve a definir su propia fila de caso.
+- `useCasoRealtime`: un solo canal de Supabase Realtime por sesión; `DuenoHome`, `TallerHome` y `CasosListPage` actualizan su lista en memoria sin recargar cuando cualquiera avanza un caso. `TallerHome` filtra `cobrado`/`cancelado` en el cliente.
+- `npm run build` y `npm run test` (76 tests, 3 corridas seguidas) en verde. Ver `.planning/phases/02-caso-de-seguro/02-04-SUMMARY.md`.
+
+### Qué falta
+- Verificación humana de punta a punta (semáforo actualizándose entre pestañas/dispositivos, filtro de taller, alerta de días trabado con datos reales), no ejecutable desde este entorno.
+- Con esto, la **Fase 2 (Caso de Seguro) queda funcionalmente completa** de alta a semáforo visible; solo faltan las verificaciones humanas acumuladas de los planes 02-02, 02-03 y 02-04.
 
 ---
 
