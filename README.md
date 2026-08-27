@@ -189,6 +189,22 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 
 ---
 
+## Changelog — Sesión 2026-08-26 (Fase 2, plan 02-02 completo)
+
+**Objetivo:** ejecutar el plan `02-02` completo (alta de caso de Seguro + Ficha de inspección pre-ingreso).
+
+### Qué se hizo
+- `CasoNuevoPage` (formulario de alta con las 6 aseguradoras fijas de D-18) + `CasosListPage` (listado real en `/casos`, reemplaza el item de menú deshabilitado desde la Fase 1). Botón "Nuevo caso" de `RecepcionHome` cableado.
+- `FichaInspeccionPage` con `DamageCheckboxes` (10 zonas de D-17) y `FotoUploader` (4 fotos obligatorias, D-16): "Guardar ficha de inspección" bloqueado hasta subir las 4, "Marcar como enviado a la aseguradora" (D-15) bloqueado hasta guardar, sin disparar ningún mail.
+- Fix de tipo en `createCaso()` (`api.ts`, plan 02-01): no aceptaba `created_by`, pero la política RLS de insert lo exige explícito en el payload.
+- `npm run build`, `npm run test` (47 tests, corridos 3 veces para descartar flakiness) en verde. Ver `.planning/phases/02-caso-de-seguro/02-02-SUMMARY.md`.
+
+### Qué falta
+- Verificación humana de punta a punta en la app real (crear caso → 4 fotos → guardar → marcar enviado → ver estado en `/casos`), no ejecutable desde este entorno.
+- Los planes `02-03` (turno + ficha de ingreso) y `02-04` (semáforo + Realtime) siguen pendientes.
+
+---
+
 ## Changelog — Sesión 2026-08-26 (Fase 2, plan 02-01 completo)
 
 **Objetivo:** cerrar la Task 3 pendiente del plan `02-01` (compresión de imágenes + hook de fotos de casos), con lo que las 3 tasks del plan quedan completas.
