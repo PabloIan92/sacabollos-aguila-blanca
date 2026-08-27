@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { Ficha } from '../../ui/Ficha'
 import { PrimaryButton } from '../../ui/PrimaryButton'
 import { getCaso, updateCasoEstado } from './api'
@@ -11,6 +11,7 @@ const inputClassName =
 
 export function CasoDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
 
   const [caso, setCaso] = useState<Caso | null>(null)
   const [turnoFecha, setTurnoFecha] = useState('')
@@ -85,6 +86,12 @@ export function CasoDetailPage() {
             Confirmar turno
           </PrimaryButton>
         </Ficha>
+      )}
+
+      {caso.estado === 'turno coordinado' && (
+        <PrimaryButton onClick={() => navigate(`/casos/${caseId}/ficha-ingreso`)}>
+          Registrar ingreso al taller
+        </PrimaryButton>
       )}
     </div>
   )

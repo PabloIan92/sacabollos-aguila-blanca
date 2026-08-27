@@ -43,6 +43,7 @@ function renderPage(id = 'caso-1') {
     <MemoryRouter initialEntries={[`/casos/${id}`]}>
       <Routes>
         <Route path="/casos/:id" element={<CasoDetailPage />} />
+        <Route path="/casos/:id/ficha-ingreso" element={<div>FICHA INGRESO PLACEHOLDER</div>} />
       </Routes>
     </MemoryRouter>
   )
@@ -87,6 +88,20 @@ describe('CasoDetailPage', () => {
         turno_fecha: new Date('2026-03-01T10:30').toISOString(),
       })
     )
+  })
+
+  it('en "turno coordinado" muestra el botón de registrar ingreso y navega a ficha de ingreso', async () => {
+    mockedGetCaso.mockResolvedValue(caso({ estado: 'turno coordinado' }))
+    renderPage()
+
+    const boton = await screen.findByRole('button', { name: 'Registrar ingreso al taller' })
+    expect(
+      screen.queryByRole('button', { name: 'Marcar orden de trabajo recibida' })
+    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Turno')).not.toBeInTheDocument()
+
+    fireEvent.click(boton)
+    await screen.findByText('FICHA INGRESO PLACEHOLDER')
   })
 
   it('en cualquier otro estado no muestra ningún control de transición', async () => {
