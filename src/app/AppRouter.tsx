@@ -8,6 +8,7 @@ import { CasosListPage } from '../features/casos/CasosListPage'
 import { CasoNuevoPage } from '../features/casos/CasoNuevoPage'
 import { FichaInspeccionPage } from '../features/casos/FichaInspeccionPage'
 import { CasoDetailPage } from '../features/casos/CasoDetailPage'
+import { FichaIngresoPage } from '../features/casos/FichaIngresoPage'
 
 const router = createBrowserRouter([
   {
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
               { path: '/casos/nuevo', element: <CasoNuevoPage /> },
               { path: '/casos/:id', element: <CasoDetailPage /> },
               { path: '/casos/:id/ficha-inspeccion', element: <FichaInspeccionPage /> },
+              { path: '/casos/:id/ficha-ingreso', element: <FichaIngresoPage /> },
             ],
           },
         ],
