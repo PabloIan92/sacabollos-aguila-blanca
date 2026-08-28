@@ -27,9 +27,9 @@ See: .planning/PROJECT.md (updated 2026-08-19)
 
 Phase: 1 of 6 (Fundaciones) — complete (plans 01-01, 01-02, 01-03; 01-04 deferred)
 Next: Phase 2 (Caso de Seguro) — not yet planned
-Last activity: 2026-08-27 - Completed quick task 260827-rxx: Fix RLS policy casos_fotos_insert: storage.foldername(name)[3] never matches, breaks photo uploads en produccion
+Last activity: 2026-08-27 - Completed quick task 260827-six: Add navigation link to Ficha de Ingreso from CasoDetailPage for casos en 'turno coordinado'
 
-Progress: [██░░░░░░░░] ~17%
+Progress: [███░░░░░░░] ~25%
 
 ## Performance Metrics
 
@@ -81,6 +81,7 @@ Recent decisions affecting current work:
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260827-rxx | Fix RLS policy casos_fotos_insert: storage.foldername(name)[3] never matches, breaks photo uploads en produccion | 2026-08-27 | e5927d6 | [260827-rxx-fix-rls-policy-casos-fotos-insert-storag](./quick/260827-rxx-fix-rls-policy-casos-fotos-insert-storag/) |
+| 260827-six | Add navigation link to Ficha de Ingreso from CasoDetailPage for casos en 'turno coordinado' | 2026-08-27 | 3c33d49 | [260827-six-add-missing-navigation-link-to-casos-id-](./quick/260827-six-add-missing-navigation-link-to-casos-id-/) |
 
 ## Deferred Items
 
