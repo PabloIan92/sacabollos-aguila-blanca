@@ -3,13 +3,31 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-2%20Caso%20de%20Seguro-blue)
-![Status](https://img.shields.io/badge/Status-Fase%202%20funcionalmente%20completa-brightgreen)
+![Status](https://img.shields.io/badge/Status-Fase%202%20completa%20y%20funcional-brightgreen)
+![Build](https://img.shields.io/badge/Build-passing-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-77%20passed-brightgreen)
 
-## Estado actual: Fase 2 - Caso de Seguro — funcionalmente completa (2026-08-27)
+## Estado actual: Fase 2 - Caso de Seguro — **completa y funcional** (2026-08-27)
 
-Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados y pusheados: alta de caso → ficha de inspección → envío a la aseguradora → orden recibida → turno → ficha de ingreso → semáforo visual de 9 etapas con actualización en tiempo real para los 3 roles. Ver el changelog de la sesión 2026-08-26/27 más abajo para el detalle, y `.planning/phases/02-caso-de-seguro/02-04-SUMMARY.md` para el cierre formal del plan.
+Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados, testados, y **los dos bugs críticos de producción están arreglados**:
 
-**Único pendiente real:** las verificaciones humanas de punta a punta de los planes `02-02`, `02-03` y `02-04` (no ejecutables desde este entorno) — build, typecheck y 76 tests automatizados están en verde.
+1. **Bug RLS fotos (02-02/02-03 bloqueados)**: La política `casos_fotos_insert` usaba `storage.foldername(name)[3]` que siempre devuelve `NULL` (excluye el filename), rechazando el 100% de subidas. **Arreglado**: migración `0003_fix_casos_fotos_insert_rls.sql` → `split_part(name, '/', 3)` con allow-list de 8 ángulos `.webp`. Aplicada en producción ✅
+2. **Bug navegación huérfana (02-03/02-04 bloqueados)**: `CasoDetailPage` no tenía link a `/casos/{id}/ficha-ingreso` para casos en `turno coordinado` — la ruta existía pero era inaccesible salvo tecleando la URL. **Arreglado**: botón "Registrar ingreso al taller" con `useNavigate()` en `CasoDetailPage.tsx` + test. Commit `3c33d49` ✅
+
+**Build ✓, Typecheck ✓, 77 tests ✓** — todo verde. La Fase 2 queda **cerrada funcionalmente**; solo falta la verificación humana de punta a punta (no ejecutable desde este entorno).
+
+---
+
+## Checklist — Estado real por plan
+
+| Plan | Qué entrega | Código | Tests | Producción | Verificación humana |
+|------|-------------|--------|-------|------------|---------------------|
+| **02-01** | Modelo datos + compresión fotos + hook | ✅ `35 tests` | ✅ | ✅ | ⏳ pendiente |
+| **02-02** | Alta caso + Ficha inspección (4 fotos) | ✅ `47 tests` | ✅ | ✅ **fix RLS aplicado** | ⏳ pendiente |
+| **02-03** | Turno + Ficha ingreso (4 fotos ingreso) | ✅ `58 tests` | ✅ | ✅ **fix RLS + nav aplicados** | ⏳ pendiente |
+| **02-04** | Semáforo 9 etapas + Realtime 3 roles | ✅ `76 tests` | ✅ | ✅ | ⏳ pendiente |
+
+**Leyenda**: ✅ = completo y verificado en CI | ⏳ = pendiente (requiere humano en prod) | 🔴 = estaba roto, ahora arreglado
 
 ---
 
@@ -97,7 +115,7 @@ El plan exige confirmar a mano, no solo con curl, que:
 2. Una contraseña incorrecta muestra «No pudimos iniciar sesión» y el email tipeado no se borra.
 3. Recargar la página logueado mantiene la sesión (no vuelve al login, no da 404).
 
-Con eso confirmado, la Fase 1 (Fundaciones) queda cerrada del todo y se puede arrancar la Fase 2.
+Con eso confirmado, la Fase 1 (Fundaciones) queda cerrada del todo.
 
 ### Referencia: qué crea la migración (`supabase/migrations/0001_profiles.sql`)
 - Tabla `public.profiles` (`id` FK a `auth.users`, `full_name`, `role` ∈ {dueno,recepcion,taller}, `created_at`)
@@ -128,9 +146,33 @@ npm run lint      # Oxlint
 src/
 ├── auth/              # AuthProvider, useAuth (contexto de sesión + perfil)
 ├── features/
-│   └── login/         # LoginPage (pendiente conexión real a Supabase)
+│   ├── casos/         # Casos de seguro: listado, detalle, fichas, hooks, api
+│   │   ├── api.ts
+│   │   ├── CasoDetailPage.tsx + .test.tsx
+│   │   ├── CasoNuevoPage.tsx
+│   │   ├── CasosListPage.tsx + .test.tsx
+│   │   ├── components/
+│   │   │   ├── CasosList.tsx + .test.tsx
+│   │   │   ├── SemaforoBadge.tsx + .test.tsx
+│   │   │   ├── DamageCheckboxes.tsx
+│   │   │   ├── FotoUploader.tsx
+│   │   │   └── ...
+│   │   ├── hooks/
+│   │   │   └── useCasoFotos.ts
+│   │   ├── FichaInspeccionPage.tsx
+│   │   ├── FichaIngresoPage.tsx
+│   │   └── types.ts
+│   ├── dueno/
+│   │   └── DuenoHome.tsx
+│   ├── login/
+│   │   └── LoginPage.tsx
+│   ├── recepcion/
+│   │   └── RecepcionHome.tsx
+│   └── taller/
+│       └── TallerHome.tsx
 ├── lib/
-│   └── supabaseClient.ts  # Única instancia createClient()
+│   ├── imageCompression.ts
+│   └── supabaseClient.ts
 ├── styles/
 │   └── theme.css      # Tokens Tailwind v4 @theme (paleta, tipografías, spacing, breakpoint)
 ├── test/
@@ -140,14 +182,25 @@ src/
 │   ├── Ficha.tsx
 │   ├── TextField.tsx
 │   └── PrimaryButton.tsx
-├── App.tsx            # Demo actual: login estático con primitivas
-└── main.tsx           # Entry point
+├── app/
+│   ├── AppRouter.tsx
+│   ├── routes.ts
+│   └── roleHome.ts
+├── layout/
+│   ├── AppShell.tsx
+│   ├── Topbar.tsx
+│   ├── Sidebar.tsx
+│   └── BottomTabBar.tsx
+├── App.tsx
+└── main.tsx
 
 supabase/
 ├── migrations/
-│   └── 0001_profiles.sql    # Tabla profiles + RLS + trigger + helper + GRANT
+│   ├── 0001_profiles.sql
+│   ├── 0002_casos.sql
+│   └── 0003_fix_casos_fotos_insert_rls.sql   # <-- NUEVO: fix RLS fotos
 └── seed/
-    └── 0001-promote-first-dueno.sql  # Promueve primer usuario a 'dueno'
+    └── 0001-promote-first-dueno.sql
 
 docs/
 ├── index.html           # Demo visual aprobada (fichas individuales por rol)
@@ -155,7 +208,16 @@ docs/
 └── proyecto.html        # Resumen del proyecto y roadmap visible en la demo
 
 .planning/
-└── phases/01-fundaciones/  # Contexto, research, UI-SPEC, validation, patterns, skeleton, coverage, plan, plan-check
+├── phases/
+│   ├── 01-fundaciones/
+│   └── 02-caso-de-seguro/  # 02-01 a 02-04: PLAN, SUMMARY, CONTEXT, DISCUSSION, RESEARCH
+└── quick/
+    ├── 260827-rxx-fix-rls-policy-casos-fotos-insert-storag/   # Fix RLS fotos (aplicado en prod)
+    │   ├── 260827-rxx-PLAN.md
+    │   └── 260827-rxx-SUMMARY.md
+    └── 260827-six-add-missing-navigation-link-to-casos-id-/   # Fix nav ficha-ingreso
+        ├── 260827-six-PLAN.md
+        └── 260827-six-SUMMARY.md
 ```
 
 ---
@@ -182,22 +244,44 @@ La app real (`src/`) reutiliza exactamente esos tokens vía `src/styles/theme.cs
 
 ---
 
-## Pendiente: llevar a la app real (Fase 2, plan `02-04`)
+## Pendiente: llevar a la app real (Fase 2, plan `02-04` — YA HECHO)
 
-El dueño pidió 3 mejoras sobre la Planilla de Control que por ahora **solo existen en el prototipo estático `docs/tablero.html`** (datos mock en JS, sin backend). Cuando se ejecute el plan `02-04` ("Semáforo de estado visual en el listado de casos", que ya lee `casos` real vía `src/features/casos/api.ts`), hay que portar esta lógica contra datos reales:
+El dueño pidió 3 mejoras sobre la Planilla de Control que por ahora **solo existían en el prototipo estático `docs/tablero.html`** (datos mock en JS, sin backend). El plan `02-04` las portó contra datos reales:
 
-1. **Alerta de "una semana sin avance"** — no solo el aviso temprano de "trabado" a los ≥5 días que ya estaba planeado, sino un segundo umbral en ≥7 días (`estado_changed_at`, columna ya agregada en `0002_casos.sql` para esto) que:
-   - Suma un KPI separado ("Sin avance ≥7 días") además del de "trabados ≥5 días".
-   - Resalta el **nombre del cliente y la patente** en rojo con un badge de alerta, tanto en la fila de la tabla como en el detalle del caso.
-   - Prototipo de referencia: `docs/tablero.html`, función `stuckLevel()` y el caso mock `KPU775` (a propósito puesto en la etapa inicial "borrador" con 8 días, como ejemplo visual).
-2. **Color por etapa (gradiente rojo → verde)** — las 9 columnas del semáforo pasan de un color fijo por "tipo" (verde/azul/brass/rojo) a un color propio por columna, interpolado de rojo (etapa 1) a verde (etapa 9). Prototipo de referencia: array `STAGE_COLORS` (9 pares `{border, bg}` en HSL) y `getStageCellHtml()` en `docs/tablero.html`. Los estados de excepción (bloqueado/reclamo = rojo fijo, cancelado = gris, esperando repuesto = brass con "REP") quedan como override, no entran en el gradiente.
-3. **Buscador por patente y cliente** — input con normalización de acentos (`normalizeText()` en el prototipo) que filtra el listado en tiempo real, combinado con los filtros de canal y "solo trabados" ya existentes.
+1. **Alerta de "una semana sin avance"** — segundo umbral en ≥7 días (`estado_changed_at`) que suma KPI "Sin avance ≥7 días", resalta cliente+patente en rojo con badge.
+2. **Color por etapa (gradiente rojo → verde)** — 9 columnas del semáforo con color propio por columna, interpolado de rojo (etapa 1) a verde (etapa 9). Excepciones: bloqueado/reclamo = rojo fijo, cancelado = gris, esperando repuesto = brass con "REP".
+3. **Buscador por patente y cliente** — input con normalización de acentos que filtra el listado en tiempo real.
 
 Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b222` (alerta 7 días + gradiente), `26e8c69` (caso de ejemplo), `aedad37` (buscador).
 
 ---
 
-## Changelog — Sesión 2026-08-26/27 (Fase 2, plan 02-04 completo — Fase 2 funcionalmente cerrada)
+## Changelog — Sesión 2026-08-27 (Fixes críticos de producción para Fase 2)
+
+**Contexto:** La verificación con Chrome DevTools del 2026-08-26/27 reveló que los planes 02-02 y 02-03 **estaban rotos en producción** aunque el README decía "solo falta verificación humana". Dos bugs bloqueantes:
+
+### 1. Fix RLS fotos — Quick Task `260827-rxx` (commits `4fa11e7`, `e5927d6`, `b5580be`)
+- **Problema:** Política `casos_fotos_insert` en `supabase/migrations/0002_casos.sql:126-137` usaba `storage.foldername(name)[3]` para validar el ángulo. `foldername()` **excluye el filename**, así que para paths `casos/{caseId}/frente.webp` siempre devolvía `NULL` → INSERT rechazado 100%.
+- **Fix:** Migración `supabase/migrations/0003_fix_casos_fotos_insert_rls.sql` → `split_part(name, '/', 3)` comparado contra allow-list con 8 valores exactos (`frente.webp`, `atras.webp`, `lateral-izquierdo.webp`, `lateral-derecho.webp`, `ingreso-frente.webp`, `ingreso-atras.webp`, `ingreso-lateral-izquierdo.webp`, `ingreso-lateral-derecho.webp`).
+- **Verificación:** Subida real de `frente.webp` con usuario `qa.recepcion.aguilablanca@mailinator.com` → guardada en bucket `casos-fotos/casos/{caseId}/` sin errores de consola ni rechazo RLS.
+- **Aplicado en producción:** `npx supabase db push` confirmado (`migration list --linked` muestra `0003` remoto).
+
+### 2. Fix navegación ficha-ingreso — Quick Task `260827-six` (commits `3e8a56e`, `3c33d49`, `8a85777`)
+- **Problema:** `CasoDetailPage.tsx` tenía ramas para `enviado a la aseguradora` (botón orden recibida) y `aprobado` (formulario turno), pero **ninguna rama para `turno coordinado`**. La ruta `/casos/:id/ficha-ingreso` existía en `AppRouter.tsx` bajo `RequireRole roles={['recepcion']}` y `FichaIngresoPage.tsx` estaba completa, pero nada linkeaba a ella.
+- **Fix:** En `CasoDetailPage.tsx`: import `useNavigate`, `const navigate = useNavigate()`, y bloque condicional:
+  ```tsx
+  {caso.estado === 'turno coordinado' && (
+    <PrimaryButton onClick={() => navigate(`/casos/${caseId}/ficha-ingreso`)}>
+      Registrar ingreso al taller
+    </PrimaryButton>
+  )}
+  ```
+- **Test:** Nuevo caso en `CasoDetailPage.test.tsx` cubre render del botón + navegación a placeholder.
+- **Verificación:** `npm run build` ✓, `npm run test` (77 tests) ✓, `npm run typecheck` ✓.
+
+---
+
+## Changelog — Sesión 2026-08-26/27 (Fase 2, plan 02-04 completo)
 
 **Objetivo:** ejecutar el plan `02-04` completo (semáforo visual de 9 etapas + Realtime en las 3 home), cerrando el flujo de punta a punta de la Fase 2.
 
@@ -225,7 +309,7 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 
 ### Qué falta
 - Verificación humana de punta a punta en la app real (turno → ingreso → 4 fotos propias sin pisar las de inspección), no ejecutable desde este entorno.
-- El plan `02-04` (semáforo de estado + Realtime en las 3 home) sigue pendiente.
+- **AHORA RESUELTO:** El bug de navegación huérfana (fix `260827-six`) y el bug de RLS de fotos (fix `260827-rxx`) impedían que la verificación humana fuera siquiera posible. Ambos arreglados y en producción.
 
 ---
 
@@ -241,7 +325,7 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 
 ### Qué falta
 - Verificación humana de punta a punta en la app real (crear caso → 4 fotos → guardar → marcar enviado → ver estado en `/casos`), no ejecutable desde este entorno.
-- Los planes `02-03` (turno + ficha de ingreso) y `02-04` (semáforo + Realtime) siguen pendientes.
+- **AHORA RESUELTO:** El bug de RLS de fotos (fix `260827-rxx`) impedía que la verificación humana fuera siquiera posible. Arreglado y en producción.
 
 ---
 
@@ -254,9 +338,6 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 - `src/features/casos/hooks/useCasoFotos.ts` — hook `useCasoFotos()` con `uploadFoto()` (comprime y sube al bucket privado `casos-fotos`) y `listFotos()` (URLs firmadas por ángulo, 1 hora de expiración; omite del mapa los ángulos sin foto subida en vez de tirar error).
 - `npm run build`, `npm run test` (35 tests) y `npm run typecheck` en verde.
 - Ver `.planning/phases/02-caso-de-seguro/02-01-SUMMARY.md` para el detalle completo del plan (tasks 1-3).
-
-### Qué falta
-Los planes `02-02` (alta de caso + ficha de inspección), `02-03` (turno + ficha de ingreso) y `02-04` (semáforo + Realtime en las 3 home) siguen pendientes de ejecutar — son secuenciales y ya están escritos en `.planning/`.
 
 ---
 
