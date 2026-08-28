@@ -12,39 +12,28 @@ export function EmptyState({
   icon: LucideIcon
   title: string
   description?: string
-  action?: { label: string; onClick: () => void; variant?: 'filled' | 'tonal' | 'outlined' | 'text' }
+  action?: { label: string; onClick: () => void; variant?: 'primary' | 'secondary' | 'outlined' | 'ghost' | 'destructive' }
   illustration?: React.ReactNode
-  variant?: 'default' | 'warm'
+  variant?: 'default' | 'illustrated'
 }) {
-  if (variant === 'warm') {
+  if (variant === 'illustrated') {
     return (
-      <div
-        className="animate-slide-up max-w-md mx-auto text-center"
-        style={{ padding: '3rem 2rem' }}
-      >
-        <div className="mx-auto mb-6" style={{ width: '96px', height: '96px' }}>
+      <div className="animate-slide-up text-center" style={{ maxWidth: '360px', margin: '0 auto', padding: '3rem 1.5rem' }}>
+        <div className="mx-auto mb-6" style={{ width: '80px', height: '80px' }}>
           {illustration ? (
             illustration
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-primary-container rounded-full">
-              <Icon size={48} strokeWidth={2} className="text-on-primary-container" />
+            <div className="w-full h-full flex items-center justify-center bg-blue-light rounded-2xl">
+              <Icon size={40} strokeWidth={2} className="text-blue" />
             </div>
           )}
         </div>
-        <h2 className="font-display text-headline-small font-bold text-on-surface mb-2">
-          {title}
-        </h2>
+        <h2 className="font-display font-bold text-headline-small text-graphite mb-2">{title}</h2>
         {description && (
-          <p className="text-body-medium text-on-surface-variant mb-6 max-w-sm mx-auto">
-            {description}
-          </p>
+          <p className="text-body-medium text-steel-600 mb-6 max-w-sm mx-auto">{description}</p>
         )}
         {action && (
-          <Button
-            variant={action.variant || 'tonal'}
-            size="md"
-            onClick={action.onClick}
-          >
+          <Button variant={action.variant || 'secondary'} size="md" onClick={action.onClick}>
             {action.label}
           </Button>
         )}
@@ -53,20 +42,12 @@ export function EmptyState({
   }
 
   return (
-    <div
-      className="animate-fade-in border-2 border-dashed border-outline-variant rounded-xl"
-      style={{ background: 'rgba(255,255,255,0.72)', color: '#4e5964', padding: '2.5rem' }}
-    >
-      <Icon size={28} strokeWidth={2} className="mb-2" />
-      <p className="font-sans font-semibold text-body-large mb-1">{title}</p>
-      {description && <p className="font-sans text-body-medium">{description}</p>}
+    <div className="animate-fade-in border-2 border-dashed border-steel-300 rounded-xl bg-steel-50/80" style={{ padding: '2.5rem' }}>
+      <Icon size={28} strokeWidth={2} className="text-steel-400 mb-2" />
+      <p className="font-sans font-semibold text-body-large text-graphite mb-1">{title}</p>
+      {description && <p className="font-sans text-body-medium text-steel-600">{description}</p>}
       {action && (
-        <Button
-          variant={action.variant || 'tonal'}
-          size="sm"
-          onClick={action.onClick}
-          className="mt-4"
-        >
+        <Button variant={action.variant || 'secondary'} size="sm" onClick={action.onClick} className="mt-4">
           {action.label}
         </Button>
       )}

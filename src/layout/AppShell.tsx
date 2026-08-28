@@ -34,9 +34,9 @@ export function AppShell() {
     return (
       <div
         data-testid="shell-loading"
-        className="min-h-screen flex items-center justify-center bg-surface"
+        className="min-h-screen flex items-center justify-center bg-steel-50"
       >
-        <div className="animate-spin w-8 h-8 border-3 border-primary border-t-transparent rounded-full" />
+        <div className="w-8 h-8 border-3 border-blue border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -48,12 +48,8 @@ export function AppShell() {
         body="Volvé a intentar o cerrá sesión y entrá de nuevo."
         actions={
           <>
-            <Button variant="filled" onClick={retryProfile}>
-              Reintentar
-            </Button>
-            <Button variant="outlined" onClick={() => supabase.auth.signOut()}>
-              Cerrar sesión
-            </Button>
+            <Button variant="primary" onClick={retryProfile}>Reintentar</Button>
+            <Button variant="outlined" onClick={() => supabase.auth.signOut()}>Cerrar sesión</Button>
           </>
         }
       />
@@ -65,15 +61,15 @@ export function AppShell() {
   }
 
   return (
-    <div className="min-h-screen bg-surface flex flex-col transition-all duration-medium easing-standard">
+    <div className="min-h-screen bg-steel-50 flex flex-col transition-all duration-medium easing-standard">
       <Topbar profile={profile} />
       <div className="flex flex-1 overflow-hidden">
         {!isTabletOrBelow && <Sidebar role={profile.role} />}
         <main
           className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-medium easing-standard"
           style={{
-            marginLeft: isTabletOrBelow ? 0 : '288px',
-            width: isTabletOrBelow ? '100%' : 'calc(100% - 288px)'
+            marginLeft: isTabletOrBelow ? 0 : '280px',
+            width: isTabletOrBelow ? '100%' : 'calc(100% - 280px)'
           }}
         >
           <Outlet />

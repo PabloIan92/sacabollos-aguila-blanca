@@ -6,7 +6,7 @@ interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'va
   helperText?: string
   leadingIcon?: ReactNode
   trailingIcon?: ReactNode
-  variant?: 'filled' | 'outlined'
+  variant?: 'outlined' | 'filled'
   floatingLabel?: boolean
   maxLength?: number
   counter?: boolean
@@ -51,10 +51,7 @@ const TextFieldComponent = forwardRef<HTMLInputElement, TextFieldProps>(
       <div className={`relative ${className}`}>
         <div className="relative">
           {leadingIcon && (
-            <div
-              className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-              aria-hidden="true"
-            >
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none" aria-hidden="true">
               {leadingIcon}
             </div>
           )}
@@ -63,16 +60,16 @@ const TextFieldComponent = forwardRef<HTMLInputElement, TextFieldProps>(
             htmlFor={inputId}
             className={`
               absolute left-3 top-1/2 -translate-y-1/2
-              text-body-large text-on-surface-variant
+              text-body-medium text-steel-600
               pointer-events-none transition-all duration-fast easing-standard
               origin-left
-              ${floatingLabel && (hasValue || error) ? 'scale-75 -translate-y-7 text-label-large text-primary' : ''}
-              ${floatingLabel && !hasValue && !error ? 'text-body-large' : ''}
-              ${!floatingLabel ? 'text-label-medium uppercase tracking-wide' : ''}
+              ${floatingLabel && (hasValue || error) ? 'scale-75 -translate-y-7 text-label-medium text-blue' : ''}
+              ${floatingLabel && !hasValue && !error ? 'text-body-medium' : ''}
+              ${!floatingLabel ? 'text-label-small uppercase tracking-wide text-steel-500' : ''}
             `}
           >
             {label}
-            {required && <span className="text-error ml-0.5" aria-hidden="true">*</span>}
+            {required && <span className="text-red ml-0.5" aria-hidden="true">*</span>}
           </label>
 
           <input
@@ -87,9 +84,9 @@ const TextFieldComponent = forwardRef<HTMLInputElement, TextFieldProps>(
             value={valueStr}
             className={`
               w-full
-              py-3.5 px-4
-              text-body-large text-on-surface
-              placeholder:text-on-surface-variant/60
+              py-3 px-4
+              text-body-large text-graphite
+              placeholder:text-steel-400
               bg-transparent
               border-0 outline-none
               ${leadingIcon ? 'pl-10' : ''}
@@ -101,10 +98,7 @@ const TextFieldComponent = forwardRef<HTMLInputElement, TextFieldProps>(
           />
 
           {trailingIcon && (
-            <div
-              className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none"
-              aria-hidden="true"
-            >
+            <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none" aria-hidden="true">
               {trailingIcon}
             </div>
           )}
@@ -117,7 +111,7 @@ const TextFieldComponent = forwardRef<HTMLInputElement, TextFieldProps>(
               role={error ? 'alert' : undefined}
               className={`
                 text-body-small transition-colors duration-fast
-                ${error ? 'text-error' : 'text-on-surface-variant'}
+                ${error ? 'text-red' : 'text-steel-500'}
               `}
             >
               {error || helperText}
@@ -125,11 +119,7 @@ const TextFieldComponent = forwardRef<HTMLInputElement, TextFieldProps>(
           )}
 
           {counter && maxLength && (
-            <p
-              id={counterId}
-              className="text-label-small text-on-surface-variant font-mono"
-              aria-live="polite"
-            >
+            <p id={counterId} className="text-label-small text-steel-500 font-mono" aria-live="polite">
               {valueStr.length} / {maxLength}
             </p>
           )}

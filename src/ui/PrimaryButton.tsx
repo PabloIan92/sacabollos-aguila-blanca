@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ForwardRefExoticComponent, type RefAttributes, type ReactNode } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'filled' | 'tonal' | 'outlined' | 'text'
+  variant?: 'primary' | 'secondary' | 'outlined' | 'ghost' | 'destructive'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   leftIcon?: ReactNode
@@ -11,7 +11,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const ButtonComponent = forwardRef<HTMLButtonElement, ButtonProps>(
   ({
-    variant = 'filled',
+    variant = 'primary',
     size = 'md',
     loading = false,
     disabled,
@@ -25,49 +25,50 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonProps>(
     const isDisabled = disabled || loading
 
     const variantClasses = {
-      filled: `
-        bg-primary text-on-primary
-        hover:bg-primary/90
-        active:bg-primary/80
-        focus-visible:ring-2 focus-visible:ring-primary/30
-        disabled:opacity-38 disabled:cursor-not-allowed
+      primary: `
+        bg-blue text-white
+        hover:bg-blue-hover
+        active:bg-navy
+        focus-visible:ring-2 focus-visible:ring-blue/30
+        disabled:opacity-40 disabled:cursor-not-allowed
       `,
-      tonal: `
-        bg-secondary-container text-on-secondary-container
-        hover:bg-secondary-container/90
-        active:bg-secondary-container/80
-        focus-visible:ring-2 focus-visible:ring-secondary/30
-        disabled:opacity-38 disabled:cursor-not-allowed
+      secondary: `
+        bg-steel-100 text-graphite border border-steel-300
+        hover:bg-steel-200 hover:border-steel-400
+        active:bg-steel-300
+        focus-visible:ring-2 focus-visible:ring-steel-400/30
+        disabled:opacity-40 disabled:cursor-not-allowed
       `,
       outlined: `
-        bg-transparent text-primary border border-primary
-        hover:bg-primary/10
-        active:bg-primary/20
-        focus-visible:ring-2 focus-visible:ring-primary/30
-        disabled:opacity-38 disabled:cursor-not-allowed disabled:border-outline-variant disabled:text-on-surface-variant
+        bg-transparent text-blue border-2 border-blue
+        hover:bg-blue-light
+        active:bg-blue-container
+        focus-visible:ring-2 focus-visible:ring-blue/30
+        disabled:opacity-40 disabled:cursor-not-allowed disabled:border-steel-300 disabled:text-steel-500
       `,
-      text: `
-        bg-transparent text-primary
-        hover:bg-primary/10
-        active:bg-primary/20
-        focus-visible:ring-2 focus-visible:ring-primary/30
-        disabled:opacity-38 disabled:cursor-not-allowed
+      ghost: `
+        bg-transparent text-graphite
+        hover:bg-steel-100
+        active:bg-steel-200
+        focus-visible:ring-2 focus-visible:ring-steel-400/30
+        disabled:opacity-40 disabled:cursor-not-allowed
+      `,
+      destructive: `
+        bg-red text-white
+        hover:bg-red-hover
+        active:bg-red-hover
+        focus-visible:ring-2 focus-visible:ring-red/30
+        disabled:opacity-40 disabled:cursor-not-allowed
       `
     }
 
     const sizeClasses = {
-      sm: 'h-8 px-3 text-label-large gap-1.5',
+      sm: 'h-9 px-3 text-label-medium gap-1.5',
       md: 'h-10 px-4 text-label-large gap-2',
-      lg: 'h-12 px-6 text-label-large gap-2'
+      lg: 'h-11 px-5 text-title-small gap-2'
     }
 
-    const iconSizes = {
-      sm: 16,
-      md: 18,
-      lg: 20
-    }
-
-    const IconSize = iconSizes[size]
+    const iconSizes = { sm: 16, md: 18, lg: 20 }
 
     return (
       <button
@@ -77,8 +78,8 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonProps>(
         aria-disabled={isDisabled}
         className={`
           inline-flex items-center justify-center
-          font-sans font-medium
-          rounded-full
+          font-sans font-semibold
+          rounded-lg
           transition-all duration-fast easing-standard
           select-none
           ${variantClasses[variant].trim()}
@@ -89,29 +90,9 @@ const ButtonComponent = forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading ? (
-          <svg
-            className="animate-spin"
-            width={IconSize}
-            height={IconSize}
-            viewBox="0 0 24 24"
-            fill="none"
-            aria-hidden="true"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="3"
-            />
-            <path
-              className="opacity-75"
-              d="M12 2a10 10 0 0 1 10 10"
-              stroke="currentColor"
-              strokeWidth="3"
-              strokeLinecap="round"
-            />
+          <svg className="animate-spin" width={iconSizes[size]} height={iconSizes[size]} viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+            <path className="opacity-75" d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
           </svg>
         ) : (
           <>
@@ -129,7 +110,6 @@ ButtonComponent.displayName = 'Button'
 
 export const Button = ButtonComponent as ForwardRefExoticComponent<ButtonProps & RefAttributes<HTMLButtonElement>>
 
-/* Alias for backwards compatibility */
 interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean
 }
