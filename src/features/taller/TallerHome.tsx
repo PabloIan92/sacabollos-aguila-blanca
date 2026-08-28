@@ -32,7 +32,7 @@ export function TallerHome() {
         <EmptyState
           icon={Wrench}
           title="No hay casos en el taller todavía"
-          body="Los autos en reparación o esperando repuesto van a aparecer acá."
+          description="Los autos en reparación o esperando repuesto van a aparecer acá."
         />
       ) : (
         <CasosList casos={casosActivos} />

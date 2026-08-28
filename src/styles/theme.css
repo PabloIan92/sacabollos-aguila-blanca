@@ -1,6 +1,51 @@
 @import "tailwindcss";
 
 @theme {
+  /* ========================================
+     MATERIAL 3 COLOR SCHEME
+     ======================================== */
+  /* Primary */
+  --color-primary: #1c4f8c;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d6e4ff;
+  --color-on-primary-container: #001d3d;
+
+  /* Secondary */
+  --color-secondary: #4a6173;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d0e4f9;
+  --color-on-secondary-container: #051f33;
+
+  /* Tertiary */
+  --color-tertiary: #6b5a7a;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #f0ddfe;
+  --color-on-tertiary-container: #251631;
+
+  /* Error */
+  --color-error: #c0272d;
+  --color-on-error: #ffffff;
+  --color-error-container: #fcd8da;
+  --color-on-error-container: #410002;
+
+  /* Surface */
+  --color-surface: #fef7ff;
+  --color-on-surface: #1b1d21;
+  --color-surface-container: #f2ecf4;
+  --color-surface-container-high: #e6e0e9;
+  --color-surface-container-highest: #dad4dc;
+  --color-on-surface-variant: #4a4a4a;
+
+  /* Outline */
+  --color-outline: #7d7d7d;
+  --color-outline-variant: #cacaca;
+
+  /* Inverse */
+  --color-inverse-surface: #313131;
+  --color-inverse-on-surface: #f5f0f8;
+  --color-inverse-primary: #a8cfff;
+
+  /* Legacy aliases (compat) */
   --color-graphite: #1b1d21;
   --color-steel-100: #eef1f3;
   --color-steel-300: #d3d9de;
@@ -11,33 +56,174 @@
   --color-green: #3f7d4f;
   --color-gray: #68737d;
 
+  /* ========================================
+     SHAPE TOKENS (Border Radius)
+     ======================================== */
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  /* ========================================
+     ELEVATION SHADOWS (Material 3 layered)
+     ======================================== */
+  /* elevation 1 */
+  --shadow-elevation-1: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1), 0 1px 1px rgba(0,0,0,0.04);
+  /* elevation 2 */
+  --shadow-elevation-2: 0 2px 4px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.04);
+  /* elevation 3 */
+  --shadow-elevation-3: 0 4px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.04);
+  /* elevation 4 */
+  --shadow-elevation-4: 0 6px 12px rgba(0,0,0,0.06), 0 6px 16px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.04);
+  /* elevation 5 */
+  --shadow-elevation-5: 0 8px 16px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.04);
+
+  /* ========================================
+     MOTION TOKENS
+     ======================================== */
+  --duration-fast: 150ms;
+  --duration-medium: 200ms;
+  --duration-slow: 300ms;
+
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --easing-decelerated: cubic-bezier(0, 0, 0.2, 1);
+  --easing-accelerated: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ========================================
+     TYPOGRAPHY SCALE (Material 3)
+     ======================================== */
+  /* Display */
+  --text-display-large: clamp(3.5rem, 5vw + 1rem, 4.5rem);
+  --text-display-medium: clamp(2.8rem, 4vw + 0.5rem, 3.5rem);
+  --text-display-small: clamp(2.25rem, 3vw + 0.5rem, 2.8rem);
+
+  /* Headline */
+  --text-headline-large: clamp(2rem, 2.5vw + 1rem, 2.5rem);
+  --text-headline-medium: clamp(1.75rem, 2vw + 0.75rem, 2rem);
+  --text-headline-small: clamp(1.5rem, 1.5vw + 0.75rem, 1.75rem);
+
+  /* Title */
+  --text-title-large: clamp(1.375rem, 1.25vw + 0.75rem, 1.5rem);
+  --text-title-medium: clamp(1.125rem, 1vw + 0.5rem, 1.25rem);
+  --text-title-small: clamp(1rem, 0.875vw + 0.5rem, 1.125rem);
+
+  /* Body */
+  --text-body-large: 1rem;
+  --text-body-medium: 0.875rem;
+  --text-body-small: 0.75rem;
+
+  /* Label */
+  --text-label-large: 0.875rem;
+  --text-label-medium: 0.75rem;
+  --text-label-small: 0.6875rem;
+
+  /* Font families */
   --font-display: "Oswald", sans-serif;
   --font-sans: "IBM Plex Sans", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 
+  /* Line heights */
+  --leading-tight: 1.2;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* Font weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ========================================
+     Z-INDEX SCALE
+     ======================================== */
+  --z-nav: 100;
+  --z-drawer: 200;
+  --z-modal: 300;
+  --z-snackbar: 400;
+  --z-tooltip: 500;
+
+  /* ========================================
+     BREAKPOINTS
+     ======================================== */
   --breakpoint-tablet: 820px;
 
+  /* ========================================
+     SPACING (keep existing)
+     ======================================== */
   --spacing-1: 4px;
   --spacing-2: 8px;
+  --spacing-3: 12px;
   --spacing-4: 16px;
+  --spacing-5: 20px;
   --spacing-6: 24px;
   --spacing-8: 32px;
+  --spacing-10: 40px;
   --spacing-12: 48px;
   --spacing-16: 64px;
-
-  --shadow-ficha: 6px 6px 0 rgba(27, 29, 33, 0.08);
 }
 
 :root {
-  --color-graphite: #1b1d21;
-  --color-steel-100: #eef1f3;
-  --color-steel-300: #d3d9de;
-  --color-navy: #123a6b;
-  --color-blue: #1c4f8c;
-  --color-red: #c0272d;
-  --color-brass: #b3792f;
-  --color-green: #3f7d4f;
-  --color-gray: #68737d;
+  /* Color scheme for light/dark mode readiness */
+  color-scheme: light dark;
+
+  /* CSS Variables as fallback for non-Tailwind contexts */
+  --color-primary: #1c4f8c;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #d6e4ff;
+  --color-on-primary-container: #001d3d;
+
+  --color-secondary: #4a6173;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d0e4f9;
+  --color-on-secondary-container: #051f33;
+
+  --color-tertiary: #6b5a7a;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #f0ddfe;
+  --color-on-tertiary-container: #251631;
+
+  --color-error: #c0272d;
+  --color-on-error: #ffffff;
+  --color-error-container: #fcd8da;
+  --color-on-error-container: #410002;
+
+  --color-surface: #fef7ff;
+  --color-on-surface: #1b1d21;
+  --color-surface-container: #f2ecf4;
+  --color-surface-container-high: #e6e0e9;
+  --color-surface-container-highest: #dad4dc;
+  --color-on-surface-variant: #4a4a4a;
+
+  --color-outline: #7d7d7d;
+  --color-outline-variant: #cacaca;
+
+  --color-inverse-surface: #313131;
+  --color-inverse-on-surface: #f5f0f8;
+  --color-inverse-primary: #a8cfff;
+
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+
+  --shadow-elevation-1: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.1), 0 1px 1px rgba(0,0,0,0.04);
+  --shadow-elevation-2: 0 2px 4px rgba(0,0,0,0.06), 0 2px 6px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-elevation-3: 0 4px 8px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-elevation-4: 0 6px 12px rgba(0,0,0,0.06), 0 6px 16px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.04);
+  --shadow-elevation-5: 0 8px 16px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.04);
+
+  --duration-fast: 150ms;
+  --duration-medium: 200ms;
+  --duration-slow: 300ms;
+
+  --easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --easing-decelerated: cubic-bezier(0, 0, 0.2, 1);
 }
 
 * {
@@ -45,25 +231,150 @@
 }
 
 html {
-  color-scheme: light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-sans);
-  background:
-    linear-gradient(90deg, rgba(18, 58, 107, 0.04) 1px, transparent 1px) 0 0 / 24px 24px,
-    linear-gradient(0deg, rgba(27, 29, 33, 0.035) 1px, transparent 1px) 0 0 / 24px 24px,
-    var(--color-steel-100);
-  color: var(--color-graphite);
+  font-size: var(--text-body-large);
+  line-height: var(--leading-normal);
+  background-color: var(--color-surface);
+  color: var(--color-on-surface);
+  transition: background-color var(--duration-medium) var(--easing-standard),
+              color var(--duration-medium) var(--easing-standard);
 }
 
-button, a {
-  font: inherit;
+/* Subtle background pattern */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, var(--color-outline-variant) 0.5px, transparent 0);
+  background-size: 24px 24px;
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: -1;
 }
 
-button:focus-visible,
-a:focus-visible {
-  outline: 3px solid var(--color-red);
+/* ========================================
+   GLOBAL FOCUS & SELECTION
+   ======================================== */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+::selection {
+  background-color: var(--color-primary-container);
+  color: var(--color-on-primary-container);
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-outline-variant) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-outline-variant);
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-outline);
+}
+
+/* ========================================
+   ANIMATION UTILITIES
+   ======================================== */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in {
+  animation: fade-in var(--duration-medium) var(--easing-decelerated) forwards;
+}
+
+.animate-slide-up {
+  animation: slide-up var(--duration-medium) var(--easing-decelerated) forwards;
+}
+
+.animate-slide-down {
+  animation: slide-down var(--duration-medium) var(--easing-decelerated) forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in var(--duration-fast) var(--easing-decelerated) forwards;
+}
+
+/* Ripple effect base */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.ripple:active::after {
+  animation: ripple var(--duration-fast) var(--easing-decelerated);
+}
+
+@keyframes ripple {
+  0% { transform: scale(0); opacity: 0.15; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

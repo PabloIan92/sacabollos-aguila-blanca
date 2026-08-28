@@ -45,7 +45,7 @@ export function LoginPage() {
               type="email"
               autoComplete="username"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={setEmail}
               className="mb-4"
             />
             <TextField
@@ -53,7 +53,7 @@ export function LoginPage() {
               type="password"
               autoComplete="current-password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={setPassword}
               className="mb-4"
             />
             {error && (

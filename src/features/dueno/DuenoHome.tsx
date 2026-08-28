@@ -28,7 +28,7 @@ export function DuenoHome() {
         <EmptyState
           icon={ClipboardList}
           title="Todavía no hay casos cargados"
-          body="Los casos que se creen en recepción van a aparecer acá con su semáforo de estado."
+          description="Los casos que se creen en recepción van a aparecer acá con su semáforo de estado."
         />
       ) : (
         <CasosList casos={casos} />

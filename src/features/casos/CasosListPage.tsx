@@ -35,7 +35,7 @@ export function CasosListPage() {
         <EmptyState
           icon={ClipboardList}
           title="No hay casos todavía"
-          body="Cuando dés de alta un caso, va a aparecer en este listado."
+          description="Cuando dés de alta un caso, va a aparecer en este listado."
         />
       ) : (
         <CasosList casos={casos} />

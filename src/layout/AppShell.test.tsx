@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { AppShell } from './AppShell'
 import { useAuth } from '../auth/useAuth'
@@ -111,7 +111,7 @@ describe('AppShell', () => {
     expect(facturacion.closest('a')).toBeNull()
   })
 
-  it('Topbar renderiza nombre, chip de rol y cerrar sesión', () => {
+  it('Topbar renderiza nombre, chip de rol y menú de usuario con cerrar sesión', async () => {
     mockMatchMedia(false)
     mockedUseAuth.mockReturnValue({
       session: {},
@@ -124,6 +124,9 @@ describe('AppShell', () => {
     renderShell()
 
     expect(screen.getByText('Dueño')).toBeInTheDocument()
+    // Abrir menú de usuario
+    const userButton = screen.getByLabelText('Menú de usuario')
+    fireEvent.click(userButton)
     expect(screen.getByText('Cerrar sesión')).toBeInTheDocument()
   })
 
