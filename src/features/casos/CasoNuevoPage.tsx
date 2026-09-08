@@ -82,37 +82,37 @@ export function CasoNuevoPage() {
           <TextField
             label="Cliente"
             value={clienteNombre}
-            onChange={setClienteNombre}
+            onChange={(event) => setClienteNombre(event.target.value)}
             className="mb-4"
           />
           <TextField
             label="Teléfono del cliente"
             value={clienteTelefono}
-            onChange={setClienteTelefono}
+            onChange={(event) => setClienteTelefono(event.target.value)}
             className="mb-4"
           />
           <TextField
             label="Patente"
             value={patente}
-            onChange={setPatente}
+            onChange={(event) => setPatente(event.target.value)}
             className="mb-4"
           />
           <TextField
             label="Marca"
             value={marca}
-            onChange={setMarca}
+            onChange={(event) => setMarca(event.target.value)}
             className="mb-4"
           />
           <TextField
             label="Modelo"
             value={modelo}
-            onChange={setModelo}
+            onChange={(event) => setModelo(event.target.value)}
             className="mb-4"
           />
           <TextField
             label="Color"
             value={color}
-            onChange={setColor}
+            onChange={(event) => setColor(event.target.value)}
             className="mb-4"
           />
 
@@ -137,7 +137,7 @@ export function CasoNuevoPage() {
           <TextField
             label="Número de siniestro"
             value={numeroSiniestro}
-            onChange={setNumeroSiniestro}
+            onChange={(event) => setNumeroSiniestro(event.target.value)}
             className="mb-4"
           />
 
@@ -157,13 +157,13 @@ export function CasoNuevoPage() {
           <TextField
             label="Productor / asesor"
             value={productorNombre}
-            onChange={setProductorNombre}
+            onChange={(event) => setProductorNombre(event.target.value)}
             className="mb-4"
           />
           <TextField
             label="Teléfono del productor"
             value={productorTelefono}
-            onChange={setProductorTelefono}
+            onChange={(event) => setProductorTelefono(event.target.value)}
             className="mb-4"
           />
 

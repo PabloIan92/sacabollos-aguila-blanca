@@ -58,7 +58,7 @@ export function FichaIngresoPage() {
         <TextField
           label="Número de orden de ingreso"
           value={ordenIngresoNumero}
-          onChange={setOrdenIngresoNumero}
+          onChange={(event) => setOrdenIngresoNumero(event.target.value)}
         />
       </Ficha>
 

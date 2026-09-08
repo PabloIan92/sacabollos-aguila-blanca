@@ -5,16 +5,13 @@ import { Topbar } from './Topbar'
 import { Sidebar } from './Sidebar'
 import { BottomTabBar } from './BottomTabBar'
 import { FullScreenError } from '../ui/FullScreenError'
-import { Button } from '../ui/PrimaryButton'
+import { PrimaryButton } from '../ui/PrimaryButton'
 import { supabase } from '../lib/supabaseClient'
 
 const TABLET_QUERY = '(max-width: 820px)'
 
 function useIsTabletOrBelow() {
-  const [matches, setMatches] = useState(() => {
-    if (typeof window === 'undefined') return false
-    return window.matchMedia(TABLET_QUERY).matches
-  })
+  const [matches, setMatches] = useState(() => window.matchMedia(TABLET_QUERY).matches)
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia(TABLET_QUERY)
@@ -31,14 +28,7 @@ export function AppShell() {
   const isTabletOrBelow = useIsTabletOrBelow()
 
   if (loading) {
-    return (
-      <div
-        data-testid="shell-loading"
-        className="min-h-screen flex items-center justify-center bg-steel-50"
-      >
-        <div className="w-8 h-8 border-3 border-blue border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
+    return <div data-testid="shell-loading" />
   }
 
   if (profileError) {
@@ -48,8 +38,8 @@ export function AppShell() {
         body="Volvé a intentar o cerrá sesión y entrá de nuevo."
         actions={
           <>
-            <Button variant="primary" onClick={retryProfile}>Reintentar</Button>
-            <Button variant="outlined" onClick={() => supabase.auth.signOut()}>Cerrar sesión</Button>
+            <PrimaryButton onClick={retryProfile}>Reintentar</PrimaryButton>
+            <PrimaryButton onClick={() => supabase.auth.signOut()}>Cerrar sesión</PrimaryButton>
           </>
         }
       />
@@ -61,17 +51,11 @@ export function AppShell() {
   }
 
   return (
-    <div className="min-h-screen bg-steel-50 flex flex-col transition-all duration-medium easing-standard">
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Topbar profile={profile} />
-      <div className="flex flex-1 overflow-hidden">
+      <div style={{ flex: 1, display: 'flex' }}>
         {!isTabletOrBelow && <Sidebar role={profile.role} />}
-        <main
-          className="flex-1 overflow-auto p-4 sm:p-6 transition-all duration-medium easing-standard"
-          style={{
-            marginLeft: isTabletOrBelow ? 0 : '280px',
-            width: isTabletOrBelow ? '100%' : 'calc(100% - 280px)'
-          }}
-        >
+        <main style={{ flex: 1 }}>
           <Outlet />
         </main>
       </div>

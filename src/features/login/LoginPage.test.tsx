@@ -61,7 +61,7 @@ describe('LoginPage', () => {
     expect(screen.getByLabelText('Email')).toHaveValue('dueno@aguilablanca.com')
   })
 
-  it('muestra spinner y deshabilita el botón mientras el pedido está en curso, sin doble submit', async () => {
+  it('muestra "Ingresando…" y deshabilita el botón mientras el pedido está en curso, sin doble submit', async () => {
     let resolveSignIn: (value: { error: null }) => void = () => {}
     signInWithPassword.mockImplementation(
       () => new Promise((resolve) => { resolveSignIn = resolve })
@@ -72,8 +72,7 @@ describe('LoginPage', () => {
     const submit = screen.getByRole('button', { name: 'Ingresar' })
     fireEvent.click(submit)
 
-    await waitFor(() => expect(submit).toBeDisabled())
-    expect(submit).toContainHTML('svg')
+    expect(await screen.findByRole('button', { name: 'Ingresando…' })).toBeDisabled()
     fireEvent.click(submit)
 
     resolveSignIn({ error: null })

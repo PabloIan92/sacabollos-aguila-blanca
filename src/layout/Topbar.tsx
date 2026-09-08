@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { Profile } from '../auth/AuthProvider'
-import { Button } from '../ui/PrimaryButton'
-import { LogOut, Search, User, ChevronDown } from 'lucide-react'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   dueno: 'Dueño',
@@ -10,100 +8,55 @@ const ROLE_LABELS: Record<Profile['role'], string> = {
   taller: 'Taller',
 }
 
-const ROLE_ICONS: Record<Profile['role'], React.ComponentType<{ size?: number; strokeWidth?: number }>> = {
-  dueno: User,
-  recepcion: User,
-  taller: User,
-}
-
 export function Topbar({ profile }: { profile: Profile }) {
-  const [searchOpen, setSearchOpen] = useState(false)
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
-
-  const RoleIcon = ROLE_ICONS[profile.role]
+  const [confirming, setConfirming] = useState(false)
 
   return (
-    <header className="sticky top-0 z-nav h-16 bg-white/95 backdrop-blur-sm border-b border-steel-200 shadow-level-1 flex items-center justify-between gap-4 px-4 sm:px-6">
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+    <header
+      className="flex items-center justify-between gap-4 bg-navy text-white"
+      style={{ minHeight: '76px', padding: '12px clamp(16px, 4vw, 42px)' }}
+    >
+      <div className="flex items-center gap-3 min-w-0">
         <img
           src="/assets/logo-aguila-blanca.jpg"
           alt=""
-          className="bg-steel-100 border border-steel-300 rounded-lg object-contain flex-shrink-0"
-          style={{ width: '40px', height: '40px' }}
+          className="border-2 border-steel-300 bg-white object-contain"
+          style={{ width: '48px', height: '48px' }}
         />
-        <h1 className="font-display font-bold uppercase text-headline-small hidden sm:block text-graphite">
-          Aguila Blanca
-        </h1>
-        <h1 className="font-display font-bold uppercase text-title-large sm:hidden text-graphite">
+        <h1
+          className="font-display uppercase m-0"
+          style={{ fontSize: 'clamp(1.1rem, 3vw, 1.55rem)', lineHeight: 1 }}
+        >
           Aguila Blanca
         </h1>
       </div>
 
-      <div className="flex items-center justify-end gap-2 flex-shrink-0">
-        <div className="relative hidden sm:block">
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<Search size={18} />}
-            onClick={() => setSearchOpen(!searchOpen)}
-            aria-label="Buscar"
-            className="text-steel-600 hover:bg-steel-100"
-          >
-            Buscar
-          </Button>
-          {searchOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 animate-scale-in">
-              <div className="bg-white shadow-level-4 rounded-lg border border-steel-200 overflow-hidden">
-                <input
-                  type="search"
-                  placeholder="Buscar casos, clientes..."
-                  className="w-full px-3 py-2 text-body-medium border-0 outline-none bg-transparent"
-                  autoFocus
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        <span className="hidden sm:flex items-center px-2.5 py-1 text-label-medium font-medium bg-blue-light text-blue rounded-full">
+      <div className="flex items-center justify-end gap-2.5 flex-wrap">
+        <span className="font-mono text-xs border border-white/35 bg-white/10 px-2.5 py-2">
           {ROLE_LABELS[profile.role]}
         </span>
 
-        <div className="relative">
+        {confirming ? (
+          <div className="flex items-center gap-2 font-sans text-sm">
+            <span>¿Cerrar sesión de {profile.full_name}?</span>
+            <button
+              className="font-semibold underline"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Cerrar sesión
+            </button>
+            <button className="opacity-80" onClick={() => setConfirming(false)}>
+              Cancelar
+            </button>
+          </div>
+        ) : (
           <button
-            onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-steel-100 transition-colors duration-fast"
-            aria-label="Menú de usuario"
-            aria-expanded={userMenuOpen}
-            aria-haspopup="true"
+            className="border border-white/32 bg-transparent text-white font-semibold px-2.5 py-2"
+            onClick={() => setConfirming(true)}
           >
-            <div className="w-9 h-9 rounded-full bg-blue-light text-blue flex items-center justify-center flex-shrink-0">
-              <RoleIcon size={20} strokeWidth={2} />
-            </div>
-            <span className="hidden sm:block text-body-medium font-medium text-graphite truncate max-w-[140px]">
-              {profile.full_name}
-            </span>
-            <ChevronDown size={16} strokeWidth={2} className="text-steel-500" />
+            Cerrar sesión
           </button>
-
-          {userMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 animate-scale-in">
-              <div className="bg-white shadow-level-4 rounded-lg border border-steel-200 overflow-hidden py-1">
-                <div className="px-3 py-2 border-b border-steel-200">
-                  <p className="text-label-medium font-medium text-graphite">{profile.full_name}</p>
-                  <p className="text-label-small text-steel-500 capitalize">{ROLE_LABELS[profile.role]}</p>
-                </div>
-                <button
-                  onClick={() => { supabase.auth.signOut(); setUserMenuOpen(false); }}
-                  className="w-full px-3 py-2 text-left flex items-center gap-2 text-body-medium text-graphite hover:bg-steel-50 rounded-none"
-                >
-                  <LogOut size={18} strokeWidth={2} className="text-steel-500" />
-                  Cerrar sesión
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </header>
   )

@@ -31,6 +31,29 @@ Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados, testados, y 
 
 ---
 
+## Restauración del frontend — 2026-09-08
+
+Se revirtió de forma selectiva la regresión visual introducida por los commits `8ac99fe` y `4583d2a`. Esos cambios habían reemplazado la identidad de taller aprobada por un sistema Material 3 genérico y luego habían vuelto a modificar tema, primitivas UI, navegación y pantallas consumidoras.
+
+La restauración toma `afdb1e0` como última referencia aprobada y la aplica como un commit nuevo, sin reescribir el historial. Volvieron la paleta graphite/steel/navy/blue/red/brass/green, las tipografías Oswald + IBM Plex Sans + IBM Plex Mono, las fichas con borde marcado y sombra desplazada, el cierre de sesión visible y el estado de acceso «Ingresando…».
+
+**Alcance:**
+
+- Restaurados `theme.css`, las cinco primitivas de `src/ui/`, el shell responsive y sus tres piezas de navegación.
+- Restauradas únicamente las adaptaciones visuales de Login, Dueño, Recepción, Taller y pantallas de Casos que habían acompañado al rediseño.
+- Conservados React Router, Supabase Auth, RLS, Realtime, fotos y la máquina de estados; no se modificaron backend, migraciones ni datos.
+- Agregados diseño y plan auditables en `docs/superpowers/`.
+
+**Verificación fresca:**
+
+- `npm run typecheck` ✅
+- `npm run build` ✅ — mantiene el aviso informativo existente de bundle principal mayor a 500 kB.
+- `npm test` ✅ — 16 archivos, 77 tests aprobados.
+- `npm run lint` ✅ — exit code 0; permanecen dos warnings preexistentes de `react(only-export-components)` en `AuthProvider.tsx` y `SemaforoBadge.tsx`.
+- Prueba de regresión RED/GREEN ✅ — antes de restaurar fallaban el texto «Ingresando…» y la presencia de «Cerrar sesión»; después pasaron 11/11 tests focalizados.
+
+---
+
 ## Estado histórico: Fase 1 - Fundaciones — COMPLETA
 
 **Completado (Tasks 1-2):**

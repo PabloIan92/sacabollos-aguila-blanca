@@ -46,7 +46,7 @@ export function RecepcionHome() {
         <EmptyState
           icon={Calendar}
           title="No hay turnos para hoy"
-          description="Cuando coordines un turno con un cliente, va a aparecer en esta agenda."
+          body="Cuando coordines un turno con un cliente, va a aparecer en esta agenda."
         />
       ) : (
         <table className="w-full text-sm font-sans bg-white border-2 border-graphite">
