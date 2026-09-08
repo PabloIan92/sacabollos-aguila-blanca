@@ -2,19 +2,21 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-2%20Caso%20de%20Seguro-blue)
-![Status](https://img.shields.io/badge/Status-Fase%202%20completa%20y%20funcional-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-3%20Caso%20Particular-blue)
+![Status](https://img.shields.io/badge/Status-Fase%202%20cerrada%20%C2%B7%20Fase%203%20en%20dise%C3%B1o-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
 ![Tests](https://img.shields.io/badge/Tests-77%20passed-brightgreen)
 
-## Estado actual: Fase 2 - Caso de Seguro — **completa y funcional** (2026-08-27)
+## Estado actual: Fase 2 - Caso de Seguro — **cerrada** (2026-09-08)
 
 Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados, testados, y **los dos bugs críticos de producción están arreglados**:
 
 1. **Bug RLS fotos (02-02/02-03 bloqueados)**: La política `casos_fotos_insert` usaba `storage.foldername(name)[3]` que siempre devuelve `NULL` (excluye el filename), rechazando el 100% de subidas. **Arreglado**: migración `0003_fix_casos_fotos_insert_rls.sql` → `split_part(name, '/', 3)` con allow-list de 8 ángulos `.webp`. Aplicada en producción ✅
 2. **Bug navegación huérfana (02-03/02-04 bloqueados)**: `CasoDetailPage` no tenía link a `/casos/{id}/ficha-ingreso` para casos en `turno coordinado` — la ruta existía pero era inaccesible salvo tecleando la URL. **Arreglado**: botón "Registrar ingreso al taller" con `useNavigate()` en `CasoDetailPage.tsx` + test. Commit `3c33d49` ✅
 
-**Build ✓, Typecheck ✓, 77 tests ✓** — todo verde. La Fase 2 queda **cerrada funcionalmente**; solo falta la verificación humana de punta a punta (no ejecutable desde este entorno).
+**Build ✓, Typecheck ✓, lint ✓, 77 tests ✓** — todo verde. La Fase 2 queda cerrada a nivel de ingeniería y el desarrollo continúa con **Fase 3: Caso Particular**.
+
+La producción responde y el login restaurado fue revisado visualmente con navegador real el 2026-09-08. La cuenta QA histórica de recepción expiró, por lo que no se repitió el circuito productivo mutante: no se usaron los scripts antiguos porque dejan datos permanentes y uno contiene una credencial privilegiada. La próxima automatización productiva será sanitizada, idempotente y con limpieza garantizada.
 
 ---
 
@@ -22,10 +24,10 @@ Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados, testados, y 
 
 | Plan | Qué entrega | Código | Tests | Producción | Verificación humana |
 |------|-------------|--------|-------|------------|---------------------|
-| **02-01** | Modelo datos + compresión fotos + hook | ✅ `35 tests` | ✅ | ✅ | ⏳ pendiente |
-| **02-02** | Alta caso + Ficha inspección (4 fotos) | ✅ `47 tests` | ✅ | ✅ **fix RLS aplicado** | ⏳ pendiente |
-| **02-03** | Turno + Ficha ingreso (4 fotos ingreso) | ✅ `58 tests` | ✅ | ✅ **fix RLS + nav aplicados** | ⏳ pendiente |
-| **02-04** | Semáforo 9 etapas + Realtime 3 roles | ✅ `76 tests` | ✅ | ✅ | ⏳ pendiente |
+| **02-01** | Modelo datos + compresión fotos + hook | ✅ `35 tests` | ✅ | ✅ | no aplica |
+| **02-02** | Alta caso + Ficha inspección (4 fotos) | ✅ `47 tests` | ✅ | ✅ **fix RLS aplicado** | ⏳ revalidación con cuenta QA nueva |
+| **02-03** | Turno + Ficha ingreso (4 fotos ingreso) | ✅ `58 tests` | ✅ | ✅ **fix RLS + nav aplicados** | ⏳ revalidación con cuenta QA nueva |
+| **02-04** | Semáforo 9 etapas + Realtime 3 roles | ✅ `76 tests` | ✅ | ✅ | ⏳ revalidación multirol sanitizada |
 
 **Leyenda**: ✅ = completo y verificado en CI | ⏳ = pendiente (requiere humano en prod) | 🔴 = estaba roto, ahora arreglado
 
@@ -51,6 +53,11 @@ La restauración toma `afdb1e0` como última referencia aprobada y la aplica com
 - `npm test` ✅ — 16 archivos, 77 tests aprobados.
 - `npm run lint` ✅ — exit code 0; permanecen dos warnings preexistentes de `react(only-export-components)` en `AuthProvider.tsx` y `SemaforoBadge.tsx`.
 - Prueba de regresión RED/GREEN ✅ — antes de restaurar fallaban el texto «Ingresando…» y la presencia de «Cerrar sesión»; después pasaron 11/11 tests focalizados.
+- Smoke productivo con Chrome/Puppeteer ✅ — Vercel responde, redirige a `/login` y la pantalla restaurada fue inspeccionada en 1280×900; captura en `docs/screenshots/phase2-login-production.png`.
+
+## Próxima entrega: Fase 3 — Caso Particular
+
+La auditoría inicial confirmó que todavía no existe implementación para particulares. Se reutilizarán alta, cuatro fotos, semáforo, turno e ingreso de Fase 2, agregando validación condicional por canal, presupuesto y respuesta del cliente. Si acepta, avanza al turno existente; si rechaza, se conserva la modalidad de contacto. El detalle se formalizará en diseño y plan antes de tocar esquema o producción.
 
 ---
 

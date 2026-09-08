@@ -11,7 +11,7 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [x] **Phase 1: Fundaciones** - Login con roles y app usable en tablet y PC
-- [ ] **Phase 2: Caso de Seguro** - Flujo completo desde denuncia hasta ingreso del auto al taller
+- [x] **Phase 2: Caso de Seguro** - Flujo completo desde denuncia hasta ingreso del auto al taller
 - [ ] **Phase 3: Caso Particular** - Presupuesto y turno para clientes particulares
 - [ ] **Phase 4: Reparación y Stock** - Ficha de trabajo, repuestos faltantes y listado de materiales
 - [ ] **Phase 5: Facturación y Cobros** - Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora
@@ -49,10 +49,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Modelo de datos y máquina de estados del caso (canal seguro): tabla `casos`, RLS, bucket de fotos y contratos de tipos
-- [ ] 02-02-PLAN.md — Alta de caso de Seguro + Ficha de inspección pre-ingreso (zonas dañadas por checkbox + 4 fotos obligatorias)
-- [ ] 02-03-PLAN.md — Orden de trabajo recibida, turno coordinado y Ficha de ingreso al taller (Ficha 2)
-- [ ] 02-04-PLAN.md — Semáforo de estado visual + Realtime en el listado de casos de los 3 roles
+- [x] 02-01-PLAN.md — Modelo de datos y máquina de estados del caso (canal seguro): tabla `casos`, RLS, bucket de fotos y contratos de tipos
+- [x] 02-02-PLAN.md — Alta de caso de Seguro + Ficha de inspección pre-ingreso (zonas dañadas por checkbox + 4 fotos obligatorias)
+- [x] 02-03-PLAN.md — Orden de trabajo recibida, turno coordinado y Ficha de ingreso al taller (Ficha 2)
+- [x] 02-04-PLAN.md — Semáforo de estado visual + Realtime en el listado de casos de los 3 roles
 
 ### Phase 3: Caso Particular
 **Goal**: Un cliente particular puede recibir presupuesto y pasar a turno sin depender del flujo de seguro
@@ -125,7 +125,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | Phase | Plans Complete | Status | Completed |
 |-------|-----------------|--------|-----------|
 | 1. Fundaciones | 3/4 | Complete (01-04 diferido) | 2026-08-25 |
-| 2. Caso de Seguro | 0/4 | Planned | - |
+| 2. Caso de Seguro | 4/4 | Complete | 2026-09-08 |
 | 3. Caso Particular | 0/2 | Not started | - |
 | 4. Reparación y Stock | 0/3 | Not started | - |
 | 5. Facturación y Cobros | 0/3 | Not started | - |

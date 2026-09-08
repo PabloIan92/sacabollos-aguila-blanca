@@ -7,7 +7,7 @@
 
 ### Autenticación y Roles
 
-- [ ] **AUTH-01**: Usuario inicia sesión y ve solo las secciones que corresponden a su rol (dueño, recepción o taller)
+- [x] **AUTH-01**: Usuario inicia sesión y ve solo las secciones que corresponden a su rol (dueño, recepción o taller)
 - [ ] **AUTH-02**: Solo el rol dueño puede ver el diferencial entre monto facturado y total cobrado; recepción y taller no lo ven en ninguna pantalla ni pueden acceder a él
 
 ### Casos
@@ -15,13 +15,13 @@
 - [ ] **CASOS-01**: Recepción puede crear un caso nuevo eligiendo canal Seguro o Particular
 - [ ] **CASOS-02**: Un caso de canal Seguro registra denuncia, número de siniestro y datos del productor/asesor, y avanza por sus estados (enviado a la aseguradora → orden de trabajo recibida → turno → ingresado al taller → en reparación → firmado → facturado → cobrado o reclamo a la compañía)
 - [ ] **CASOS-03**: Un caso de canal Particular registra presupuesto y fotos; si el cliente acepta pasa a turno, si no acepta se guarda la modalidad de contacto para seguimiento futuro
-- [ ] **CASOS-04**: Cada caso muestra un semáforo de estado visual que refleja en qué etapa está, actualizado sin necesidad de recargar la página
-- [ ] **CASOS-05**: Recepción puede coordinar el turno del cliente, quedando registrada la fecha/hora de ingreso del auto
+- [x] **CASOS-04**: Cada caso muestra un semáforo de estado visual que refleja en qué etapa está, actualizado sin necesidad de recargar la página
+- [x] **CASOS-05**: Recepción puede coordinar el turno del cliente, quedando registrada la fecha/hora de ingreso del auto
 
 ### Fichas Digitales
 
-- [ ] **FICHAS-01**: Usuario completa la ficha de inspección pre-ingreso con datos del auto, del cliente, del seguro (si aplica), fotos y un bosquejo del auto para marcar daños
-- [ ] **FICHAS-02**: Usuario completa la ficha de inspección de ingreso al momento real de entrar el auto al taller, con fotos y orden de ingreso
+- [x] **FICHAS-01**: Usuario completa la ficha de inspección pre-ingreso con datos del auto, del cliente, del seguro (si aplica), fotos y un bosquejo del auto para marcar daños
+- [x] **FICHAS-02**: Usuario completa la ficha de inspección de ingreso al momento real de entrar el auto al taller, con fotos y orden de ingreso
 - [ ] **FICHAS-03**: Usuario completa la ficha de trabajo de reparación con la figura del auto, daños marcados y patente
 - [ ] **FICHAS-04**: El sistema no permite guardar ninguna ficha sin sus campos obligatorios completos (patente, fotos mínimas requeridas, etc.)
 
@@ -47,7 +47,7 @@
 
 ### Dispositivos
 
-- [ ] **DISPOSITIVO-01**: El sistema se usa cómodamente tanto desde tablet (carga de fichas y fotos en el taller) como desde PC/notebook (oficina/recepción)
+- [x] **DISPOSITIVO-01**: El sistema se usa cómodamente tanto desde tablet (carga de fichas y fotos en el taller) como desde PC/notebook (oficina/recepción)
 
 ## v2 Requirements
 
@@ -84,15 +84,15 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| DISPOSITIVO-01 | Phase 1 | Pending |
-| CASOS-01 | Phase 2 | Pending |
-| CASOS-02 | Phase 2 | Pending |
-| CASOS-04 | Phase 2 | Pending |
-| CASOS-05 | Phase 2 | Pending |
-| FICHAS-01 | Phase 2 | Pending |
-| FICHAS-02 | Phase 2 | Pending |
-| FICHAS-04 | Phase 2 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| DISPOSITIVO-01 | Phase 1 | Complete (navegador responsive; tablet física pendiente no bloqueante) |
+| CASOS-01 | Phase 2, Phase 3 | Partial (Seguro completo; Particular pendiente) |
+| CASOS-02 | Phase 2, Phase 4, Phase 5 | Partial (completo hasta ingreso al taller) |
+| CASOS-04 | Phase 2 | Complete |
+| CASOS-05 | Phase 2 | Complete |
+| FICHAS-01 | Phase 2 | Complete |
+| FICHAS-02 | Phase 2 | Complete |
+| FICHAS-04 | Phase 2, Phase 3, Phase 4 | Partial (fichas de Fase 2 validadas) |
 | CASOS-03 | Phase 3 | Pending |
 | FICHAS-03 | Phase 4 | Pending |
 | REPARACION-01 | Phase 4 | Pending |
@@ -112,4 +112,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-08-19*
-*Last updated: 2026-08-19 after initial definition*
+*Last updated: 2026-09-08 after Phase 2 engineering closure*

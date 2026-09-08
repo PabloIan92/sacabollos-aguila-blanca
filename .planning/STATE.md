@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready-to-plan
-stopped_at: Phase 2 context gathered
-last_updated: "2026-08-25T02:44:28.000Z"
-last_activity: 2026-08-25 — Fase 1 completa y verificada en produccion
+status: planning
+stopped_at: Phase 3 audit complete; design pending approval
+last_updated: "2026-09-08T00:00:00.000-03:00"
+last_activity: 2026-09-08 — Fase 2 cerrada y frontend aprobado restaurado
 progress:
   total_phases: 6
-  completed_phases: 0
-  total_plans: 4
-  completed_plans: 3
-  percent: 0
+  completed_phases: 2
+  total_plans: 18
+  completed_plans: 7
+  percent: 39
 ---
 
 # Project State
@@ -21,21 +21,21 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel.
-**Current focus:** Phase 2 — Caso de Seguro
+**Current focus:** Phase 3 — Caso Particular
 
 ## Current Position
 
-Phase: 1 of 6 (Fundaciones) — complete (plans 01-01, 01-02, 01-03; 01-04 deferred)
-Next: Phase 2 (Caso de Seguro) — not yet planned
-Last activity: 2026-08-27 - Completed quick task 260827-ui-elevation: Frontend elevation a Material 3 (design tokens, components, layout shell)
+Phase: 2 of 6 (Caso de Seguro) — complete (plans 02-01 a 02-04)
+Next: Phase 3 (Caso Particular) — auditada, pendiente de diseño/plan
+Last activity: 2026-09-08 - Restauración del frontend aprobado, suite completa verde y cierre documental de Fase 2
 
-Progress: [████░░░░░░] ~35%
+Progress: [████░░░░░░] 39% de planes
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3 (01-01, 01-02, 01-03)
+- Total plans completed: 7 (01-01, 01-02, 01-03, 02-01, 02-02, 02-03, 02-04)
 - Average duration: variable (01-01 repartido en varias sesiones; 01-02/01-03 ~2h combinadas)
 - Total execution time: —
 
@@ -44,11 +44,12 @@ Progress: [████░░░░░░] ~35%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1. Fundaciones | 3/4 | multi-sesion | — |
+| 2. Caso de Seguro | 4/4 | multi-sesion | — |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-01, 01-02, 01-03 completados 2026-08-25
-- Trend: acelerando — verificacion con navegador real (Chrome DevTools) encontro 2 bugs bloqueantes que los tests unitarios no atraparon
+- Last 5 plans: 01-03, 02-01, 02-02, 02-03, 02-04 completados
+- Trend: Fase 2 estabilizada — 77 tests, typecheck, build y lint en verde; frontend restaurado a la referencia aprobada
 
 *Updated after each plan completion*
 
@@ -65,16 +66,19 @@ Recent decisions affecting current work:
 - Init: Investigación de dominio (stack/features/arquitectura/pitfalls) delegada a modelos NVIDIA NIM en vez de subagentes Claude, por pedido explícito del usuario
 - 2026-08-25: Cuenta Vercel separada de la personal de Pablo (Team `aguila-blanca`) para poder transferirle la propiedad al dueño del taller mas adelante sin migrar nada
 - 2026-08-25: Verificacion funcional se hace con navegador real (Chrome DevTools automation) contra el build de produccion, no solo con la suite de tests unitarios — 2 bugs bloqueantes de esta fase (login sin implementar, /login sin redirect) eran invisibles para Vitest con hooks mockeados
+- 2026-09-08: Los scripts QA históricos no se ejecutan sin revisión: contienen fixtures obsoletos y uno incluye una credencial privilegiada. Las nuevas pruebas E2E deben ser sanitizadas, idempotentes y limpiar sus datos.
+- 2026-09-08: Fases 4-5 separarán permisos operativos y datos financieros; importes nunca se agregarán a `casos`, porque la tabla se comparte por RLS y Realtime.
 
 ### Pending Todos
 
-- Plan 01-04 (invite-user Edge Function) nunca se ejecuto. No bloquea la Fase 2 — el unico usuario existente (dueño) se creo a mano via Admin API. Retomar cuando haga falta invitar mas usuarios reales desde la app.
+- Plan 01-04 (invite-user Edge Function) nunca se ejecuto. No bloqueó la Fase 2; debe retomarse al final de v1 o antes si hace falta regenerar cuentas QA.
 - Verificacion humana en tablet fisica de 10-12" (layout responsive) — lo automatizado ya cubrio el comportamiento funcional en distintos anchos de navegador, falta el chequeo tactil real.
+- Revalidación E2E productiva de Fase 2 — la cuenta QA histórica de recepción ya no autentica. El código y la producción tienen evidencia previa; para repetir el circuito sin usar secretos privilegiados hay que regenerar la cuenta por un canal legítimo.
 
 ### Blockers/Concerns
 
-- Detalle exacto de plantillas de mail por aseguradora — a definir en discuss-phase de la Fase 2, no bloquea el arranque
-- Campos finales de cada una de las 3 fichas — base sólida ya definida desde las fotos originales, puede afinarse en discuss-phase
+- Fase 3 debe definir monto/observación de presupuesto y modalidad de contacto antes de implementar.
+- La clave privilegiada encontrada en un script QA histórico debe rotarse; no se usará para automatización.
 
 ### Quick Tasks Completed
 
@@ -93,6 +97,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-08-25T02:44:27.963Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-caso-de-seguro/02-CONTEXT.md
+Last session: 2026-09-08
+Stopped at: Phase 3 audit complete; design pending approval
+Resume file: docs/superpowers/specs/ (crear diseño de Fase 3)
