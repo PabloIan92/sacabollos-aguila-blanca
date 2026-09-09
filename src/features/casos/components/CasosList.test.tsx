@@ -2,9 +2,9 @@ import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import { CasosList } from './CasosList'
-import type { Caso } from '../types'
+import type { Caso, CasoSeguro } from '../types'
 
-function caso(overrides: Partial<Caso> = {}): Caso {
+function caso(overrides: Partial<CasoSeguro> = {}): Caso {
   return {
     id: 'caso-1',
     canal: 'seguro',

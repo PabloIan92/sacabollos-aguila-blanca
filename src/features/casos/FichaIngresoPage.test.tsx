@@ -4,7 +4,7 @@ import { MemoryRouter, Routes, Route } from 'react-router'
 import { FichaIngresoPage } from './FichaIngresoPage'
 import { getCaso, updateCasoEstado } from './api'
 import { useCasoFotos } from './hooks/useCasoFotos'
-import type { Caso } from './types'
+import type { Caso, CasoSeguro } from './types'
 
 vi.mock('./api')
 vi.mock('./hooks/useCasoFotos')
@@ -15,7 +15,7 @@ const mockedUseCasoFotos = vi.mocked(useCasoFotos)
 
 const uploadFoto = vi.fn()
 
-function caso(overrides: Partial<Caso> = {}): Caso {
+function caso(overrides: Partial<CasoSeguro> = {}): Caso {
   return {
     id: 'caso-1',
     canal: 'seguro',

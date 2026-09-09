@@ -3,14 +3,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { CasoDetailPage } from './CasoDetailPage'
 import { getCaso, updateCasoEstado } from './api'
-import type { Caso } from './types'
+import type { Caso, CasoSeguro } from './types'
 
 vi.mock('./api')
 
 const mockedGetCaso = vi.mocked(getCaso)
 const mockedUpdateCasoEstado = vi.mocked(updateCasoEstado)
 
-function caso(overrides: Partial<Caso> = {}): Caso {
+function caso(overrides: Partial<CasoSeguro> = {}): Caso {
   return {
     id: 'caso-1',
     canal: 'seguro',

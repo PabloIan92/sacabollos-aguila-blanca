@@ -3,33 +3,39 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-3%20Caso%20Particular-blue)
-![Status](https://img.shields.io/badge/Status-Fase%202%20cerrada%20%C2%B7%20Fase%203%20en%20dise%C3%B1o-brightgreen)
+![Status](https://img.shields.io/badge/Status-Tareas%201--3%20completas%20en%20local-yellow)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-77%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-113%20passed%20%C2%B7%2018%20files-brightgreen)
 
-## Estado actual: Fase 2 - Caso de Seguro — **cerrada** (2026-09-08)
+## Estado actual: Fase 3 - Caso Particular — **Tareas 1-3 completas en local** (2026-09-09)
 
-Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados, testados, y **los dos bugs críticos de producción están arreglados**:
+La implementación local actual incorpora el canal Particular sin duplicar el circuito de Seguro. Las primeras tres tareas del plan están completas; todavía no se aplicó la migración `0004` en remoto ni se desplegó esta fase.
 
-1. **Bug RLS fotos (02-02/02-03 bloqueados)**: La política `casos_fotos_insert` usaba `storage.foldername(name)[3]` que siempre devuelve `NULL` (excluye el filename), rechazando el 100% de subidas. **Arreglado**: migración `0003_fix_casos_fotos_insert_rls.sql` → `split_part(name, '/', 3)` con allow-list de 8 ángulos `.webp`. Aplicada en producción ✅
-2. **Bug navegación huérfana (02-03/02-04 bloqueados)**: `CasoDetailPage` no tenía link a `/casos/{id}/ficha-ingreso` para casos en `turno coordinado` — la ruta existía pero era inaccesible salvo tecleando la URL. **Arreglado**: botón "Registrar ingreso al taller" con `useNavigate()` en `CasoDetailPage.tsx` + test. Commit `3c33d49` ✅
+1. **Tarea 1 - contratos, API, migración `0004` y máquina de estados:** contratos discriminados para `seguro | particular`, presupuesto, respuesta y modalidad de contacto; operaciones de dominio para guardar inspección, aceptar, rechazar y coordinar turno; migración compatible con casos existentes, checks condicionales por canal y trigger PostgreSQL que valida rol, canal, transición y datos obligatorios.
+2. **Tarea 2 - alta unificada Seguro/Particular:** una sola pantalla con Seguro por defecto, campos condicionales, presupuesto Particular mayor que cero, payloads separados sin mezclar campos de canales, conservación de datos y control rehabilitado para reintentar ante errores.
+3. **Tarea 3 - ficha común y recuperación:** las cuatro fotos se rehidratan desde Storage al recargar, la inspección queda persistida mediante `inspeccion_guardada_at`, Seguro conserva su envío a aseguradora y Particular permite aceptación o rechazo con modalidad de contacto obligatoria; cargas y mutaciones fallidas muestran errores recuperables sin dejar spinners bloqueados.
 
-**Build ✓, Typecheck ✓, lint ✓, 77 tests ✓** — todo verde. La Fase 2 queda cerrada a nivel de ingeniería y el desarrollo continúa con **Fase 3: Caso Particular**.
+### Verificación local actual
 
-La producción responde y el login restaurado fue revisado visualmente con navegador real el 2026-09-08. La cuenta QA histórica de recepción expiró, por lo que no se repitió el circuito productivo mutante: no se usaron los scripts antiguos porque dejan datos permanentes y uno contiene una credencial privilegiada. La próxima automatización productiva será sanitizada, idempotente y con limpieza garantizada.
+- `npm test` ✅ — **18 archivos, 113 tests aprobados**.
+- `npm run typecheck` ✅.
+- `npm run build` ✅.
+- `npm run lint` ✅ — sin errores; permanecen **2 warnings preexistentes** de `react(only-export-components)` en `AuthProvider.tsx` y `SemaforoBadge.tsx`.
+- Se mantiene registrado el aviso informativo preexistente/actual de chunk principal mayor a 500 kB; no bloquea el build.
 
 ---
 
-## Checklist — Estado real por plan
+## Checklist - Fase 3
 
-| Plan | Qué entrega | Código | Tests | Producción | Verificación humana |
-|------|-------------|--------|-------|------------|---------------------|
-| **02-01** | Modelo datos + compresión fotos + hook | ✅ `35 tests` | ✅ | ✅ | no aplica |
-| **02-02** | Alta caso + Ficha inspección (4 fotos) | ✅ `47 tests` | ✅ | ✅ **fix RLS aplicado** | ⏳ revalidación con cuenta QA nueva |
-| **02-03** | Turno + Ficha ingreso (4 fotos ingreso) | ✅ `58 tests` | ✅ | ✅ **fix RLS + nav aplicados** | ⏳ revalidación con cuenta QA nueva |
-| **02-04** | Semáforo 9 etapas + Realtime 3 roles | ✅ `76 tests` | ✅ | ✅ | ⏳ revalidación multirol sanitizada |
+| Tarea | Alcance | Estado local | Producción |
+|-------|---------|--------------|------------|
+| **1** | Contratos, API, migración `0004` y máquina de estados | ✅ Completa | ⏳ Migración no aplicada |
+| **2** | Alta unificada Seguro/Particular, validación y recuperación | ✅ Completa | ⏳ No desplegada |
+| **3** | Fotos rehidratadas, inspección persistente, aceptación/rechazo y errores recuperables | ✅ Completa | ⏳ No desplegada |
+| **4** | Detalle, listado, turno e ingreso compartidos | ⏳ Pendiente | ⏳ Pendiente |
+| **5** | Regresión final, planning/docs, migración remota, deploy y smoke/E2E | ⏳ Pendiente | ⏳ Pendiente |
 
-**Leyenda**: ✅ = completo y verificado en CI | ⏳ = pendiente (requiere humano en prod) | 🔴 = estaba roto, ahora arreglado
+**Pendientes claros:** la Tarea 4 debe completar el detalle condicional, la identificación de canal en el listado y la reutilización del turno e ingreso. La Tarea 5 debe ejecutar la regresión final, actualizar planning y documentación, aplicar `0004` en Supabase remoto, desplegar y realizar smoke más E2E sanitizado.
 
 ---
 
@@ -46,7 +52,7 @@ La restauración toma `afdb1e0` como última referencia aprobada y la aplica com
 - Conservados React Router, Supabase Auth, RLS, Realtime, fotos y la máquina de estados; no se modificaron backend, migraciones ni datos.
 - Agregados diseño y plan auditables en `docs/superpowers/`.
 
-**Verificación fresca:**
+**Verificación histórica de esa restauración:**
 
 - `npm run typecheck` ✅
 - `npm run build` ✅ — mantiene el aviso informativo existente de bundle principal mayor a 500 kB.
@@ -55,9 +61,15 @@ La restauración toma `afdb1e0` como última referencia aprobada y la aplica com
 - Prueba de regresión RED/GREEN ✅ — antes de restaurar fallaban el texto «Ingresando…» y la presencia de «Cerrar sesión»; después pasaron 11/11 tests focalizados.
 - Smoke productivo con Chrome/Puppeteer ✅ — Vercel responde, redirige a `/login` y la pantalla restaurada fue inspeccionada en 1280×900; captura en `docs/screenshots/phase2-login-production.png`.
 
-## Próxima entrega: Fase 3 — Caso Particular
+## Referencias de negocio para fases posteriores
 
-La auditoría inicial confirmó que todavía no existe implementación para particulares. Se reutilizarán alta, cuatro fotos, semáforo, turno e ingreso de Fase 2, agregando validación condicional por canal, presupuesto y respuesta del cliente. Si acepta, avanza al turno existente; si rechaza, se conserva la modalidad de contacto. El detalle se formalizará en diseño y plan antes de tocar esquema o producción.
+Se relevaron tres documentos Word que quedan como referencias de negocio futuras:
+
+- **Formulario de Presupuesto**.
+- **Ficha de Ingreso**.
+- **Orden de Trabajo Interna**.
+
+Sus campos adicionales se evaluarán en fases posteriores. **No se agregaron todavía** al modelo, a la migración `0004`, a los contratos ni a las pantallas de esta entrega.
 
 ---
 
@@ -84,9 +96,7 @@ Estos dos planes estaban escritos en `.planning/` pero nunca implementados: desp
 - **Bug real encontrado y arreglado probando el build de producción con Chrome DevTools** (no solo con tests mockeados): `/login` nunca redirigía a `/` tras un login exitoso — el usuario se autenticaba correctamente pero se quedaba viendo el formulario. Se agregó `src/auth/RedirectIfAuthenticated.tsx`.
 - Verificado con navegador real en producción: login → shell completo, sidebar en 1280px / barra inferior en 700px (capturas), "Cerrar sesión" con confirmación nombrando al usuario, logout vuelve a `/login`, sesión persiste al recargar, cero errores de consola.
 
-**Único pendiente real, no bloqueante:** repetir la prueba de layout en una tablet física de 10-12" para el chequeo táctil/visual en hardware real (lo automatizado ya cubre el comportamiento funcional y el breakpoint responsive en el navegador).
-
-> Ver sección "Próximos pasos" abajo para el detalle completo de esta sesión.
+**Pendiente histórico no bloqueante de Fase 1:** repetir la prueba de layout en una tablet física de 10-12" para el chequeo táctil/visual en hardware real (lo automatizado ya cubre el comportamiento funcional y el breakpoint responsive en el navegador).
 
 ### Lo que está implementado
 
@@ -125,35 +135,12 @@ Estos dos planes estaban escritos en `.planning/` pero nunca implementados: desp
 
 ## Próximos pasos
 
-### Infraestructura — YA CONFIGURADA (2026-08-24/25)
-| Dato | Valor |
-|------|-------|
-| **Supabase Project Ref** | `tnwrewghcowayuudvxey` |
-| **Supabase Project URL** | `https://tnwrewghcowayuudvxey.supabase.co` |
-| **Supabase Dashboard** | https://supabase.com/dashboard/project/tnwrewghcowayuudvxey |
-| **Vercel Team** | `aguila-blanca` (cuenta separada de la de Pablo, para poder transferirla al dueño más adelante) |
-| **Producción** | https://sacabollos-aguila-blanca.vercel.app |
+1. **Tarea 4:** completar detalle y listado por canal, coordinación de turno compartida, ficha de ingreso común y recuperación de errores en esos flujos.
+2. **Tarea 5 local:** ejecutar la regresión final y actualizar `.planning/`, diseño y documentación con la trazabilidad definitiva.
+3. **Tarea 5 remota:** aplicar `supabase/migrations/0004_casos_particulares.sql`, confirmar `0004` en el proyecto vinculado y recién después desplegar el frontend.
+4. **Validación final:** ejecutar smoke no mutante y E2E sanitizado con una cuenta QA legítima y limpieza garantizada.
 
-✅ Migración `profiles` pusheada y aplicada en remoto (`supabase migration list --linked` confirma `0001_profiles`), RLS verificada en vivo (GET anónimo devuelve `[]`).
-✅ Deploy de producción en Vercel, con las 2 env vars públicas configuradas.
-✅ Usuario dueño creado en Supabase Auth y promovido a rol `dueno` con el seed (credenciales entregadas por el dueño del taller, no documentadas acá por seguridad).
-✅ Round-trip de login verificado con la API real (login → JWT → lectura de `profiles` vía RLS).
-
-### Único pendiente: verificación humana
-El plan exige confirmar a mano, no solo con curl, que:
-1. Entrando a https://sacabollos-aguila-blanca.vercel.app desde PC y desde tablet (10-12") con las credenciales del dueño, se ve el nombre completo y la etiqueta "Dueño".
-2. Una contraseña incorrecta muestra «No pudimos iniciar sesión» y el email tipeado no se borra.
-3. Recargar la página logueado mantiene la sesión (no vuelve al login, no da 404).
-
-Con eso confirmado, la Fase 1 (Fundaciones) queda cerrada del todo.
-
-### Referencia: qué crea la migración (`supabase/migrations/0001_profiles.sql`)
-- Tabla `public.profiles` (`id` FK a `auth.users`, `full_name`, `role` ∈ {dueno,recepcion,taller}, `created_at`)
-- RLS habilitada en la misma migración: `profiles_select_own`, `profiles_update_own`, `profiles_select_all_for_admins` (dueño y recepción ven todos los perfiles)
-- Trigger `on_auth_user_created` → auto-crea perfil al alta en `auth.users`, con rol `taller` (el de menor privilegio) si la metadata no trae un rol válido — nunca asigna `dueno` sin autorización explícita
-- Backfill idempotente para usuarios de Auth creados antes de esta migración
-- Helper `public.current_user_role()` en `plpgsql` (no `sql`, para que el planificador no lo inlinee y rompa el `security definer`) — evita recursión de RLS
-- GRANT: `select` completo + `update` acotado **solo a la columna `full_name`** para `authenticated` — el rol nunca es escribible vía PostgREST
+La infraestructura existente de Supabase y Vercel continúa activa, pero la implementación local de Fase 3 no debe considerarse disponible en producción hasta completar esos pasos.
 
 ---
 
@@ -176,7 +163,7 @@ npm run lint      # Oxlint
 src/
 ├── auth/              # AuthProvider, useAuth (contexto de sesión + perfil)
 ├── features/
-│   ├── casos/         # Casos de seguro: listado, detalle, fichas, hooks, api
+│   ├── casos/         # Casos Seguro/Particular: alta, listado, detalle, fichas, hooks, API
 │   │   ├── api.ts
 │   │   ├── CasoDetailPage.tsx + .test.tsx
 │   │   ├── CasoNuevoPage.tsx
@@ -228,14 +215,16 @@ supabase/
 ├── migrations/
 │   ├── 0001_profiles.sql
 │   ├── 0002_casos.sql
-│   └── 0003_fix_casos_fotos_insert_rls.sql   # <-- NUEVO: fix RLS fotos
+│   ├── 0003_fix_casos_fotos_insert_rls.sql
+│   └── 0004_casos_particulares.sql           # Local; pendiente de aplicar en remoto
 └── seed/
     └── 0001-promote-first-dueno.sql
 
 docs/
 ├── index.html           # Demo visual aprobada (fichas individuales por rol)
 ├── tablero.html         # Prototipo Planilla de Control (vista tabular tipo Excel con semáforo y stock)
-└── proyecto.html        # Resumen del proyecto y roadmap visible en la demo
+├── proyecto.html        # Resumen del proyecto y roadmap visible en la demo
+└── superpowers/         # Diseño y plan de implementación de Fase 3
 
 .planning/
 ├── phases/
