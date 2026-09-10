@@ -93,12 +93,22 @@ declare
   v_caso_id uuid := coalesce(new.caso_id, old.caso_id);
   v_estado text;
 begin
+  if tg_op = 'UPDATE' and new.caso_id is distinct from old.caso_id then
+    raise exception 'No se puede cambiar caso_id de un daño de reparación'
+      using errcode = '23514';
+  end if;
+
   select estado into v_estado
   from public.casos
   where id = v_caso_id
   for update;
 
   if not found then
+    -- Un hijo sin padre sólo se puede observar durante ON DELETE CASCADE:
+    -- la FK impide que exista para un DELETE directo de aplicación.
+    if tg_op = 'DELETE' then
+      return old;
+    end if;
     raise exception 'Caso de reparación inexistente' using errcode = '23503';
   end if;
 
@@ -408,12 +418,8 @@ begin
       raise exception 'Al reanudar reparación debe limpiar repuesto_pendiente' using errcode = '23514';
     end if;
   elsif old.estado = 'en reparación' and new.estado = 'listo para firma' then
-    -- El lock de caso de esta UPDATE bloquea el trigger de escrituras de daños;
-    -- además bloqueamos sus filas antes de verificar que todas estén reparadas.
-    perform 1
-    from public.reparacion_danos d
-    where d.caso_id = old.id
-    for update;
+    -- El lock de caso es el único coordinador: el trigger de daños adquiere
+    -- el mismo lock antes de mutar, evitando orden inverso.
     if exists (
       select 1 from public.reparacion_danos d
       where d.caso_id = old.id and not d.reparado

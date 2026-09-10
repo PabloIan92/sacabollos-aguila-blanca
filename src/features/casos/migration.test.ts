@@ -321,4 +321,30 @@ describe('migración 0005 de reparación y stock', () => {
     expect(sql).toContain('before insert or update or delete on public.reparacion_danos')
     expect(sql).toContain('where id = v_caso_id\n  for update;')
   })
+
+  it('permite sólo el DELETE cascado, inmoviliza caso_id y coordina el cierre sólo por caso', () => {
+    const sql = repairSql()
+    const damageGuard = sql.slice(
+      sql.indexOf('create function public.validar_escritura_reparacion_dano()'),
+      sql.indexOf('create policy reparacion_danos_taller_dueno_crud')
+    )
+    const validationStart = sql.indexOf(
+      "if old.estado = 'ingresado' and new.estado = 'en reparación' then\n    if new.reparacion_iniciada_at"
+    )
+    const repairCloseStart = sql.indexOf(
+      "elsif old.estado = 'en reparación' and new.estado = 'listo para firma' then",
+      validationStart
+    )
+    const repairClose = sql.slice(
+      repairCloseStart,
+      sql.indexOf("elsif old.estado = 'listo para firma' and new.estado = 'firmado' then", repairCloseStart)
+    )
+
+    expect(damageGuard).toContain("if tg_op = 'UPDATE' and new.caso_id is distinct from old.caso_id then")
+    expect(damageGuard).toContain("raise exception 'No se puede cambiar caso_id de un daño de reparación'")
+    expect(damageGuard).toMatch(/if not found then[\s\S]*?if tg_op = 'DELETE' then\s+return old;/)
+    expect(damageGuard).toContain("if (v_estado in ('ingresado', 'en reparación', 'esperando repuesto')) is not true then")
+    expect(repairClose).toContain('El lock de caso es el único coordinador')
+    expect(repairClose).not.toContain('from public.reparacion_danos d\n    where d.caso_id = old.id\n    for update;')
+  })
 })
