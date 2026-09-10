@@ -2,12 +2,75 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-4%20Reparaci%C3%B3n%20y%20Stock-blue)
-![Status](https://img.shields.io/badge/Status-Fase%204%20completa%20en%20producci%C3%B3n-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-5%20Facturaci%C3%B3n%20y%20Cobranza-blue)
+![Status](https://img.shields.io/badge/Status-Fase%205%20completa%20en%20producci%C3%B3n-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-197%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-225%20passed-brightgreen)
 
-## Estado actual: Fase 4 - Reparación y Stock — **completa en producción** (2026-09-10)
+## Estado actual: Fase 5 - Facturación y Cobranza — **completa en producción** (2026-09-10)
+
+La funcionalidad de Facturación, Cobranza y Reclamos a Aseguradoras está 100% implementada y verificada. La migración `0006_facturacion_y_cobros.sql` está aplicada en Supabase (`tnwrewghcowayuudvxey`), los 225 tests en 26 suites pasan en verde, typecheck con `tsc -b` limpio, build de producción en 7.68s y linter sin errores.
+
+- **Task 1: Persistencia, seguridad RLS exclusiva y guards de estado (`7dc95f6`)**:
+  - Migración `0006_facturacion_y_cobros.sql` con la tabla `public.caso_facturacion` (`caso_id`, `monto_facturado`, `monto_cobrado`, `numero_factura`, `fecha_factura`, `fecha_cobro`, `metodo_pago`, `notas_cobranza`).
+  - **Seguridad financiera estricta (Requisito `AUTH-02`)**: RLS habilitado en `caso_facturacion` con política `caso_facturacion_dueno_all` exclusiva para `public.current_user_role() = 'dueno'`. Los roles `recepcion` y `taller` tienen **acceso 0** (denegación total por RLS).
+  - Campos de auditoría en `public.casos`: `facturado_at`, `cobrado_at`, `motivo_reclamo`.
+  - Check constraint `casos_datos_por_canal_check` ampliado para admitir casos particulares en `facturado` y `cobrado`.
+  - Ampliación de la función trigger `public.validar_transicion_caso()`:
+    - `firmado -> facturado`: exclusivo para `dueno`, exige registro en `caso_facturacion` con `monto_facturado > 0` y `numero_factura` no vacío. Setea `facturado_at`.
+    - `facturado -> cobrado` o `reclamo a la compañía -> cobrado`: exclusivo para `dueno`, exige `monto_cobrado > 0` y `fecha_cobro` no nulo. Setea `cobrado_at`.
+    - `facturado -> reclamo a la compañía`: permitido para `dueno` y `recepcion`, restringido estrictamente a `canal = 'seguro'` con `motivo_reclamo` no vacío.
+    - `reclamo a la compañía -> facturado`: permitido para `dueno` y `recepcion` para resolver o destrabar el reclamo.
+- **Task 2: Capa de datos y servicios API tipados (`4bc5a89`)**:
+  - `types.ts`: interfaces `CasoFacturacion`, `MetodoPago`, `SaveFacturacionPayload`, `ResumenFacturacionItem`.
+  - `api.ts`: funciones tipadas de persistencia y transiciones hacia Supabase: `getFacturacion`, `saveFacturacion`, `marcarComoFacturado`, `marcarComoCobrado`, `iniciarReclamoAseguradora`, `resolverReclamo`, `getResumenFacturacion`.
+  - Tests unitarios en `api.test.ts` con cobertura de todas las operaciones y reglas de negocio.
+- **Task 3: Pantalla Principal de Facturación y Navegación (`928e180`)**:
+  - Pantalla `FacturacionPage.tsx` en ruta `/facturacion` protegida por `RequireRole roles={['dueno']}`.
+  - 4 Tarjetas KPI financieras: Total Facturado, Total Cobrado, Pendiente de Cobro (diferencial acumulado), En Reclamo (conteo de casos en disputa).
+  - Filtros combinados: buscador de texto por patente/cliente/vehículo/factura/aseguradora, selector de estado y selector de canal.
+  - Tabla con cálculo de diferencial por caso (`monto_facturado - monto_cobrado`), formato de moneda en pesos argentinos y badges semafóricos.
+  - Habilitado el ítem «Facturación» en `routes.ts` (`available: true` para `dueno`).
+- **Task 4: Ficha de Facturación por Caso y Reclamo a Aseguradoras (`f248c0b`)**:
+  - Pantalla `FichaFacturacionPage.tsx` en `/casos/:id/facturacion` protegida para rol `dueno`.
+  - Emisión de factura, imputación de cobros, medio de pago y notas de cobranza.
+  - Indicador de saldo/diferencial en tiempo real con actualización reactiva.
+  - Botones adaptativos según estado del caso (`firmado`, `facturado`, `reclamo a la compañía`, `cobrado`).
+  - Integración en `CasoDetailPage.tsx`:
+    - Para `dueno`: botón «Gestión de Facturación y Cobranza».
+    - Para `recepcion`: botón y modal «Iniciar Reclamo a Aseguradora» habilitado para casos de seguro en estado `facturado`.
+    - Alerta destacada con el motivo del reclamo cuando el caso está en `reclamo a la compañía`.
+    - Para `taller`: ningún elemento ni monto financiero visible (`AUTH-02`).
+- **Task 5: Verificación Integral, Migración Remota y Despliegue**:
+  - Suite completa de 225 tests aprobados (26 suites).
+  - Typecheck `tsc -b` con 0 errores.
+  - Build de producción Vite completado en 7.68s.
+  - Migración `0006_facturacion_y_cobros.sql` aplicada exitosamente en Supabase remoto.
+
+### Referencia operativa y Troubleshooting (Fase 5)
+
+1. **Seguridad y Acceso a Datos Financieros (AUTH-02):**
+   - La tabla `public.caso_facturacion` no contiene políticas para `recepcion` ni `taller`.
+   - Cualquier consulta directa desde la API de Supabase con el token de un usuario sin rol `dueno` devolverá un array vacío `[]` o denegación de RLS.
+   - Para verificar RLS en SQL:
+     ```sql
+     select public.current_user_role(); -- debe devolver 'dueno'
+     select * from public.caso_facturacion;
+     ```
+2. **Máquina de Estados de Facturación y Cobros:**
+   - La transición a `facturado` requiere que el registro en `caso_facturacion` exista con `monto_facturado > 0` y `numero_factura`. Por esta razón, la función `marcarComoFacturado` en `api.ts` siempre ejecuta el upsert en `caso_facturacion` **antes** del update en `casos`.
+   - La transición a `cobrado` requiere `monto_cobrado > 0` y `fecha_cobro`. La función `marcarComoCobrado` ejecuta el upsert de cobranza previo a la transición de estado.
+   - En casos particulares, no está permitido pasar a `reclamo a la compañía`. Solo los casos con `canal = 'seguro'` pueden ingresar en reclamo.
+3. **Comandos de Verificación:**
+   - Tests: `npm test` (225 tests).
+   - Typecheck: `npx tsc -b`.
+   - Lint: `npx oxlint`.
+   - Build: `npm run build`.
+   - Migraciones remotas: `npx supabase migration list`.
+
+---
+
+## Estado histórico: Fase 4 - Reparación y Stock — **completa en producción** (2026-09-10)
 
 La funcionalidad está implementada, la migración `0005_reparacion_y_stock.sql` está aplicada en Supabase (`tnwrewghcowayuudvxey`), el PR #1 fue mergeado a `main` y desplegado exitosamente en Vercel (`https://sacabollos-aguila-blanca.vercel.app`). Se encuentran los 197 tests en verde, typecheck limpio, build pasando y lint sin errores:
 
