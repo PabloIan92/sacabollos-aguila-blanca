@@ -78,6 +78,9 @@ export interface Caso {
   reparacion_iniciada_at: string | null
   reparacion_lista_at: string | null
   firmado_at: string | null
+  facturado_at?: string | null
+  cobrado_at?: string | null
+  motivo_reclamo?: string | null
   estado: CasoEstado
   created_at: string
   updated_at: string
@@ -95,6 +98,9 @@ type CasoGeneratedField =
   | 'reparacion_iniciada_at'
   | 'reparacion_lista_at'
   | 'firmado_at'
+  | 'facturado_at'
+  | 'cobrado_at'
+  | 'motivo_reclamo'
 
 type CasoChannelField =
   | 'canal'
