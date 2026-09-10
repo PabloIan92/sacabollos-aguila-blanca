@@ -68,6 +68,8 @@ La funcionalidad de Facturación, Cobranza y Reclamos a Aseguradoras está 100% 
    - Build: `npm run build`.
    - Migraciones remotas: `npx supabase migration list`.
 
+**Próximo bloque en desarrollo**: **Fase 6 — CRM (Clientes, Aseguradoras y Productores)**.
+
 ---
 
 ## Estado histórico: Fase 4 - Reparación y Stock — **completa en producción** (2026-09-10)
