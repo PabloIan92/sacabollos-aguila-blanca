@@ -14,7 +14,7 @@ create table public.clientes (
 
 create trigger clientes_updated_at
   before update on public.clientes
-  for each row execute function public.set_updated_at();
+  for each row execute function public.set_row_updated_at();
 
 alter table public.clientes enable row level security;
 
@@ -46,7 +46,7 @@ create table public.aseguradoras (
 
 create trigger aseguradoras_updated_at
   before update on public.aseguradoras
-  for each row execute function public.set_updated_at();
+  for each row execute function public.set_row_updated_at();
 
 alter table public.aseguradoras enable row level security;
 
@@ -77,7 +77,7 @@ create table public.productores (
 
 create trigger productores_updated_at
   before update on public.productores
-  for each row execute function public.set_updated_at();
+  for each row execute function public.set_row_updated_at();
 
 alter table public.productores enable row level security;
 
