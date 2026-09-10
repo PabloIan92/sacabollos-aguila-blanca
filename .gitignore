@@ -28,6 +28,9 @@ supabase/.temp
 # Temp scaffold
 .gsd-scaffold
 
+# Isolated feature worktrees
+.worktrees/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
