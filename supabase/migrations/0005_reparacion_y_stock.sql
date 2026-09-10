@@ -81,6 +81,46 @@ create trigger reparacion_danos_updated_at
 revoke all on function public.set_reparacion_danos_updated_at()
   from public, anon, authenticated;
 
+-- Todas las mutaciones de daños comparten un lock de la fila del caso con el
+-- cierre. Así el trigger de cierre no puede observar daños mientras se editan.
+create function public.validar_escritura_reparacion_dano()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_caso_id uuid := coalesce(new.caso_id, old.caso_id);
+  v_estado text;
+begin
+  select estado into v_estado
+  from public.casos
+  where id = v_caso_id
+  for update;
+
+  if not found then
+    raise exception 'Caso de reparación inexistente' using errcode = '23503';
+  end if;
+
+  if (v_estado in ('ingresado', 'en reparación', 'esperando repuesto')) is not true then
+    raise exception 'No se pueden modificar daños fuera de una reparación activa'
+      using errcode = '23514';
+  end if;
+
+  if tg_op = 'DELETE' then
+    return old;
+  end if;
+  return new;
+end;
+$$;
+
+create trigger reparacion_danos_validar_escritura
+  before insert or update or delete on public.reparacion_danos
+  for each row execute function public.validar_escritura_reparacion_dano();
+
+revoke all on function public.validar_escritura_reparacion_dano()
+  from public, anon, authenticated;
+
 create policy reparacion_danos_taller_dueno_crud
   on public.reparacion_danos
   for all
@@ -154,6 +194,7 @@ as $$
   select count(distinct split_part(o.name, '/', 3)) = 4
   from storage.objects o
   where o.bucket_id = 'casos-fotos'
+    and array_length(string_to_array(o.name, '/'), 1) = 3
     and split_part(o.name, '/', 1) = 'casos'
     and split_part(o.name, '/', 2) = caso_id::text
     and split_part(o.name, '/', 3) in (
@@ -175,6 +216,7 @@ as $$
     select 1
     from storage.objects o
     where o.bucket_id = 'casos-fotos'
+      and array_length(string_to_array(o.name, '/'), 1) = 3
       and split_part(o.name, '/', 1) = 'casos'
       and split_part(o.name, '/', 2) = caso_id::text
       and split_part(o.name, '/', 3) = 'orden-firmada.webp'
@@ -305,9 +347,9 @@ begin
   elsif old.estado = 'esperando repuesto' and new.estado = 'en reparación' then
     campos_permitidos := array['estado', 'repuesto_pendiente'];
   elsif old.estado = 'en reparación' and new.estado = 'listo para firma' then
-    campos_permitidos := array['estado', 'reparacion_lista_at'];
+    campos_permitidos := array['estado'];
   elsif old.estado = 'listo para firma' and new.estado = 'firmado' then
-    campos_permitidos := array['estado', 'firmado_at'];
+    campos_permitidos := array['estado'];
   end if;
 
   if (to_jsonb(old) - (campos_permitidos || array['updated_at', 'estado_changed_at']))
@@ -316,6 +358,14 @@ begin
     raise exception
       'La transición intenta cambiar campos no permitidos'
       using errcode = '23514';
+  end if;
+
+  -- La validación anterior rechaza timestamps enviados por el cliente; sólo
+  -- después el trigger estampa los tiempos del servidor para estas transiciones.
+  if old.estado = 'en reparación' and new.estado = 'listo para firma' then
+    new.reparacion_lista_at := now();
+  elsif old.estado = 'listo para firma' and new.estado = 'firmado' then
+    new.firmado_at := now();
   end if;
 
   if old.estado = 'borrador' and new.estado is distinct from old.estado then
@@ -358,9 +408,12 @@ begin
       raise exception 'Al reanudar reparación debe limpiar repuesto_pendiente' using errcode = '23514';
     end if;
   elsif old.estado = 'en reparación' and new.estado = 'listo para firma' then
-    if new.reparacion_lista_at is null then
-      raise exception 'Al cerrar reparación requiere reparacion_lista_at' using errcode = '23514';
-    end if;
+    -- El lock de caso de esta UPDATE bloquea el trigger de escrituras de daños;
+    -- además bloqueamos sus filas antes de verificar que todas estén reparadas.
+    perform 1
+    from public.reparacion_danos d
+    where d.caso_id = old.id
+    for update;
     if exists (
       select 1 from public.reparacion_danos d
       where d.caso_id = old.id and not d.reparado
@@ -368,9 +421,6 @@ begin
       raise exception 'La reparación requiere todos los daños reparados y cuatro fotos finales' using errcode = '23514';
     end if;
   elsif old.estado = 'listo para firma' and new.estado = 'firmado' then
-    if new.firmado_at is null then
-      raise exception 'Al firmar requiere firmado_at' using errcode = '23514';
-    end if;
     if not public.caso_tiene_orden_firmada(old.id) then
       raise exception 'El firmado requiere orden-firmada.webp' using errcode = '23514';
     end if;
@@ -382,7 +432,7 @@ begin
     rol_autorizado := actor_role in ('dueno', 'recepcion');
   end if;
 
-  if not rol_autorizado then
+  if rol_autorizado is not true then
     raise exception
       'El rol % no puede realizar la transición % -> %',
       coalesce(actor_role, 'sin rol'), old.estado, new.estado
@@ -417,7 +467,7 @@ as $$
 declare
   v_caso public.casos;
 begin
-  if public.current_user_role() not in ('dueno', 'taller') then
+  if (public.current_user_role() in ('dueno', 'taller')) is not true then
     raise exception 'Solo dueño o taller puede iniciar reparación' using errcode = '42501';
   end if;
 
@@ -464,6 +514,7 @@ create policy casos_fotos_insert_reparacion
   with check (
     bucket_id = 'casos-fotos'
     and public.current_user_role() in ('dueno', 'taller')
+    and array_length(string_to_array(name, '/'), 1) = 3
     and (storage.foldername(name))[1] = 'casos'
     and split_part(name, '/', 3) in (
       'final-frente.webp', 'final-atras.webp',
@@ -483,6 +534,7 @@ create policy casos_fotos_update_reparacion
   using (
     bucket_id = 'casos-fotos'
     and public.current_user_role() in ('dueno', 'taller')
+    and array_length(string_to_array(name, '/'), 1) = 3
     and (storage.foldername(name))[1] = 'casos'
     and split_part(name, '/', 3) in (
       'final-frente.webp', 'final-atras.webp',
@@ -493,6 +545,7 @@ create policy casos_fotos_update_reparacion
   with check (
     bucket_id = 'casos-fotos'
     and public.current_user_role() in ('dueno', 'taller')
+    and array_length(string_to_array(name, '/'), 1) = 3
     and (storage.foldername(name))[1] = 'casos'
     and split_part(name, '/', 3) in (
       'final-frente.webp', 'final-atras.webp',

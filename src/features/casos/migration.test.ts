@@ -275,4 +275,50 @@ describe('migración 0005 de reparación y stock', () => {
     expect(sql).toContain('revoke all on function public.caso_tiene_fotos_finales(uuid)')
     expect(sql).toContain('revoke all on function public.caso_tiene_orden_firmada(uuid)')
   })
+
+  it('estampa los cierres en PostgreSQL y no acepta fechas del cliente', () => {
+    const sql = repairSql()
+    const trigger = sql.slice(
+      sql.indexOf('create or replace function public.validar_transicion_caso()'),
+      sql.indexOf('create policy casos_update_taller_reparacion')
+    )
+
+    expect(trigger).toContain("if old.estado = 'en reparación' and new.estado = 'listo para firma' then")
+    expect(trigger).toContain('new.reparacion_lista_at := now();')
+    expect(trigger).toContain("elsif old.estado = 'listo para firma' and new.estado = 'firmado' then")
+    expect(trigger).toContain('new.firmado_at := now();')
+    expect(trigger).not.toContain("array['estado', 'reparacion_lista_at']")
+    expect(trigger).not.toContain("array['estado', 'firmado_at']")
+    expect(trigger.indexOf('new.reparacion_lista_at := now();')).toBeGreaterThan(
+      trigger.indexOf('La transición intenta cambiar campos no permitidos')
+    )
+  })
+
+  it('exige paths de storage de exactamente tres segmentos', () => {
+    const sql = repairSql()
+    const finalPhotos = sql.slice(
+      sql.indexOf('create function public.caso_tiene_fotos_finales'),
+      sql.indexOf('create function public.caso_tiene_orden_firmada')
+    )
+    const signedOrder = sql.slice(
+      sql.indexOf('create function public.caso_tiene_orden_firmada'),
+      sql.indexOf('revoke all on function public.caso_tiene_fotos_finales')
+    )
+    const storagePolicies = sql.slice(sql.indexOf('create policy casos_fotos_insert_reparacion'))
+
+    expect(finalPhotos).toContain("array_length(string_to_array(o.name, '/'), 1) = 3")
+    expect(signedOrder).toContain("array_length(string_to_array(o.name, '/'), 1) = 3")
+    expect(storagePolicies).toContain("array_length(string_to_array(name, '/'), 1) = 3")
+  })
+
+  it('rechaza roles nulos y serializa las escrituras de daños con el caso', () => {
+    const sql = repairSql()
+
+    expect(sql).toContain('if rol_autorizado is not true then')
+    expect(sql).toContain("if (public.current_user_role() in ('dueno', 'taller')) is not true then")
+    expect(sql).toContain('create function public.validar_escritura_reparacion_dano()')
+    expect(sql).toContain('create trigger reparacion_danos_validar_escritura')
+    expect(sql).toContain('before insert or update or delete on public.reparacion_danos')
+    expect(sql).toContain('where id = v_caso_id\n  for update;')
+  })
 })
