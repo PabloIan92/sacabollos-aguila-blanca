@@ -94,4 +94,17 @@ describe('CasosList', () => {
     renderList([caso({ estado_changed_at: haceNDias(2) })])
     expect(screen.queryByText(/⚠/)).not.toBeInTheDocument()
   })
+
+  it('permite personalizar el destino del link mediante caseHref', () => {
+    render(
+      <MemoryRouter>
+        <CasosList
+          casos={[caso({ id: 'caso-99' })]}
+          caseHref={(c) => `/casos/${c.id}/ficha-trabajo`}
+        />
+      </MemoryRouter>
+    )
+    const link = screen.getByRole('link', { name: 'AA123BB' })
+    expect(link).toHaveAttribute('href', '/casos/caso-99/ficha-trabajo')
+  })
 })

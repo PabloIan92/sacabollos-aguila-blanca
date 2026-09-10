@@ -9,7 +9,13 @@ function diasEnEtapa(caso: Caso): number {
   return Math.floor((Date.now() - cambiado) / (1000 * 60 * 60 * 24))
 }
 
-export function CasosList({ casos }: { casos: Caso[] }) {
+export function CasosList({
+  casos,
+  caseHref,
+}: {
+  casos: Caso[]
+  caseHref?: (caso: Caso) => string
+}) {
   return (
     <table className="w-full text-sm font-sans bg-white border-2 border-graphite">
       <thead>
@@ -24,7 +30,11 @@ export function CasosList({ casos }: { casos: Caso[] }) {
         {casos.map((caso) => {
           const dias = diasEnEtapa(caso)
           const trabado = dias >= DIAS_TRABADO
-          const destino = caso.estado === 'borrador' ? `/casos/${caso.id}/ficha-inspeccion` : `/casos/${caso.id}`
+          const destino = caseHref
+            ? caseHref(caso)
+            : caso.estado === 'borrador'
+              ? `/casos/${caso.id}/ficha-inspeccion`
+              : `/casos/${caso.id}`
           return (
             <tr key={caso.id} className="border-b border-steel-300">
               <td className="p-2">
