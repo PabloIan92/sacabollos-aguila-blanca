@@ -66,6 +66,16 @@ La ingeniería local está completa: alta discriminada Seguro/Particular, presup
 **Verificación fresca:** 18 archivos / 122 tests ✅, typecheck ✅, build de producción ✅ (permanece el aviso informativo de chunk >500 kB), lint ✅ con solo dos warnings históricos de Fast Refresh, y `git diff --check` ✅.
 
 **Rollout completado:** Supabase CLI confirmó `0001–0003` alineadas, el dry-run propuso únicamente `0004_casos_particulares_y_transiciones.sql` y el push registró `0004` en remoto. GitHub `main` quedó en `c097efd` y el deployment canónico de Vercel terminó en `success`: **https://sacabollos-aguila-blanca.vercel.app**. El E2E productivo mutante sigue reservado hasta disponer de una cuenta QA legítima y una limpieza idempotente.
+### Registro de cierre — Fase 3 (2026-09-09/10)
+
+- Dos implementaciones paralelas partían de `fb0e5c8`: `7caa8b0` (flujo completo) y `8a28ea4` (tareas 1–3). Se compararon código, migraciones y pruebas; el merge `c097efd` conserva el árbol completo y registra ambos historiales sin mantener dos migraciones `0004` incompatibles.
+- La variante descartada compilaba, pero su suite sólo ejecutó 62 pruebas y dejó 10 archivos fallidos por falta de entorno Supabase. El árbol elegido ejecutó 18 archivos y 122 pruebas correctamente, además de typecheck, build, lint sin errores y `git diff --check`.
+- OpenCode con `DeepSeek V4 Pro 0813` y `Nemotron 3 Super` se usó para auditorías auxiliares de release, SQL y divergencia. Las decisiones finales se validaron contra el repositorio y los comandos reales; no se guardaron credenciales, tokens ni códigos de acceso.
+- Supabase quedó `ACTIVE_HEALTHY`, el repositorio se vinculó al proyecto `tnwrewghcowayuudvxey` y el historial remoto confirmó `0001`, `0002`, `0003` y `0004` alineadas.
+- El cierre documental quedó en `5f8a317`. GitHub Pages y los cuatro checks Vercel asociados terminaron en `success`; el dominio canónico es **https://sacabollos-aguila-blanca.vercel.app**.
+- GitHub todavía registra tres proyectos Vercel adicionales (`sacabollos-aguila-blanca-3a`, `sacabollos-aguila-blanca-en` y `sacabollos-aguila-blanca-m3`). Su desvinculación queda pendiente de acceso administrativo a Vercel.
+- Pendientes no bloqueantes: E2E productivo mutante con cuenta QA legítima y limpieza idempotente; verificación táctil en tablet física; plan diferido `01-04` para alta de usuarios.
+- Próximo bloque: **Fase 4 — Reparación y Stock**.
 
 ---
 
@@ -387,7 +397,7 @@ Commits donde se prototipó cada pieza (todos sobre `docs/tablero.html`): `116b2
 - `npx supabase link` + `npx supabase db push` corridos contra el proyecto real (`tnwrewghcowayuudvxey`) — migración `0001_profiles` aplicada en remoto.
 - Verificado con curl que RLS bloquea el acceso anónimo (`GET /rest/v1/profiles` → `[]`).
 - Vercel: se creó una cuenta separada (equipo `aguila-blanca`, login vía Bitbucket con el email del taller) para poder transferirle la propiedad del proyecto al dueño más adelante sin migrar nada.
-- Se detectaron y limpiaron 4 proyectos duplicados en Vercel (quedó solo `sacabollos-aguila-blanca`), producto de varios intentos de import mientras se resolvía el alta de la cuenta.
+- En esa sesión se intentó limpiar los proyectos duplicados de Vercel. La auditoría del 2026-09-09/10 confirmó que actualmente vuelven a existir tres vínculos adicionales (`-3a`, `-en`, `-m3`); ver el registro de cierre de Fase 3.
 - Env vars de producción cargadas (`VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`) y deploy de producción corrido: **https://sacabollos-aguila-blanca.vercel.app**
 - Primer usuario dueño creado vía Supabase Auth Admin API y promovido a rol `dueno` con el mismo criterio del seed `0001-promote-first-dueno.sql`.
 - Login real verificado de punta a punta contra la API (no solo build/typecheck): login devuelve JWT, el JWT lee su propia fila de `profiles` vía RLS.
@@ -439,7 +449,10 @@ Solo repetir la prueba a mano en una tablet física de 10-12" para el chequeo de
 - **Filtros**: Todos / Seguro / Particular / "Solo trabados (≥5d)".
 - **Concepto vendido al cliente**: *"Es tu Excel, pero se llena solo"* — nadie edita la planilla a mano; cada celda cambia de color cuando el responsable aprueba su parte en su pantalla.
 
-### Estado actual tras esta sesión
+### Estado histórico tras esa sesión (2026-08-23)
+
+> Este bloque conserva el estado de aquel momento; el estado vigente está al inicio del README y en el registro de cierre de Fase 3.
+
 - **Fase 1 (Fundaciones)**: Tasks 1-2 ✅ (scaffold, UI primitives, tema visual, tests). Tasks 3-4 ⏳ bloqueadas (requieren Supabase + Vercel propios).
 - **Demo Fichas**: https://pabloian92.github.io/sacabollos-aguila-blanca/
 - **Demo Planilla (nueva)**: https://pabloian92.github.io/sacabollos-aguila-blanca/tablero.html

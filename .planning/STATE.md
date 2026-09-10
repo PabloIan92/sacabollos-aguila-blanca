@@ -78,7 +78,7 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- La migración 0004 está validada contractualmente pero no se pudo ejecutar: no hay Docker/psql y Supabase CLI no tiene access token en este entorno.
+- GitHub registra tres proyectos Vercel adicionales (`-3a`, `-en`, `-m3`) que despliegan junto al canónico; su desvinculación requiere acceso administrativo a Vercel.
 - La clave privilegiada encontrada en un script QA histórico debe rotarse; no se usará para automatización.
 
 ### Quick Tasks Completed
@@ -98,6 +98,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-09-08
-Stopped at: Phase 3 engineering complete; production rollout pending
-Resume file: docs/superpowers/plans/2026-09-08-fase-3-caso-particular.md (Tarea 5: producción)
+Last session: 2026-09-09
+Stopped at: Phase 3 complete in production; Phase 4 discovery started
+Resume file: README.md (registro de cierre) and upcoming Phase 4 design spec
