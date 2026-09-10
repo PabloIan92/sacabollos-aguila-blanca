@@ -3,11 +3,11 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-4%20Reparaci%C3%B3n%20y%20Stock-blue)
-![Status](https://img.shields.io/badge/Status-Fase%204%20completa%20local-brightgreen)
+![Status](https://img.shields.io/badge/Status-Fase%204%20migraci%C3%B3n%20aplicada-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
 ![Tests](https://img.shields.io/badge/Tests-197%20passed-brightgreen)
 
-## Estado actual: Fase 4 - Reparación y Stock — **completa a nivel de ingeniería** (2026-09-10)
+## Estado actual: Fase 4 - Reparación y Stock — **migración 0005 aplicada en Supabase** (2026-09-10)
 
 Se completaron las 5 tareas del plan `docs/superpowers/plans/2026-09-10-fase-4-reparacion-stock.md` en la rama `feat/phase4-workflow`. Se encuentran los 197 tests en verde, typecheck limpio, build pasando y lint sin errores:
 
