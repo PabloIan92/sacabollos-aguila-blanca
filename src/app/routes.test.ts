@@ -1,6 +1,11 @@
 import React from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { navItemsForRole } from './routes'
+import { useAuth } from '../auth/useAuth'
+
+vi.mock('../auth/useAuth', () => ({
+  useAuth: vi.fn(),
+}))
 
 describe('navItemsForRole', () => {
   it('devuelve Casos, Stock, Facturación e Invitar para dueno', () => {
@@ -68,5 +73,65 @@ describe('navItemsForRole', () => {
 
     const link = await screen.findByRole('link', { name: 'TALLER1' })
     expect(link).toHaveAttribute('href', '/casos/caso-taller-1/ficha-trabajo')
+  })
+
+  it('deniega acceso a /facturacion y /casos/:id/facturacion para recepcion y taller', async () => {
+    const { RequireRole } = await import('../auth/RequireRole')
+    const { render, screen } = await import('@testing-library/react')
+    const { MemoryRouter, Routes, Route } = await import('react-router')
+
+    const mockedAuth = vi.mocked(useAuth)
+
+    for (const role of ['recepcion', 'taller'] as const) {
+      mockedAuth.mockReturnValue({
+        session: { user: { id: 'u-1' } },
+        profile: { id: 'u-1', full_name: 'Test', role },
+        loading: false,
+      } as any)
+
+      const { unmount } = render(
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: ['/facturacion'] },
+          React.createElement(
+            Routes,
+            null,
+            React.createElement(Route, { path: '/', element: React.createElement('div', null, 'ACCESO DENEGADO / HOME') }),
+            React.createElement(
+              Route,
+              { element: React.createElement(RequireRole, { roles: ['dueno'] }) },
+              React.createElement(Route, { path: '/facturacion', element: React.createElement('div', null, 'FACTURACION PAGE') }),
+              React.createElement(Route, { path: '/casos/:id/facturacion', element: React.createElement('div', null, 'FICHA FACTURACION') })
+            )
+          )
+        )
+      )
+
+      expect(screen.getByText('ACCESO DENEGADO / HOME')).toBeInTheDocument()
+      expect(screen.queryByText('FACTURACION PAGE')).not.toBeInTheDocument()
+      unmount()
+
+      const { unmount: unmountFicha } = render(
+        React.createElement(
+          MemoryRouter,
+          { initialEntries: ['/casos/123/facturacion'] },
+          React.createElement(
+            Routes,
+            null,
+            React.createElement(Route, { path: '/', element: React.createElement('div', null, 'ACCESO DENEGADO / HOME') }),
+            React.createElement(
+              Route,
+              { element: React.createElement(RequireRole, { roles: ['dueno'] }) },
+              React.createElement(Route, { path: '/facturacion', element: React.createElement('div', null, 'FACTURACION PAGE') }),
+              React.createElement(Route, { path: '/casos/:id/facturacion', element: React.createElement('div', null, 'FICHA FACTURACION') })
+            )
+          )
+        )
+      )
+
+      expect(screen.getByText('ACCESO DENEGADO / HOME')).toBeInTheDocument()
+      expect(screen.queryByText('FICHA FACTURACION')).not.toBeInTheDocument()
+      unmountFicha()
+    }
   })
 })
