@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
+import { AuthContext } from '../../auth/AuthProvider'
 import { Ficha } from '../../ui/Ficha'
 import { PrimaryButton } from '../../ui/PrimaryButton'
 import { coordinateCasoTurno, getCaso, markSeguroApproved } from './api'
+import { iniciarReclamoAseguradora } from '../facturacion/api'
 import type { Caso, ModalidadContacto } from './types'
 
 const labelClassName = 'block text-xs font-mono font-semibold uppercase tracking-wide text-graphite mb-1'
@@ -20,12 +22,19 @@ export function CasoDetailPage() {
   const navigate = useNavigate()
 
   const [caso, setCaso] = useState<Caso | null>(null)
+  const auth = useContext(AuthContext)
+  const role = auth?.profile?.role
+
   const [turnoFecha, setTurnoFecha] = useState('')
   const [actualizando, setActualizando] = useState(false)
   const [cargando, setCargando] = useState(true)
   const [errorCarga, setErrorCarga] = useState(false)
   const [errorOperacion, setErrorOperacion] = useState<string | null>(null)
   const [reintento, setReintento] = useState(0)
+
+  const [mostrarReclamoModal, setMostrarReclamoModal] = useState(false)
+  const [motivoReclamo, setMotivoReclamo] = useState('')
+  const [enviandoReclamo, setEnviandoReclamo] = useState(false)
 
   useEffect(() => {
     if (!id) return
@@ -89,6 +98,22 @@ export function CasoDetailPage() {
       setErrorOperacion('No se pudo coordinar el turno. Intentá nuevamente.')
     } finally {
       setActualizando(false)
+    }
+  }
+
+  async function handleIniciarReclamo() {
+    if (!motivoReclamo.trim()) return
+    setEnviandoReclamo(true)
+    setErrorOperacion(null)
+    try {
+      const actualizado = await iniciarReclamoAseguradora(caseId, motivoReclamo.trim())
+      setCaso(actualizado)
+      setMostrarReclamoModal(false)
+      setMotivoReclamo('')
+    } catch {
+      setErrorOperacion('No se pudo iniciar el reclamo a la aseguradora. Intentá nuevamente.')
+    } finally {
+      setEnviandoReclamo(false)
     }
   }
 
@@ -179,6 +204,71 @@ export function CasoDetailPage() {
         <PrimaryButton onClick={() => navigate(`/casos/${caseId}/ficha-ingreso`)}>
           Registrar ingreso al taller
         </PrimaryButton>
+      )}
+
+      {/* Botón para Dueño hacia Facturación */}
+      {role === 'dueno' && (
+        <div className="mt-4">
+          <PrimaryButton onClick={() => navigate(`/casos/${caseId}/facturacion`)}>
+            Gestión de Facturación y Cobranza
+          </PrimaryButton>
+        </div>
+      )}
+
+      {/* Alerta de Caso en Reclamo */}
+      {caso.estado === 'reclamo a la compañía' && role !== 'taller' && (
+        <div className="mt-4 p-4 bg-red-50 border-2 border-red text-red">
+          <p className="font-mono font-bold text-xs uppercase mb-1">
+            Caso en reclamo a la aseguradora
+          </p>
+          <p className="font-sans text-sm">
+            Motivo: <strong>{caso.motivo_reclamo || 'Sin motivo especificado'}</strong>
+          </p>
+        </div>
+      )}
+
+      {/* Botón de Reclamo a Aseguradora para Recepción / Dueño */}
+      {caso.canal === 'seguro' && caso.estado === 'facturado' && role !== 'taller' && (
+        <div className="mt-4">
+          {!mostrarReclamoModal ? (
+            <button
+              onClick={() => setMostrarReclamoModal(true)}
+              className="px-4 py-2 bg-red-50 border-2 border-red text-red font-mono text-xs uppercase font-bold hover:bg-red hover:text-white transition"
+            >
+              Iniciar Reclamo a Aseguradora
+            </button>
+          ) : (
+            <div className="p-4 bg-red-50 border-2 border-red">
+              <label htmlFor="motivo_reclamo_input" className={labelClassName}>
+                Motivo del Reclamo a la Compañía
+              </label>
+              <textarea
+                id="motivo_reclamo_input"
+                rows={3}
+                value={motivoReclamo}
+                onChange={(e) => setMotivoReclamo(e.target.value)}
+                placeholder="Describa el motivo del reclamo (demora de pago, liquidación observada...)"
+                className="w-full px-3 py-2 text-sm font-sans bg-white border-2 border-red-300 focus:border-red focus:outline-none mb-3"
+              />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleIniciarReclamo}
+                  disabled={enviandoReclamo || !motivoReclamo.trim()}
+                  className="px-4 py-2 bg-red text-white font-mono text-xs uppercase font-bold hover:bg-red-700 transition disabled:opacity-50"
+                >
+                  Confirmar Reclamo
+                </button>
+                <button
+                  onClick={() => setMostrarReclamoModal(false)}
+                  disabled={enviandoReclamo}
+                  className="px-4 py-2 border-2 border-graphite font-mono text-xs uppercase font-bold hover:bg-steel-100 transition"
+                >
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </div>
   )

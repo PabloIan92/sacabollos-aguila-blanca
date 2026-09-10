@@ -14,7 +14,7 @@ export const navItems: NavItem[] = [
   { to: '/', label: 'Turnos', icon: Calendar, roles: ['recepcion'], available: true },
   { to: '/casos', label: 'Casos', icon: ClipboardList, roles: ['recepcion'], available: true },
   { to: '/stock', label: 'Stock', icon: Package, roles: ['dueno', 'recepcion', 'taller'], available: true },
-  { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['dueno'], available: false },
+  { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['dueno'], available: true },
   { to: '/invitar', label: 'Invitar', icon: UserPlus, roles: ['dueno', 'recepcion'], available: false },
 ]
 

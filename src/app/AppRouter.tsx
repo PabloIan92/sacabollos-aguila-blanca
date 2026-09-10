@@ -12,6 +12,8 @@ import { FichaIngresoPage } from '../features/casos/FichaIngresoPage'
 import { FichaTrabajoPage } from '../features/casos/FichaTrabajoPage'
 import { CierreReparacionPage } from '../features/casos/CierreReparacionPage'
 import { StockPage } from '../features/stock/StockPage'
+import { FacturacionPage } from '../features/facturacion/FacturacionPage'
+import { FichaFacturacionPage } from '../features/facturacion/FichaFacturacionPage'
 
 const router = createBrowserRouter([
   {
@@ -31,11 +33,23 @@ const router = createBrowserRouter([
           { index: true, element: <RoleHome /> },
           { path: '/stock', element: <StockPage /> },
           {
+            element: <RequireRole roles={['dueno']} />,
+            children: [
+              { path: '/facturacion', element: <FacturacionPage /> },
+              { path: '/casos/:id/facturacion', element: <FichaFacturacionPage /> },
+            ],
+          },
+          {
+            element: <RequireRole roles={['recepcion', 'dueno']} />,
+            children: [
+              { path: '/casos/:id', element: <CasoDetailPage /> },
+            ],
+          },
+          {
             element: <RequireRole roles={['recepcion']} />,
             children: [
               { path: '/casos', element: <CasosListPage /> },
               { path: '/casos/nuevo', element: <CasoNuevoPage /> },
-              { path: '/casos/:id', element: <CasoDetailPage /> },
               { path: '/casos/:id/ficha-inspeccion', element: <FichaInspeccionPage /> },
               { path: '/casos/:id/ficha-ingreso', element: <FichaIngresoPage /> },
             ],
