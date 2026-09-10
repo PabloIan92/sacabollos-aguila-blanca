@@ -14,6 +14,8 @@ import { CierreReparacionPage } from '../features/casos/CierreReparacionPage'
 import { StockPage } from '../features/stock/StockPage'
 import { FacturacionPage } from '../features/facturacion/FacturacionPage'
 import { FichaFacturacionPage } from '../features/facturacion/FichaFacturacionPage'
+import { CRMPage } from '../features/crm/CRMPage'
+import { InvitarPage } from '../features/equipo/InvitarPage'
 
 const router = createBrowserRouter([
   {
@@ -43,6 +45,8 @@ const router = createBrowserRouter([
             element: <RequireRole roles={['recepcion', 'dueno']} />,
             children: [
               { path: '/casos/:id', element: <CasoDetailPage /> },
+              { path: '/crm', element: <CRMPage /> },
+              { path: '/invitar', element: <InvitarPage /> },
             ],
           },
           {

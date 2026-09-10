@@ -1,4 +1,4 @@
-import { ClipboardList, Calendar, Receipt, UserPlus, Package, type LucideIcon } from 'lucide-react'
+import { ClipboardList, Calendar, Receipt, UserPlus, Package, Users, type LucideIcon } from 'lucide-react'
 import type { Profile } from '../auth/AuthProvider'
 
 export type NavItem = {
@@ -15,7 +15,8 @@ export const navItems: NavItem[] = [
   { to: '/casos', label: 'Casos', icon: ClipboardList, roles: ['recepcion'], available: true },
   { to: '/stock', label: 'Stock', icon: Package, roles: ['dueno', 'recepcion', 'taller'], available: true },
   { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['dueno'], available: true },
-  { to: '/invitar', label: 'Invitar', icon: UserPlus, roles: ['dueno', 'recepcion'], available: false },
+  { to: '/crm', label: 'CRM', icon: Users, roles: ['dueno', 'recepcion'], available: true },
+  { to: '/invitar', label: 'Invitar', icon: UserPlus, roles: ['dueno', 'recepcion'], available: true },
 ]
 
 export function navItemsForRole(role: Profile['role']): NavItem[] {
