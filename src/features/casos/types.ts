@@ -41,6 +41,15 @@ export const ANGULOS_FOTO = ['frente', 'atras', 'lateral-izquierdo', 'lateral-de
 
 export type AnguloFoto = (typeof ANGULOS_FOTO)[number]
 
+export const FINAL_PHOTO_ANGLES = [
+  'final-frente',
+  'final-atras',
+  'final-lateral-izquierdo',
+  'final-lateral-derecho',
+] as const
+
+export const SIGNED_ORDER_ANGLES = ['orden-firmada'] as const
+
 export interface Caso {
   id: string
   canal: 'seguro' | 'particular'
@@ -65,6 +74,10 @@ export interface Caso {
   turno_fecha: string | null
   orden_ingreso_numero: string | null
   ingresado_at: string | null
+  repuesto_pendiente: string | null
+  reparacion_iniciada_at: string | null
+  reparacion_lista_at: string | null
+  firmado_at: string | null
   estado: CasoEstado
   created_at: string
   updated_at: string
@@ -78,6 +91,10 @@ type CasoGeneratedField =
   | 'created_at'
   | 'updated_at'
   | 'estado_changed_at'
+  | 'repuesto_pendiente'
+  | 'reparacion_iniciada_at'
+  | 'reparacion_lista_at'
+  | 'firmado_at'
 
 type CasoChannelField =
   | 'canal'
@@ -124,3 +141,27 @@ export type CreateCasoInput =
       seguimiento_observaciones?: null
       inspeccion_guardada_at?: string | null
     })
+
+export interface ReparacionDano {
+  id: string
+  caso_id: string
+  zona: string
+  x: number
+  y: number
+  descripcion: string | null
+  reparado: boolean
+  origen_inspeccion: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface CreateReparacionDanoInput {
+  zona: string
+  x: number
+  y: number
+  descripcion: string | null
+}
+
+export type UpdateReparacionDanoInput = Partial<
+  Pick<ReparacionDano, 'zona' | 'x' | 'y' | 'descripcion' | 'reparado'>
+>
