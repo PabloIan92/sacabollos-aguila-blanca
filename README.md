@@ -3,13 +3,13 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-3%20Caso%20Particular-blue)
-![Status](https://img.shields.io/badge/Status-Fase%203%20ingenier%C3%ADa%20completa%20%C2%B7%20rollout%20pendiente-yellow)
+![Status](https://img.shields.io/badge/Status-Fase%203%20completa-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
 ![Tests](https://img.shields.io/badge/Tests-122%20passed-brightgreen)
 
-## Estado actual: Fase 3 - Caso Particular — **ingeniería local completa** (2026-09-09)
+## Estado actual: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
 
-La funcionalidad está implementada y verificada localmente; el rollout queda pendiente hasta autenticar Supabase CLI y aplicar la migración 0004. El detalle y las evidencias están en la sección de Fase 3.
+La funcionalidad está implementada, la migración `0004` está aplicada en Supabase y el commit reconciliado `c097efd` fue desplegado correctamente por Vercel. El detalle y las evidencias están en la sección de Fase 3.
 
 ## Estado histórico: Fase 2 - Caso de Seguro — cerrada (2026-09-08)
 
@@ -65,7 +65,7 @@ La ingeniería local está completa: alta discriminada Seguro/Particular, presup
 
 **Verificación fresca:** 18 archivos / 122 tests ✅, typecheck ✅, build de producción ✅ (permanece el aviso informativo de chunk >500 kB), lint ✅ con solo dos warnings históricos de Fast Refresh, y `git diff --check` ✅.
 
-**Rollout pendiente:** este entorno no tiene Docker ni `psql`, y Supabase CLI responde `Access token not provided`; por eso `0004` todavía no fue aplicada ni confirmada en remoto. El orden seguro es autenticar la CLI, vincular `tnwrewghcowayuudvxey`, aplicar/confirmar `0004`, desplegar el frontend y ejecutar smoke no mutante; el E2E mutante espera una cuenta QA legítima.
+**Rollout completado:** Supabase CLI confirmó `0001–0003` alineadas, el dry-run propuso únicamente `0004_casos_particulares_y_transiciones.sql` y el push registró `0004` en remoto. GitHub `main` quedó en `c097efd` y el deployment canónico de Vercel terminó en `success`: **https://sacabollos-aguila-blanca.vercel.app**. El E2E productivo mutante sigue reservado hasta disponer de una cuenta QA legítima y una limpieza idempotente.
 
 ---
 

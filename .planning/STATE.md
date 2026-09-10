@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: implementing
-stopped_at: Phase 3 engineering complete; Supabase migration and production rollout pending
-last_updated: "2026-09-09T20:40:00.000-03:00"
-last_activity: 2026-09-08 — Fase 2 cerrada y frontend aprobado restaurado
+status: planning
+stopped_at: Phase 3 complete in production; Phase 4 planning next
+last_updated: "2026-09-09T22:25:00.000-03:00"
+last_activity: 2026-09-09 — Fase 3 desplegada; migración 0004 y Vercel verificados
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 18
   completed_plans: 9
   percent: 50
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel.
-**Current focus:** Phase 3 — Caso Particular
+**Current focus:** Phase 4 — Reparación y Stock
 
 ## Current Position
 
-Phase: 3 of 6 (Caso Particular) — engineering complete; rollout pending
-Next: autenticar Supabase CLI, aplicar/confirmar 0004, desplegar frontend y ejecutar smoke no mutante
-Last activity: 2026-09-09 - Fase 3 implementada localmente; 122 tests, typecheck, build, lint y diff check verificados
+Phase: 3 of 6 (Caso Particular) — complete in production
+Next: diseñar y planificar la Fase 4 — Reparación y Stock
+Last activity: 2026-09-09 - Fase 3 desplegada; 0004 registrada en Supabase, 122 tests y Vercel verificados
 
 Progress: [█████░░░░░] 50% de planes
 

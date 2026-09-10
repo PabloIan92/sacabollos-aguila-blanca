@@ -12,7 +12,7 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
 
 - [x] **Phase 1: Fundaciones** - Login con roles y app usable en tablet y PC
 - [x] **Phase 2: Caso de Seguro** - Flujo completo desde denuncia hasta ingreso del auto al taller
-- [ ] **Phase 3: Caso Particular** - Ingeniería completa; migración y despliegue productivo pendientes
+- [x] **Phase 3: Caso Particular** - Flujo completo desplegado en producción
 - [ ] **Phase 4: Reparación y Stock** - Ficha de trabajo, repuestos faltantes y listado de materiales
 - [ ] **Phase 5: Facturación y Cobros** - Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora
 - [ ] **Phase 6: CRM** - Clientes, aseguradoras y productores con historial de casos
@@ -66,8 +66,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [x] 03-01: Flujo de presupuesto particular (aceptar / no aceptar) — ingeniería local completa
-- [x] 03-02: Registro de modalidad de contacto cuando no acepta — ingeniería local completa
+- [x] 03-01: Flujo de presupuesto particular (aceptar / no aceptar) — desplegado en producción
+- [x] 03-02: Registro de modalidad de contacto cuando no acepta — desplegado en producción
 
 ### Phase 4: Reparación y Stock
 **Goal**: El taller puede documentar la reparación completa, incluyendo repuestos faltantes y materiales
