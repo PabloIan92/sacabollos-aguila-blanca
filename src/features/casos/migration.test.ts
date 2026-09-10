@@ -3,7 +3,7 @@ import migration from '../../../supabase/migrations/0004_casos_particulares_y_tr
 import repairMigration from '../../../supabase/migrations/0005_reparacion_y_stock.sql?raw'
 
 function migrationSql() {
-  return migration
+  return migration.replace(/\r\n/g, '\n')
 }
 
 describe('migración 0004 de casos particulares', () => {
@@ -190,7 +190,7 @@ describe('migración 0004 de casos particulares', () => {
 
 describe('migración 0005 de reparación y stock', () => {
   function repairSql() {
-    return repairMigration
+    return repairMigration.replace(/\r\n/g, '\n')
   }
 
   it('crea los daños normalizados y el stock con sus restricciones y RLS', () => {

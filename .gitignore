@@ -30,6 +30,7 @@ supabase/.temp
 
 # Isolated feature worktrees
 .worktrees/
+.superpowers/
 
 # Editor directories and files
 .vscode/*
