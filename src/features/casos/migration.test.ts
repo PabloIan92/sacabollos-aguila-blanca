@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import migration from '../../../supabase/migrations/0004_casos_particulares_y_transiciones.sql?raw'
 import repairMigration from '../../../supabase/migrations/0005_reparacion_y_stock.sql?raw'
+import billingMigration from '../../../supabase/migrations/0006_facturacion_y_cobros.sql?raw'
 
 function migrationSql() {
   return migration.replace(/\r\n/g, '\n')
@@ -348,3 +349,54 @@ describe('migración 0005 de reparación y stock', () => {
     expect(repairClose).not.toContain('from public.reparacion_danos d\n    where d.caso_id = old.id\n    for update;')
   })
 })
+
+describe('migración 0006 de facturación y cobros', () => {
+  function billingSql() {
+    return billingMigration.replace(/\r\n/g, '\n')
+  }
+
+  it('crea la tabla caso_facturacion con RLS exclusivo para dueño', () => {
+    const sql = billingSql()
+
+    expect(sql).toContain('create table public.caso_facturacion')
+    expect(sql).toContain('caso_id uuid primary key references public.casos(id) on delete cascade')
+    expect(sql).toContain('monto_facturado numeric(14, 2) not null check (monto_facturado >= 0)')
+    expect(sql).toContain('monto_cobrado numeric(14, 2) not null default 0 check (monto_cobrado >= 0)')
+    expect(sql).toContain("check (trim(numero_factura) <> '')")
+    expect(sql).toContain('alter table public.caso_facturacion enable row level security')
+    expect(sql).toContain('create policy caso_facturacion_dueno_all')
+    expect(sql).toContain("public.current_user_role() = 'dueno'")
+    expect(sql).not.toContain('create policy caso_facturacion_recepcion')
+    expect(sql).not.toContain('create policy caso_facturacion_taller')
+  })
+
+  it('agrega columnas de facturación y reclamo a casos', () => {
+    const sql = billingSql()
+
+    expect(sql).toContain('add column facturado_at timestamptz')
+    expect(sql).toContain('add column cobrado_at timestamptz')
+    expect(sql).toContain('add column motivo_reclamo text')
+  })
+
+  it('actualiza el check constraint de canal para permitir facturado y cobrado en particulares', () => {
+    const sql = billingSql()
+
+    expect(sql).toContain('drop constraint casos_datos_por_canal_check')
+    expect(sql).toContain("'listo para firma', 'firmado', 'facturado', 'cobrado'")
+  })
+
+  it('valida las transiciones firmado -> facturado -> cobrado y reclamo a compañía', () => {
+    const sql = billingSql()
+
+    expect(sql).toContain("old.estado = 'firmado' and new.estado = 'facturado'")
+    expect(sql).toContain("old.estado = 'facturado' and new.estado = 'cobrado'")
+    expect(sql).toContain("old.estado = 'facturado' and new.estado = 'reclamo a la compañía'")
+    expect(sql).toContain("old.estado = 'reclamo a la compañía' and new.estado = 'cobrado'")
+    expect(sql).toContain("old.estado = 'reclamo a la compañía' and new.estado = 'facturado'")
+    expect(sql).toContain('Solo dueño puede facturar')
+    expect(sql).toContain('Solo dueño puede cobrar')
+    expect(sql).toContain('Reclamo a la compañía solo permitido en casos de seguro')
+    expect(sql).toContain('Al reclamar a la compañía requiere motivo_reclamo')
+  })
+})
+
