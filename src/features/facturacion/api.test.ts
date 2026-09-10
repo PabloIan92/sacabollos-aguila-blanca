@@ -13,6 +13,7 @@ import { supabase } from '../../lib/supabaseClient'
 vi.mock('../../lib/supabaseClient', () => ({
   supabase: {
     from: vi.fn(),
+    rpc: vi.fn(),
   },
 }))
 
@@ -115,6 +116,48 @@ describe('facturacion api', () => {
 
     await expect(marcarComoCobrado('c-1', { monto_facturado: 100, numero_factura: 'F-1', monto_cobrado: 100 }))
       .rejects.toThrow('Para marcar como cobrado, debe indicar la fecha de cobro')
+  })
+
+  it('marcarComoFacturado utiliza RPC atómico si está disponible', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: { id: 'c-1', estado: 'facturado' },
+      error: null,
+    } as any)
+
+    const caso = await marcarComoFacturado('c-1', {
+      monto_facturado: 250000,
+      numero_factura: 'A-001',
+    })
+
+    expect(caso.estado).toBe('facturado')
+    expect(supabase.rpc).toHaveBeenCalledWith('facturar_caso_atomic', expect.objectContaining({
+      p_caso_id: 'c-1',
+      p_monto_facturado: 250000,
+      p_numero_factura: 'A-001',
+    }))
+  })
+
+  it('marcarComoCobrado utiliza RPC atómico si está disponible', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValue({
+      data: { id: 'c-1', estado: 'cobrado' },
+      error: null,
+    } as any)
+
+    const caso = await marcarComoCobrado('c-1', {
+      monto_facturado: 250000,
+      numero_factura: 'A-001',
+      monto_cobrado: 250000,
+      fecha_cobro: '2026-09-10',
+      metodo_pago: 'transferencia',
+    })
+
+    expect(caso.estado).toBe('cobrado')
+    expect(supabase.rpc).toHaveBeenCalledWith('cobrar_caso_atomic', expect.objectContaining({
+      p_caso_id: 'c-1',
+      p_monto_cobrado: 250000,
+      p_fecha_cobro: '2026-09-10',
+      p_metodo_pago: 'transferencia',
+    }))
   })
 
   it('iniciarReclamoAseguradora valida motivo no vacío y actualiza estado', async () => {

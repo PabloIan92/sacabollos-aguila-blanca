@@ -17,8 +17,8 @@ import type { CasoEstado } from '../casos/types'
 
 function formatMoneda(monto: number): string {
   return `$ ${new Intl.NumberFormat('es-AR', {
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
+    minimumFractionDigits: monto % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(monto)}`
 }
 

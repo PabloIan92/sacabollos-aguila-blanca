@@ -25,8 +25,8 @@ import { SemaforoBadge } from '../casos/components/SemaforoBadge'
 
 function formatMoneda(monto: number): string {
   return `$ ${new Intl.NumberFormat('es-AR', {
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
+    minimumFractionDigits: monto % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
   }).format(monto)}`
 }
 
@@ -317,7 +317,7 @@ export function FichaFacturacionPage() {
               id="input-monto-facturado"
               type="number"
               min="0"
-              step="1"
+              step="0.01"
               value={montoFacturado}
               onChange={(e) => setMontoFacturado(e.target.value)}
               placeholder="Ej: 250000"
@@ -368,7 +368,7 @@ export function FichaFacturacionPage() {
               id="input-monto-cobrado"
               type="number"
               min="0"
-              step="1"
+              step="0.01"
               value={montoCobrado}
               onChange={(e) => setMontoCobrado(e.target.value)}
               placeholder="Ej: 250000"

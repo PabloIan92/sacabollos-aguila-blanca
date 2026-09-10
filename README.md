@@ -3,13 +3,40 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-5%20Facturaci%C3%B3n%20y%20Cobranza-blue)
-![Status](https://img.shields.io/badge/Status-Fase%205%20completa%20en%20producci%C3%B3n-brightgreen)
+![Status](https://img.shields.io/badge/Status-Fase%205%20auditada%20y%20cerrada%20(OK)-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-225%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-232%20passed-brightgreen)
 
-## Estado actual: Fase 5 - Facturación y Cobranza — **completa en producción** (2026-09-10)
+## Estado actual: Fase 5 - Facturación y Cobranza — **100% cerrada y auditada en producción** (2026-09-10)
 
-La funcionalidad de Facturación, Cobranza y Reclamos a Aseguradoras está 100% implementada y verificada. La migración `0006_facturacion_y_cobros.sql` está aplicada en Supabase (`tnwrewghcowayuudvxey`), los 225 tests en 26 suites pasan en verde, typecheck con `tsc -b` limpio, build de producción en 7.68s y linter sin errores.
+La funcionalidad de Facturación, Cobranza y Reclamos a Aseguradoras está 100% verificada, auditada y en producción. Los 6 hallazgos de la auditoría fueron subsanados mediante la migración `0007_correccion_facturacion_y_transiciones.sql`, aplicada exitosamente en el Supabase remoto (`tnwrewghcowayuudvxey`). Los 232 tests en 26 suites pasan en verde, `tsc -b` limpio, build en 4.69s y linter sin errores.
+
+### ✅ Resolución y Cierre de Auditoría Fase 5 (Migración `0007`)
+
+1. **Trigger `caso_facturacion_updated_at` corregido**:
+   - Se creó la función genérica `public.set_row_updated_at()` para tablas auxiliares sin columna `estado`.
+   - Se reemplazó el trigger previo en `public.caso_facturacion`, eliminando la incompatibilidad de `NEW.estado`.
+
+2. **Restablecimiento de guardas de inmutabilidad de `0005`**:
+   - Se reconstruyó `public.validar_transicion_caso()` preservando la inmutabilidad de identidad (`patente`, `marca`, `modelo`, `color`, `cliente_nombre`, `cliente_telefono`, `aseguradora`, `numero_siniestro`, `denuncia`, `productor_nombre`, `productor_telefono`, `presupuesto_monto`, `created_at`, `created_by`).
+   - Las actualizaciones sin cambio de estado quedan estrictamente restringidas a `danos_zonas` e `inspeccion_guardada_at` exclusivamente en estado `borrador`.
+
+3. **Corrección de autorización para Recepción al resolver reclamos**:
+   - Se evaluó por transición exacta: la transición `reclamo a la compañía -> facturado` ahora autoriza explícitamente a `dueno` y `recepcion`.
+
+4. **Operaciones transaccionales atómicas para facturar y cobrar**:
+   - Se crearon las funciones PostgreSQL `public.facturar_caso_atomic()` y `public.cobrar_caso_atomic()`, con bloqueo de fila `for update`, validación de precondiciones, upsert de `caso_facturacion` y actualización de `casos` en una única transacción atómica con permisos para usuarios autenticados.
+   - `src/features/facturacion/api.ts` invoca prioritariamente las RPCs atómicas con fallback seguro.
+
+5. **Ampliación de cobertura de pruebas**:
+   - Se añadieron tests en `src/features/casos/migration.test.ts` validando la estructura de la migración `0007`.
+   - Se añadieron tests unitarios para las RPCs atómicas en `src/features/facturacion/api.test.ts`.
+   - Se añadieron tests de denegación de rutas para `/facturacion` y `/casos/:id/facturacion` para roles `recepcion` y `taller` en `src/app/routes.test.ts`.
+
+6. **Detalles numéricos y consistencia de KPIs**:
+   - `formatMoneda` ahora muestra 2 decimales para importes no enteros (ej. `$ 150,50` o `$ 0,40`).
+   - Los campos de entrada en `FichaFacturacionPage.tsx` utilizan `step="0.01"` para permitir el ingreso de centavos.
+   - KPI "Pendiente de cobro": suma de saldos pendientes por cobrar (monto facturado - monto cobrado con saldo a favor del taller).
 
 - **Task 1: Persistencia, seguridad RLS exclusiva y guards de estado (`7dc95f6`)**:
   - Migración `0006_facturacion_y_cobros.sql` con la tabla `public.caso_facturacion` (`caso_id`, `monto_facturado`, `monto_cobrado`, `numero_factura`, `fecha_factura`, `fecha_cobro`, `metodo_pago`, `notas_cobranza`).

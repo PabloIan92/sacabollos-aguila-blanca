@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import migration from '../../../supabase/migrations/0004_casos_particulares_y_transiciones.sql?raw'
 import repairMigration from '../../../supabase/migrations/0005_reparacion_y_stock.sql?raw'
 import billingMigration from '../../../supabase/migrations/0006_facturacion_y_cobros.sql?raw'
-import crmMigration from '../../../supabase/migrations/0007_crm_y_equipo.sql?raw'
+import fixBillingMigration from '../../../supabase/migrations/0007_correccion_facturacion_y_transiciones.sql?raw'
+import crmMigration from '../../../supabase/migrations/0008_crm_y_equipo.sql?raw'
 
 function migrationSql() {
   return migration.replace(/\r\n/g, '\n')
@@ -401,25 +402,66 @@ describe('migración 0006 de facturación y cobros', () => {
   })
 })
 
-describe('migración 0007 de CRM y equipo', () => {
+describe('migración 0007 de correcciones de facturación y transiciones', () => {
+  function fixSql() {
+    return fixBillingMigration.replace(/\r\n/g, '\n')
+  }
+
+  it('instala helper set_row_updated_at y reemplaza el trigger de caso_facturacion', () => {
+    const sql = fixSql()
+    expect(sql).toContain('create or replace function public.set_row_updated_at()')
+    expect(sql).toContain('drop trigger if exists caso_facturacion_updated_at on public.caso_facturacion')
+    expect(sql).toContain('create trigger caso_facturacion_updated_at')
+    expect(sql).toContain('before update on public.caso_facturacion')
+    expect(sql).toContain('execute function public.set_row_updated_at()')
+    expect(sql).not.toContain('execute function public.set_updated_at()')
+  })
+
+  it('restablece las guardas de inmutabilidad y de actualizaciones sin transición', () => {
+    const sql = fixSql()
+    expect(sql).toContain('No se pueden cambiar campos de identidad, creación, canal o presupuesto inicial')
+    expect(sql).toContain('Una actualización sin transición solo puede cambiar danos_zonas e inspeccion_guardada_at en borrador')
+    expect(sql).toContain('La transición intenta cambiar campos no permitidos')
+  })
+
+  it('permite a recepcion y dueno resolver reclamo volviendo a facturado', () => {
+    const sql = fixSql()
+    expect(sql).toContain("elsif old.estado = 'reclamo a la compañía' and new.estado = 'facturado' then")
+    expect(sql).toContain("rol_autorizado := actor_role in ('dueno', 'recepcion')")
+  })
+
+  it('crea RPCs atómicas facturar_caso_atomic y cobrar_caso_atomic con bloqueo y permisos', () => {
+    const sql = fixSql()
+    expect(sql).toContain('create or replace function public.facturar_caso_atomic')
+    expect(sql).toContain('create or replace function public.cobrar_caso_atomic')
+    expect(sql).toContain('for update')
+    expect(sql).toContain('grant execute on function public.facturar_caso_atomic to authenticated')
+    expect(sql).toContain('grant execute on function public.cobrar_caso_atomic to authenticated')
+  })
+})
+
+describe('migración 0008 de CRM y equipo', () => {
   function crmSql() {
     return crmMigration.replace(/\r\n/g, '\n')
   }
 
-  it('crea las tablas clientes, aseguradoras y productores con sus restricciones y triggers', () => {
+  it('crea las tablas clientes, aseguradoras y productores con sus restricciones y triggers con set_row_updated_at', () => {
     const sql = crmSql()
 
     expect(sql).toContain('create table public.clientes')
     expect(sql).toContain("check (trim(nombre) <> '')")
     expect(sql).toContain('create trigger clientes_updated_at')
+    expect(sql).toContain('before update on public.clientes\n  for each row execute function public.set_row_updated_at()')
 
     expect(sql).toContain('create table public.aseguradoras')
     expect(sql).toContain('nombre text not null unique check (trim(nombre) <> \'\')')
     expect(sql).toContain('activa boolean not null default true')
     expect(sql).toContain('create trigger aseguradoras_updated_at')
+    expect(sql).toContain('before update on public.aseguradoras\n  for each row execute function public.set_row_updated_at()')
 
     expect(sql).toContain('create table public.productores')
     expect(sql).toContain('create trigger productores_updated_at')
+    expect(sql).toContain('before update on public.productores\n  for each row execute function public.set_row_updated_at()')
   })
 
   it('configura RLS correctamente para dueño, recepción y taller', () => {
@@ -454,5 +496,3 @@ describe('migración 0007 de CRM y equipo', () => {
     expect(sql).toContain('on conflict (nombre) do nothing')
   })
 })
-
-
