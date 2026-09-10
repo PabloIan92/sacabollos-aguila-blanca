@@ -3,13 +3,13 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-4%20Reparaci%C3%B3n%20y%20Stock-blue)
-![Status](https://img.shields.io/badge/Status-Fase%204%20migraci%C3%B3n%20aplicada-brightgreen)
+![Status](https://img.shields.io/badge/Status-Fase%204%20completa%20en%20producci%C3%B3n-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
 ![Tests](https://img.shields.io/badge/Tests-197%20passed-brightgreen)
 
-## Estado actual: Fase 4 - Reparación y Stock — **migración 0005 aplicada en Supabase** (2026-09-10)
+## Estado actual: Fase 4 - Reparación y Stock — **completa en producción** (2026-09-10)
 
-Se completaron las 5 tareas del plan `docs/superpowers/plans/2026-09-10-fase-4-reparacion-stock.md` en la rama `feat/phase4-workflow`. Se encuentran los 197 tests en verde, typecheck limpio, build pasando y lint sin errores:
+La funcionalidad está implementada, la migración `0005_reparacion_y_stock.sql` está aplicada en Supabase (`tnwrewghcowayuudvxey`), el PR #1 fue mergeado a `main` y desplegado exitosamente en Vercel (`https://sacabollos-aguila-blanca.vercel.app`). Se encuentran los 197 tests en verde, typecheck limpio, build pasando y lint sin errores:
 
 - **Task 1: Persistencia y máquina de estados de reparación** (`209a94f`, `48b2988`, `2d15d66`):
   - Migración `0005_reparacion_y_stock.sql` con ampliación de `validar_transicion_caso()` para todas las etapas de taller.

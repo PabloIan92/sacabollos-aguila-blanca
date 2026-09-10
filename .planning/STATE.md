@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-08-19)
 
 ## Current Position
 
-Phase: 4 of 6 (Reparación y Stock) — completa en rama `feat/phase4-workflow` (migración 0005 aplicada en Supabase)
-Next: Abrir PR de Phase 4 a `main`, mergear y verificar deploy en Vercel
-Last activity: 2026-09-10 — Migración 0005 aplicada en Supabase, APIs, VehicleDamageMap con Konva, FichaTrabajoPage, CierreReparacionPage, StockPage, 197 tests, build en 5.5s y lint limpio
+Phase: 4 of 6 (Reparación y Stock) — completa en producción (`main`)
+Next: Planificación e inicio de Fase 5 (Facturación y Cobranza)
+Last activity: 2026-09-10 — Fase 4 desplegada en producción; migración 0005 en Supabase, PR #1 mergeado, deploy Vercel verificado, 197 tests, build en 5.5s y lint limpio
 
 Progress: [███████░░░] 66% de planes totales
 
