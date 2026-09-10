@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import migration from '../../../supabase/migrations/0004_casos_particulares_y_transiciones.sql?raw'
+import repairMigration from '../../../supabase/migrations/0005_reparacion_y_stock.sql?raw'
 
 function migrationSql() {
   return migration
@@ -184,5 +185,94 @@ describe('migración 0004 de casos particulares', () => {
       sql.indexOf('validate constraint casos_datos_por_canal_check')
     )
     expect(channelConstraint).not.toMatch(/'(?:esperando repuesto|en reparación|listo para firma|firmado|facturado|cobrado|reclamo a la compañía)'/)
+  })
+})
+
+describe('migración 0005 de reparación y stock', () => {
+  function repairSql() {
+    return repairMigration
+  }
+
+  it('crea los daños normalizados y el stock con sus restricciones y RLS', () => {
+    const sql = repairSql()
+
+    expect(sql).toContain('create table public.reparacion_danos')
+    expect(sql).toContain('caso_id uuid not null references public.casos(id) on delete cascade')
+    expect(sql).toContain("check (trim(zona) <> '')")
+    expect(sql).toContain('check (x between 0 and 1)')
+    expect(sql).toContain('check (y between 0 and 1)')
+    expect(sql).toContain('reparado boolean not null default false')
+    expect(sql).toContain('origen_inspeccion boolean not null default false')
+    expect(sql).toContain('alter table public.reparacion_danos enable row level security')
+
+    expect(sql).toContain('create table public.stock_items')
+    expect(sql).toContain("check (trim(nombre) <> '')")
+    expect(sql).toContain('cantidad numeric not null default 0 check (cantidad >= 0)')
+    expect(sql).toContain("check (trim(unidad) <> '')")
+    expect(sql).toContain('updated_by uuid not null references auth.users(id)')
+    expect(sql).toContain('alter table public.stock_items enable row level security')
+    expect(sql).toContain("public.current_user_role() in ('dueno', 'recepcion', 'taller')")
+  })
+
+  it('agrega las columnas de reparación al caso y el RPC atómico de inicio', () => {
+    const sql = repairSql()
+
+    expect(sql).toContain('add column repuesto_pendiente text')
+    expect(sql).toContain('add column reparacion_iniciada_at timestamptz')
+    expect(sql).toContain('add column reparacion_lista_at timestamptz')
+    expect(sql).toContain('add column firmado_at timestamptz')
+    expect(sql).toContain('create function public.iniciar_reparacion(p_caso_id uuid)')
+    expect(sql).toContain('for update')
+    expect(sql).toContain('unnest(coalesce(v_caso.danos_zonas, array[]::text[])) with ordinality')
+    expect(sql).toContain('on conflict (caso_id, zona) do nothing')
+    expect(sql).toContain("estado = 'en reparación'")
+    expect(sql).toContain('reparacion_iniciada_at = now()')
+    expect(sql).toContain('grant execute on function public.iniciar_reparacion(uuid) to authenticated')
+  })
+
+  it('preserva el grafo anterior y agrega las transiciones exactas de reparación', () => {
+    const sql = repairSql()
+
+    expect(sql).toContain("old.estado = 'borrador' and new.estado = 'enviado a la aseguradora'")
+    expect(sql).toContain("old.estado = 'enviado a la aseguradora' and new.estado = 'aprobado'")
+    expect(sql).toContain("old.estado = 'aprobado' and new.estado = 'turno coordinado'")
+    expect(sql).toContain("old.estado = 'turno coordinado' and new.estado = 'ingresado'")
+    expect(sql).toContain("old.estado = 'borrador' and new.estado = 'cancelado'")
+    expect(sql).toContain("old.estado = 'ingresado' and new.estado = 'en reparación'")
+    expect(sql).toContain("old.estado = 'en reparación' and new.estado = 'esperando repuesto'")
+    expect(sql).toContain("old.estado = 'esperando repuesto' and new.estado = 'en reparación'")
+    expect(sql).toContain("old.estado = 'en reparación' and new.estado = 'listo para firma'")
+    expect(sql).toContain("old.estado = 'listo para firma' and new.estado = 'firmado'")
+    expect(sql).toContain("actor_role in ('dueno', 'taller')")
+    expect(sql).toContain('Al iniciar reparación requiere reparacion_iniciada_at')
+    expect(sql).toContain('Al esperar repuesto requiere repuesto_pendiente no vacío')
+    expect(sql).toContain('Al reanudar reparación debe limpiar repuesto_pendiente')
+    expect(sql).toContain('La reparación requiere todos los daños reparados y cuatro fotos finales')
+    expect(sql).toContain('El firmado requiere orden-firmada.webp')
+  })
+
+  it('limita la escritura de taller y protege daños, fotos finales y helpers', () => {
+    const sql = repairSql()
+
+    expect(sql).toContain('create policy casos_update_taller_reparacion')
+    expect(sql).toContain("estado in ('ingresado', 'en reparación', 'esperando repuesto', 'listo para firma')")
+    expect(sql).toContain('create policy reparacion_danos_taller_dueno_crud')
+    expect(sql).toContain('create policy reparacion_danos_recepcion_select')
+    expect(sql).toContain('create function public.caso_tiene_fotos_finales(caso_id uuid)')
+    expect(sql).toContain('create function public.caso_tiene_orden_firmada(caso_id uuid)')
+    expect(sql).toContain('create policy casos_fotos_insert_reparacion')
+    expect(sql).toContain('create policy casos_fotos_update_reparacion')
+    for (const filename of [
+      'final-frente.webp',
+      'final-atras.webp',
+      'final-lateral-izquierdo.webp',
+      'final-lateral-derecho.webp',
+      'orden-firmada.webp',
+    ]) {
+      expect(sql).toContain(`'${filename}'`)
+    }
+    expect(sql).toContain('revoke all on function public.validar_transicion_caso()')
+    expect(sql).toContain('revoke all on function public.caso_tiene_fotos_finales(uuid)')
+    expect(sql).toContain('revoke all on function public.caso_tiene_orden_firmada(uuid)')
   })
 })
