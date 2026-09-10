@@ -2,18 +2,22 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { FichaIngresoPage } from './FichaIngresoPage'
-import { getCaso, updateCasoEstado } from './api'
+import { getCaso, registerCasoIngreso } from './api'
 import { useCasoFotos } from './hooks/useCasoFotos'
 import type { Caso } from './types'
 
-vi.mock('./api')
-vi.mock('./hooks/useCasoFotos')
+vi.mock('./api', () => ({
+  getCaso: vi.fn(),
+  registerCasoIngreso: vi.fn(),
+}))
+vi.mock('./hooks/useCasoFotos', () => ({ useCasoFotos: vi.fn() }))
 
 const mockedGetCaso = vi.mocked(getCaso)
-const mockedUpdateCasoEstado = vi.mocked(updateCasoEstado)
+const mockedRegisterCasoIngreso = vi.mocked(registerCasoIngreso)
 const mockedUseCasoFotos = vi.mocked(useCasoFotos)
 
 const uploadFoto = vi.fn()
+const listFotos = vi.fn()
 
 function caso(overrides: Partial<Caso> = {}): Caso {
   return {
@@ -30,6 +34,12 @@ function caso(overrides: Partial<Caso> = {}): Caso {
     denuncia: 'x',
     productor_nombre: null,
     productor_telefono: null,
+    presupuesto_monto: null,
+    presupuesto_respuesta: null,
+    presupuesto_observaciones: null,
+    modalidad_contacto: null,
+    seguimiento_observaciones: null,
+    inspeccion_guardada_at: null,
     danos_zonas: [],
     turno_fecha: '2026-03-01T10:30:00.000Z',
     orden_ingreso_numero: null,
@@ -70,9 +80,10 @@ beforeEach(() => {
   vi.clearAllMocks()
   URL.createObjectURL = vi.fn(() => 'blob:mock-url')
   mockedGetCaso.mockResolvedValue(caso())
-  mockedUpdateCasoEstado.mockResolvedValue(caso({ estado: 'ingresado' }))
+  mockedRegisterCasoIngreso.mockResolvedValue(caso({ estado: 'ingresado' }))
   uploadFoto.mockResolvedValue('casos/caso-1/ingreso-frente.webp')
-  mockedUseCasoFotos.mockReturnValue({ uploadFoto, listFotos: vi.fn() })
+  listFotos.mockResolvedValue({})
+  mockedUseCasoFotos.mockReturnValue({ uploadFoto, listFotos })
 })
 
 describe('FichaIngresoPage', () => {
@@ -104,7 +115,7 @@ describe('FichaIngresoPage', () => {
     expect(boton).not.toBeDisabled()
   })
 
-  it('al confirmar, llama a updateCasoEstado una sola vez y navega a /casos', async () => {
+  it('al confirmar, llama a registerCasoIngreso una sola vez y navega a /casos', async () => {
     renderPage()
     await screen.findByText('Ficha de ingreso')
 
@@ -120,12 +131,39 @@ describe('FichaIngresoPage', () => {
     fireEvent.click(boton)
 
     await waitFor(() =>
-      expect(mockedUpdateCasoEstado).toHaveBeenCalledWith('caso-1', 'ingresado', {
-        orden_ingreso_numero: 'ORD-99',
-        ingresado_at: expect.any(String),
-      })
+      expect(mockedRegisterCasoIngreso).toHaveBeenCalledWith(
+        'caso-1',
+        'ORD-99',
+        expect.any(String)
+      )
     )
-    expect(mockedUpdateCasoEstado).toHaveBeenCalledTimes(1)
+    expect(mockedRegisterCasoIngreso).toHaveBeenCalledTimes(1)
     expect(await screen.findByText('LISTADO DE CASOS')).toBeInTheDocument()
+  })
+
+  it('rehabilita el botón y conserva la orden cuando falla el registro', async () => {
+    mockedRegisterCasoIngreso.mockRejectedValue(new Error('sin red'))
+    renderPage()
+    await screen.findByText('Ficha de ingreso')
+
+    await subirLasCuatroFotosDeIngreso()
+    const orden = screen.getByLabelText('Número de orden de ingreso')
+    fireEvent.change(orden, { target: { value: 'ORD-ERROR' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Registrar ingreso' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo registrar el ingreso')
+    expect(screen.getByRole('button', { name: 'Registrar ingreso' })).not.toBeDisabled()
+    expect(orden).toHaveValue('ORD-ERROR')
+  })
+
+  it('permite reintentar cuando falla la carga del caso', async () => {
+    mockedGetCaso
+      .mockRejectedValueOnce(new Error('sin red'))
+      .mockResolvedValueOnce(caso())
+    renderPage()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo cargar el caso')
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+    expect(await screen.findByText('Ficha de ingreso')).toBeInTheDocument()
   })
 })

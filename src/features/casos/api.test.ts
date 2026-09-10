@@ -1,6 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { ESTADOS_CASO, ZONAS_DANO } from './types'
-import { listCasos, getCaso, createCaso, updateCasoEstado } from './api'
+import {
+  listCasos,
+  getCaso,
+  createCaso,
+  saveCasoInspection,
+  markSeguroSent,
+  markSeguroApproved,
+  acceptParticular,
+  rejectParticular,
+  coordinateCasoTurno,
+  registerCasoIngreso,
+} from './api'
 
 const select = vi.fn()
 const eq = vi.fn()
@@ -88,10 +99,58 @@ describe('api', () => {
     expect(insert).toHaveBeenCalled()
   })
 
-  it('updateCasoEstado incluye la clave estado en el payload', async () => {
-    await updateCasoEstado('abc', 'turno coordinado', { turno_fecha: '2026-01-01' })
-    expect(update).toHaveBeenCalledWith(
-      expect.objectContaining({ estado: 'turno coordinado', turno_fecha: '2026-01-01' })
-    )
+  it('saveCasoInspection guarda daños y timestamp sin forzar un cambio de estado', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-09-10T13:00:00.000Z'))
+
+    await saveCasoInspection('abc', ['capot'])
+
+    expect(update).toHaveBeenCalledWith({
+      danos_zonas: ['capot'],
+      inspeccion_guardada_at: '2026-09-10T13:00:00.000Z',
+    })
+    vi.useRealTimers()
+  })
+
+  it('markSeguroSent avanza solamente a enviado a la aseguradora', async () => {
+    await markSeguroSent('abc')
+    expect(update).toHaveBeenCalledWith({ estado: 'enviado a la aseguradora' })
+  })
+
+  it('markSeguroApproved registra la orden recibida sin aceptar campos arbitrarios', async () => {
+    await markSeguroApproved('abc')
+    expect(update).toHaveBeenCalledWith({ estado: 'aprobado' })
+  })
+
+  it('acceptParticular persiste respuesta y estado de manera atómica', async () => {
+    await acceptParticular('abc')
+    expect(update).toHaveBeenCalledWith({ presupuesto_respuesta: 'aceptado', estado: 'aprobado' })
+  })
+
+  it('rejectParticular exige una modalidad y persiste el rechazo atómicamente', async () => {
+    await rejectParticular('abc', 'whatsapp', 'Retomar contacto en noviembre')
+    expect(update).toHaveBeenCalledWith({
+      presupuesto_respuesta: 'rechazado',
+      modalidad_contacto: 'whatsapp',
+      seguimiento_observaciones: 'Retomar contacto en noviembre',
+      estado: 'cancelado',
+    })
+  })
+
+  it('coordinateCasoTurno persiste fecha y estado de manera atómica', async () => {
+    await coordinateCasoTurno('abc', '2026-09-10T13:00:00.000Z')
+    expect(update).toHaveBeenCalledWith({
+      turno_fecha: '2026-09-10T13:00:00.000Z',
+      estado: 'turno coordinado',
+    })
+  })
+
+  it('registerCasoIngreso persiste orden, fecha y estado de manera atómica', async () => {
+    await registerCasoIngreso('abc', 'ORD-10', '2026-09-10T13:00:00.000Z')
+    expect(update).toHaveBeenCalledWith({
+      orden_ingreso_numero: 'ORD-10',
+      ingresado_at: '2026-09-10T13:00:00.000Z',
+      estado: 'ingresado',
+    })
   })
 })

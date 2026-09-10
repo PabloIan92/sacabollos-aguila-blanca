@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, within } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { CasoNuevoPage } from './CasoNuevoPage'
 import { createCaso } from './api'
@@ -30,6 +30,12 @@ function fillRequiredFields() {
   fireEvent.change(screen.getByLabelText('Denuncia'), { target: { value: 'Choque en cruce' } })
 }
 
+function fillCommonFields() {
+  fireEvent.change(screen.getByLabelText('Cliente'), { target: { value: 'Ana Gómez' } })
+  fireEvent.change(screen.getByLabelText('Teléfono del cliente'), { target: { value: '1199887766' } })
+  fireEvent.change(screen.getByLabelText('Patente'), { target: { value: 'AC456DE' } })
+}
+
 beforeEach(() => {
   vi.clearAllMocks()
   mockedUseAuth.mockReturnValue({
@@ -38,9 +44,19 @@ beforeEach(() => {
 })
 
 describe('CasoNuevoPage', () => {
+  it('permite elegir entre Seguro y Particular y mantiene Seguro como opción inicial', () => {
+    renderPage()
+
+    const canal = screen.getByLabelText('Canal') as HTMLSelectElement
+    expect(canal.value).toBe('seguro')
+    expect(within(canal).getAllByRole('option')).toHaveLength(2)
+  })
+
   it('el select de aseguradora tiene exactamente las 6 opciones de D-18', () => {
     renderPage()
-    const options = screen.getAllByRole('option') as HTMLOptionElement[]
+    const options = within(screen.getByLabelText('Aseguradora')).getAllByRole(
+      'option'
+    ) as HTMLOptionElement[]
     expect(options).toHaveLength(6)
     expect(options.map((option) => option.value)).toEqual([
       'San Cristóbal',
@@ -83,5 +99,76 @@ describe('CasoNuevoPage', () => {
       })
     )
     expect(await screen.findByText('FICHA DE INSPECCION')).toBeInTheDocument()
+  })
+
+  it('para Particular muestra presupuesto, oculta seguro y exige un monto mayor que cero', () => {
+    renderPage()
+    fireEvent.change(screen.getByLabelText('Canal'), { target: { value: 'particular' } })
+
+    expect(screen.queryByLabelText('Aseguradora')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Número de siniestro')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Denuncia')).not.toBeInTheDocument()
+    expect(screen.getByLabelText('Monto del presupuesto')).toBeInTheDocument()
+    expect(screen.getByLabelText('Observaciones del presupuesto')).toBeInTheDocument()
+
+    fillCommonFields()
+    const submit = screen.getByRole('button', { name: 'Crear caso' })
+    expect(submit).toBeDisabled()
+
+    fireEvent.change(screen.getByLabelText('Monto del presupuesto'), { target: { value: '0' } })
+    expect(submit).toBeDisabled()
+
+    fireEvent.change(screen.getByLabelText('Monto del presupuesto'), { target: { value: '125000.50' } })
+    expect(submit).not.toBeDisabled()
+  })
+
+  it('crea un caso Particular con los campos de seguro en null y navega a inspección', async () => {
+    mockedCreateCaso.mockResolvedValue({ id: 'caso-particular' } as Awaited<ReturnType<typeof createCaso>>)
+    renderPage()
+    fireEvent.change(screen.getByLabelText('Canal'), { target: { value: 'particular' } })
+    fillCommonFields()
+    fireEvent.change(screen.getByLabelText('Monto del presupuesto'), { target: { value: '125000.50' } })
+    fireEvent.change(screen.getByLabelText('Observaciones del presupuesto'), {
+      target: { value: 'Reparación de capot' },
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: 'Crear caso' }))
+
+    await waitFor(() =>
+      expect(mockedCreateCaso).toHaveBeenCalledWith(
+        expect.objectContaining({
+          canal: 'particular',
+          patente: 'AC456DE',
+          cliente_nombre: 'Ana Gómez',
+          cliente_telefono: '1199887766',
+          aseguradora: null,
+          numero_siniestro: null,
+          denuncia: null,
+          productor_nombre: null,
+          productor_telefono: null,
+          presupuesto_monto: 125000.5,
+          presupuesto_observaciones: 'Reparación de capot',
+          presupuesto_respuesta: 'pendiente',
+          modalidad_contacto: null,
+          seguimiento_observaciones: null,
+          inspeccion_guardada_at: null,
+          created_by: 'user-1',
+        })
+      )
+    )
+    expect(await screen.findByText('FICHA DE INSPECCION')).toBeInTheDocument()
+  })
+
+  it('muestra un error recuperable y vuelve a habilitar el formulario si falla el alta', async () => {
+    mockedCreateCaso.mockRejectedValue(new Error('network'))
+    renderPage()
+    fillRequiredFields()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Crear caso' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No pudimos crear el caso. Intentá nuevamente.'
+    )
+    expect(screen.getByRole('button', { name: 'Crear caso' })).not.toBeDisabled()
   })
 })

@@ -16,6 +16,12 @@ export const ESTADOS_CASO = [
 
 export type CasoEstado = (typeof ESTADOS_CASO)[number]
 
+export const RESPUESTAS_PRESUPUESTO = ['pendiente', 'aceptado', 'rechazado'] as const
+export type RespuestaPresupuesto = (typeof RESPUESTAS_PRESUPUESTO)[number]
+
+export const MODALIDADES_CONTACTO = ['whatsapp', 'telefono', 'email', 'presencial'] as const
+export type ModalidadContacto = (typeof MODALIDADES_CONTACTO)[number]
+
 export const ZONAS_DANO = [
   'paragolpes delantero',
   'paragolpes trasero',
@@ -37,18 +43,24 @@ export type AnguloFoto = (typeof ANGULOS_FOTO)[number]
 
 export interface Caso {
   id: string
-  canal: 'seguro'
+  canal: 'seguro' | 'particular'
   patente: string
   marca: string | null
   modelo: string | null
   color: string | null
   cliente_nombre: string
   cliente_telefono: string
-  aseguradora: string
-  numero_siniestro: string
-  denuncia: string
+  aseguradora: string | null
+  numero_siniestro: string | null
+  denuncia: string | null
   productor_nombre: string | null
   productor_telefono: string | null
+  presupuesto_monto: number | null
+  presupuesto_respuesta: RespuestaPresupuesto | null
+  presupuesto_observaciones: string | null
+  modalidad_contacto: ModalidadContacto | null
+  seguimiento_observaciones: string | null
+  inspeccion_guardada_at: string | null
   danos_zonas: ZonaDano[]
   turno_fecha: string | null
   orden_ingreso_numero: string | null
@@ -59,3 +71,56 @@ export interface Caso {
   estado_changed_at: string
   created_by: string
 }
+
+type CasoGeneratedField =
+  | 'id'
+  | 'estado'
+  | 'created_at'
+  | 'updated_at'
+  | 'estado_changed_at'
+
+type CasoChannelField =
+  | 'canal'
+  | 'aseguradora'
+  | 'numero_siniestro'
+  | 'denuncia'
+  | 'productor_nombre'
+  | 'productor_telefono'
+  | 'presupuesto_monto'
+  | 'presupuesto_respuesta'
+  | 'presupuesto_observaciones'
+  | 'modalidad_contacto'
+  | 'seguimiento_observaciones'
+  | 'inspeccion_guardada_at'
+
+type CasoCreateBase = Omit<Caso, CasoGeneratedField | CasoChannelField>
+
+export type CreateCasoInput =
+  | (CasoCreateBase & {
+      canal: 'seguro'
+      aseguradora: string
+      numero_siniestro: string
+      denuncia: string
+      productor_nombre: string | null
+      productor_telefono: string | null
+      presupuesto_monto?: null
+      presupuesto_respuesta?: null
+      presupuesto_observaciones?: null
+      modalidad_contacto?: null
+      seguimiento_observaciones?: null
+      inspeccion_guardada_at?: string | null
+    })
+  | (CasoCreateBase & {
+      canal: 'particular'
+      aseguradora: null
+      numero_siniestro: null
+      denuncia: null
+      productor_nombre: null
+      productor_telefono: null
+      presupuesto_monto: number
+      presupuesto_respuesta: 'pendiente'
+      presupuesto_observaciones?: string | null
+      modalidad_contacto: null
+      seguimiento_observaciones?: null
+      inspeccion_guardada_at?: string | null
+    })

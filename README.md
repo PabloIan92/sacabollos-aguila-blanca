@@ -3,18 +3,22 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-3%20Caso%20Particular-blue)
-![Status](https://img.shields.io/badge/Status-Fase%202%20cerrada%20%C2%B7%20Fase%203%20en%20dise%C3%B1o-brightgreen)
+![Status](https://img.shields.io/badge/Status-Fase%203%20ingenier%C3%ADa%20completa%20%C2%B7%20rollout%20pendiente-yellow)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-77%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-122%20passed-brightgreen)
 
-## Estado actual: Fase 2 - Caso de Seguro — **cerrada** (2026-09-08)
+## Estado actual: Fase 3 - Caso Particular — **ingeniería local completa** (2026-09-09)
+
+La funcionalidad está implementada y verificada localmente; el rollout queda pendiente hasta autenticar Supabase CLI y aplicar la migración 0004. El detalle y las evidencias están en la sección de Fase 3.
+
+## Estado histórico: Fase 2 - Caso de Seguro — cerrada (2026-09-08)
 
 Los 4 planes de la Fase 2 (`02-01` a `02-04`) están implementados, testados, y **los dos bugs críticos de producción están arreglados**:
 
 1. **Bug RLS fotos (02-02/02-03 bloqueados)**: La política `casos_fotos_insert` usaba `storage.foldername(name)[3]` que siempre devuelve `NULL` (excluye el filename), rechazando el 100% de subidas. **Arreglado**: migración `0003_fix_casos_fotos_insert_rls.sql` → `split_part(name, '/', 3)` con allow-list de 8 ángulos `.webp`. Aplicada en producción ✅
 2. **Bug navegación huérfana (02-03/02-04 bloqueados)**: `CasoDetailPage` no tenía link a `/casos/{id}/ficha-ingreso` para casos en `turno coordinado` — la ruta existía pero era inaccesible salvo tecleando la URL. **Arreglado**: botón "Registrar ingreso al taller" con `useNavigate()` en `CasoDetailPage.tsx` + test. Commit `3c33d49` ✅
 
-**Build ✓, Typecheck ✓, lint ✓, 77 tests ✓** — todo verde. La Fase 2 queda cerrada a nivel de ingeniería y el desarrollo continúa con **Fase 3: Caso Particular**.
+**Build ✓, Typecheck ✓, lint ✓, 77 tests ✓** — todo verde. La Fase 2 quedó cerrada a nivel de ingeniería.
 
 La producción responde y el login restaurado fue revisado visualmente con navegador real el 2026-09-08. La cuenta QA histórica de recepción expiró, por lo que no se repitió el circuito productivo mutante: no se usaron los scripts antiguos porque dejan datos permanentes y uno contiene una credencial privilegiada. La próxima automatización productiva será sanitizada, idempotente y con limpieza garantizada.
 
@@ -55,9 +59,13 @@ La restauración toma `afdb1e0` como última referencia aprobada y la aplica com
 - Prueba de regresión RED/GREEN ✅ — antes de restaurar fallaban el texto «Ingresando…» y la presencia de «Cerrar sesión»; después pasaron 11/11 tests focalizados.
 - Smoke productivo con Chrome/Puppeteer ✅ — Vercel responde, redirige a `/login` y la pantalla restaurada fue inspeccionada en 1280×900; captura en `docs/screenshots/phase2-login-production.png`.
 
-## Próxima entrega: Fase 3 — Caso Particular
+## Fase 3 — Caso Particular
 
-La auditoría inicial confirmó que todavía no existe implementación para particulares. Se reutilizarán alta, cuatro fotos, semáforo, turno e ingreso de Fase 2, agregando validación condicional por canal, presupuesto y respuesta del cliente. Si acepta, avanza al turno existente; si rechaza, se conserva la modalidad de contacto. El detalle se formalizará en diseño y plan antes de tocar esquema o producción.
+La ingeniería local está completa: alta discriminada Seguro/Particular, presupuesto positivo, cuatro fotos persistidas, aceptación hacia el circuito compartido de turno e ingreso, rechazo con modalidad de contacto y seguimiento, detalle/listado por canal y errores recuperables. La migración `0004_casos_particulares_y_transiciones.sql` protege en PostgreSQL el grafo de estados, los campos permitidos por transición, roles y fotos obligatorias.
+
+**Verificación fresca:** 18 archivos / 122 tests ✅, typecheck ✅, build de producción ✅ (permanece el aviso informativo de chunk >500 kB), lint ✅ con solo dos warnings históricos de Fast Refresh, y `git diff --check` ✅.
+
+**Rollout pendiente:** este entorno no tiene Docker ni `psql`, y Supabase CLI responde `Access token not provided`; por eso `0004` todavía no fue aplicada ni confirmada en remoto. El orden seguro es autenticar la CLI, vincular `tnwrewghcowayuudvxey`, aplicar/confirmar `0004`, desplegar el frontend y ejecutar smoke no mutante; el E2E mutante espera una cuenta QA legítima.
 
 ---
 

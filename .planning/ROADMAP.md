@@ -12,7 +12,7 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
 
 - [x] **Phase 1: Fundaciones** - Login con roles y app usable en tablet y PC
 - [x] **Phase 2: Caso de Seguro** - Flujo completo desde denuncia hasta ingreso del auto al taller
-- [ ] **Phase 3: Caso Particular** - Presupuesto y turno para clientes particulares
+- [ ] **Phase 3: Caso Particular** - Ingeniería completa; migración y despliegue productivo pendientes
 - [ ] **Phase 4: Reparación y Stock** - Ficha de trabajo, repuestos faltantes y listado de materiales
 - [ ] **Phase 5: Facturación y Cobros** - Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora
 - [ ] **Phase 6: CRM** - Clientes, aseguradoras y productores con historial de casos
@@ -66,8 +66,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01: Flujo de presupuesto particular (aceptar / no aceptar)
-- [ ] 03-02: Registro de modalidad de contacto cuando no acepta
+- [x] 03-01: Flujo de presupuesto particular (aceptar / no aceptar) — ingeniería local completa
+- [x] 03-02: Registro de modalidad de contacto cuando no acepta — ingeniería local completa
 
 ### Phase 4: Reparación y Stock
 **Goal**: El taller puede documentar la reparación completa, incluyendo repuestos faltantes y materiales
@@ -126,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 |-------|-----------------|--------|-----------|
 | 1. Fundaciones | 3/4 | Complete (01-04 diferido) | 2026-08-25 |
 | 2. Caso de Seguro | 4/4 | Complete | 2026-09-08 |
-| 3. Caso Particular | 0/2 | Not started | - |
+| 3. Caso Particular | 2/2 | Engineering complete; rollout pending | - |
 | 4. Reparación y Stock | 0/3 | Not started | - |
 | 5. Facturación y Cobros | 0/3 | Not started | - |
 | 6. CRM | 0/2 | Not started | - |

@@ -19,6 +19,12 @@ function caso(overrides: Partial<Caso> = {}): Caso {
     denuncia: 'x',
     productor_nombre: null,
     productor_telefono: null,
+    presupuesto_monto: null,
+    presupuesto_respuesta: null,
+    presupuesto_observaciones: null,
+    modalidad_contacto: null,
+    seguimiento_observaciones: null,
+    inspeccion_guardada_at: null,
     danos_zonas: [],
     turno_fecha: null,
     orden_ingreso_numero: null,
@@ -57,6 +63,26 @@ describe('CasosList', () => {
     expect(screen.getByText('AA123BB')).toBeInTheDocument()
     expect(screen.getByText('Juan Pérez')).toBeInTheDocument()
     expect(screen.getByText('Reparación PDR')).toBeInTheDocument()
+  })
+
+  it('muestra la columna Canal para distinguir seguro y particular', () => {
+    renderList([
+      caso(),
+      caso({
+        id: 'caso-2',
+        patente: 'PART123',
+        canal: 'particular',
+        aseguradora: null,
+        numero_siniestro: null,
+        denuncia: null,
+        presupuesto_monto: 10000,
+        presupuesto_respuesta: 'pendiente',
+      }),
+    ])
+
+    expect(screen.getByRole('columnheader', { name: 'Canal' })).toBeInTheDocument()
+    expect(screen.getByText('Seguro')).toBeInTheDocument()
+    expect(screen.getByText('Particular')).toBeInTheDocument()
   })
 
   it('marca con alerta un caso con 5 días o más en la misma etapa', () => {

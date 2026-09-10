@@ -23,10 +23,30 @@ function tieneTurnoHoy(caso: Caso): caso is Caso & { turno_fecha: string } {
 export function RecepcionHome() {
   const navigate = useNavigate()
   const [casos, setCasos] = useState<Caso[] | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [retry, setRetry] = useState(0)
 
   useEffect(() => {
-    listCasos().then(setCasos)
-  }, [])
+    let active = true
+    setCasos(null)
+    setError(null)
+
+listCasos()
+       .then((result) => {
+         if (active) {
+           setCasos(result)
+         }
+       })
+       .catch(() => {
+         if (active) {
+           setError('No se pudieron cargar los turnos.')
+         }
+       })
+
+    return () => {
+      active = false
+    }
+  }, [retry])
 
   const turnosDeHoy =
     casos === null
@@ -42,7 +62,11 @@ export function RecepcionHome() {
         <PrimaryButton onClick={() => navigate('/casos/nuevo')}>Nuevo caso</PrimaryButton>
       </div>
 
-      {turnosDeHoy === null ? null : turnosDeHoy.length === 0 ? (
+      {error ? (
+        <div role="alert" className="mb-4 p-4 bg-red-50 border border-red-200 text-red-500">
+          No se pudieron cargar los turnos. <button type="button" onClick={() => setRetry(r => r + 1)} className="underline ml-2">Reintentar</button>
+        </div>
+      ) : casos === null ? null : turnosDeHoy === null ? null : turnosDeHoy.length === 0 ? (
         <EmptyState
           icon={Calendar}
           title="No hay turnos para hoy"

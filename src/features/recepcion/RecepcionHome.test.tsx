@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { RecepcionHome } from './RecepcionHome'
 import { listCasos } from '../casos/api'
@@ -24,6 +24,12 @@ function caso(overrides: Partial<Caso> = {}): Caso {
     denuncia: 'x',
     productor_nombre: null,
     productor_telefono: null,
+    presupuesto_monto: null,
+    presupuesto_respuesta: null,
+    presupuesto_observaciones: null,
+    modalidad_contacto: null,
+    seguimiento_observaciones: null,
+    inspeccion_guardada_at: null,
     danos_zonas: [],
     turno_fecha: null,
     orden_ingreso_numero: null,
@@ -103,5 +109,29 @@ describe('RecepcionHome', () => {
     await screen.findByText('No hay turnos para hoy')
     fireEvent.click(screen.getByRole('button', { name: 'Nuevo caso' }))
     expect(await screen.findByText('NUEVO CASO')).toBeInTheDocument()
+  })
+
+  it('muestra error y permite reintentar', async () => {
+    const error = new Error('Error de red')
+    mockedListCasos.mockRejectedValueOnce(error).mockResolvedValueOnce([caso({ turno_fecha: isoHoy('11:00') })])
+    renderPage()
+
+    // Espera el mensaje de error
+    expect(await screen.findByText('No se pudieron cargar los turnos.')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reintentar' })).toBeInTheDocument()
+
+    // Hace clic en Reintentar
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }))
+
+    // Espera la segunda llamada
+    await waitFor(() => {
+      expect(mockedListCasos).toHaveBeenCalledTimes(2)
+    })
+
+    // Espera el link del turno
+    await screen.findByRole('link', { name: /\d{2}:\d{2}/ })
+
+    // Verifica que el alerta ya no está presente
+    expect(screen.queryByText(/No se pudieron cargar los turnos./)).not.toBeInTheDocument()
   })
 })

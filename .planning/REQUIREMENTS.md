@@ -12,9 +12,9 @@
 
 ### Casos
 
-- [ ] **CASOS-01**: Recepción puede crear un caso nuevo eligiendo canal Seguro o Particular
+- [ ] **CASOS-01**: Recepción puede crear un caso nuevo eligiendo canal Seguro o Particular (implementación local completa; rollout Particular pendiente)
 - [ ] **CASOS-02**: Un caso de canal Seguro registra denuncia, número de siniestro y datos del productor/asesor, y avanza por sus estados (enviado a la aseguradora → orden de trabajo recibida → turno → ingresado al taller → en reparación → firmado → facturado → cobrado o reclamo a la compañía)
-- [ ] **CASOS-03**: Un caso de canal Particular registra presupuesto y fotos; si el cliente acepta pasa a turno, si no acepta se guarda la modalidad de contacto para seguimiento futuro
+- [ ] **CASOS-03**: Un caso de canal Particular registra presupuesto y fotos; si el cliente acepta pasa a turno, si no acepta se guarda la modalidad de contacto para seguimiento futuro (implementación local completa; rollout pendiente)
 - [x] **CASOS-04**: Cada caso muestra un semáforo de estado visual que refleja en qué etapa está, actualizado sin necesidad de recargar la página
 - [x] **CASOS-05**: Recepción puede coordinar el turno del cliente, quedando registrada la fecha/hora de ingreso del auto
 
@@ -86,14 +86,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | AUTH-01 | Phase 1 | Complete |
 | DISPOSITIVO-01 | Phase 1 | Complete (navegador responsive; tablet física pendiente no bloqueante) |
-| CASOS-01 | Phase 2, Phase 3 | Partial (Seguro completo; Particular pendiente) |
+| CASOS-01 | Phase 2, Phase 3 | Partial (Particular completo localmente; rollout pendiente) |
 | CASOS-02 | Phase 2, Phase 4, Phase 5 | Partial (completo hasta ingreso al taller) |
 | CASOS-04 | Phase 2 | Complete |
 | CASOS-05 | Phase 2 | Complete |
 | FICHAS-01 | Phase 2 | Complete |
 | FICHAS-02 | Phase 2 | Complete |
-| FICHAS-04 | Phase 2, Phase 3, Phase 4 | Partial (fichas de Fase 2 validadas) |
-| CASOS-03 | Phase 3 | Pending |
+| FICHAS-04 | Phase 2, Phase 3, Phase 4 | Partial (Fases 2-3 validadas; Fase 4 pendiente) |
+| CASOS-03 | Phase 3 | Engineering complete; rollout pending |
 | FICHAS-03 | Phase 4 | Pending |
 | REPARACION-01 | Phase 4 | Pending |
 | REPARACION-02 | Phase 4 | Pending |
@@ -112,4 +112,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-08-19*
-*Last updated: 2026-09-08 after Phase 2 engineering closure*
+*Last updated: 2026-09-09 after Phase 3 local engineering completion*

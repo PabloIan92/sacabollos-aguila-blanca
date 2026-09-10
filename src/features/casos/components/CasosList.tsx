@@ -16,6 +16,7 @@ export function CasosList({ casos }: { casos: Caso[] }) {
         <tr className="border-b-2 border-graphite text-left font-mono text-xs uppercase">
           <th className="p-2">Patente</th>
           <th className="p-2">Cliente</th>
+          <th className="p-2">Canal</th>
           <th className="p-2">Semáforo</th>
         </tr>
       </thead>
@@ -32,6 +33,7 @@ export function CasosList({ casos }: { casos: Caso[] }) {
                 </Link>
               </td>
               <td className="p-2">{caso.cliente_nombre}</td>
+              <td className="p-2">{caso.canal === 'seguro' ? 'Seguro' : 'Particular'}</td>
               <td className="p-2">
                 <div className="flex items-center gap-2">
                   <SemaforoBadge estado={caso.estado} />

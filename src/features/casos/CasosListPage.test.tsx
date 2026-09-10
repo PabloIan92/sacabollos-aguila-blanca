@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
 import { CasosListPage } from './CasosListPage'
 import { listCasos } from './api'
@@ -38,6 +38,12 @@ function caso(overrides: Partial<Caso> = {}): Caso {
     denuncia: 'x',
     productor_nombre: null,
     productor_telefono: null,
+    presupuesto_monto: null,
+    presupuesto_respuesta: null,
+    presupuesto_observaciones: null,
+    modalidad_contacto: null,
+    seguimiento_observaciones: null,
+    inspeccion_guardada_at: null,
     danos_zonas: [],
     turno_fecha: null,
     orden_ingreso_numero: null,
@@ -90,5 +96,29 @@ describe('CasosListPage', () => {
     await screen.findByText('No hay casos todavía')
     fireEvent.click(screen.getByRole('button', { name: 'Nuevo caso' }))
     expect(await screen.findByText('NUEVO CASO')).toBeInTheDocument()
+  })
+
+  it('muestra alerta tras primer fallo y oculta tras segundo éxito con reintentar', async () => {
+    mockedListCasos.mockRejectedValueOnce(new Error('primer error'))
+    mockedListCasos.mockResolvedValueOnce([caso()])
+    renderPage()
+
+    // Esperar a que aparezca la alerta tras el primer fallo
+    const alertElement = await screen.findByRole('alert')
+    expect(alertElement).toHaveTextContent('No se pudieron cargar los casos.')
+    expect(screen.getByRole('button', { name: /reintentar/i })).toBeInTheDocument()
+
+    // Hacer clic en reintentar
+    fireEvent.click(screen.getByRole('button', { name: /reintentar/i }))
+
+    // Esperar a que se haga la segunda llamada y se resuelva exitosamente
+    await waitFor(() => {
+      expect(mockedListCasos).toHaveBeenCalledTimes(2)
+    })
+
+    // Verificar que la patente del caso es visible
+    expect(await screen.findByText('AA123BB')).toBeInTheDocument()
+    // Verificar que la alerta ya no está presente
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
   })
 })

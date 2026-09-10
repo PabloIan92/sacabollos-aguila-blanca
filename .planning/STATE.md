@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 3 audit complete; design pending approval
-last_updated: "2026-09-08T00:00:00.000-03:00"
+status: implementing
+stopped_at: Phase 3 engineering complete; Supabase migration and production rollout pending
+last_updated: "2026-09-09T20:40:00.000-03:00"
 last_activity: 2026-09-08 — Fase 2 cerrada y frontend aprobado restaurado
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 18
-  completed_plans: 7
-  percent: 39
+  completed_plans: 9
+  percent: 50
 ---
 
 # Project State
@@ -25,17 +25,17 @@ See: .planning/PROJECT.md (updated 2026-08-19)
 
 ## Current Position
 
-Phase: 2 of 6 (Caso de Seguro) — complete (plans 02-01 a 02-04)
-Next: Phase 3 (Caso Particular) — auditada, pendiente de diseño/plan
-Last activity: 2026-09-08 - Restauración del frontend aprobado, suite completa verde y cierre documental de Fase 2
+Phase: 3 of 6 (Caso Particular) — engineering complete; rollout pending
+Next: autenticar Supabase CLI, aplicar/confirmar 0004, desplegar frontend y ejecutar smoke no mutante
+Last activity: 2026-09-09 - Fase 3 implementada localmente; 122 tests, typecheck, build, lint y diff check verificados
 
-Progress: [████░░░░░░] 39% de planes
+Progress: [█████░░░░░] 50% de planes
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 7 (01-01, 01-02, 01-03, 02-01, 02-02, 02-03, 02-04)
+- Total plans completed: 9 (01-01, 01-02, 01-03, 02-01, 02-02, 02-03, 02-04, 03-01, 03-02)
 - Average duration: variable (01-01 repartido en varias sesiones; 01-02/01-03 ~2h combinadas)
 - Total execution time: —
 
@@ -45,6 +45,7 @@ Progress: [████░░░░░░] 39% de planes
 |-------|-------|-------|----------|
 | 1. Fundaciones | 3/4 | multi-sesion | — |
 | 2. Caso de Seguro | 4/4 | multi-sesion | — |
+| 3. Caso Particular | 2/2 | multi-sesion | — |
 
 **Recent Trend:**
 
@@ -77,7 +78,7 @@ Recent decisions affecting current work:
 
 ### Blockers/Concerns
 
-- Fase 3 debe definir monto/observación de presupuesto y modalidad de contacto antes de implementar.
+- La migración 0004 está validada contractualmente pero no se pudo ejecutar: no hay Docker/psql y Supabase CLI no tiene access token en este entorno.
 - La clave privilegiada encontrada en un script QA histórico debe rotarse; no se usará para automatización.
 
 ### Quick Tasks Completed
@@ -98,5 +99,5 @@ Recent decisions affecting current work:
 ## Session Continuity
 
 Last session: 2026-09-08
-Stopped at: Phase 3 audit complete; design pending approval
-Resume file: docs/superpowers/specs/ (crear diseño de Fase 3)
+Stopped at: Phase 3 engineering complete; production rollout pending
+Resume file: docs/superpowers/plans/2026-09-08-fase-3-caso-particular.md (Tarea 5: producción)
