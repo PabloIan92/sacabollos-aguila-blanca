@@ -43,6 +43,34 @@ La funcionalidad está implementada, la migración `0005_reparacion_y_stock.sql`
   - Ítem de navegación «Stock» agregado al menú principal (`BottomTabBar`, `Sidebar`) para los tres roles autenticados.
   - Cobertura de tests: 197 tests aprobados (23 suites), typecheck limpio, build de producción en 5.53s (198 kB) y lint sin errores.
 
+### Referencia operativa y Troubleshooting (Fase 4)
+
+Si se presenta alguna contingencia, despliegue manual o se retoma el entorno desde una máquina limpia, tener en cuenta:
+
+1. **Dependencias del frontend:**
+   - La Fase 4 incorporó `konva@^10.5.0` y `react-konva@^19.2.7` para el croquis interactivo de daños (`VehicleDamageMap`). Ejecutar siempre `npm install` tras clonar o actualizar.
+2. **Base de Datos y Migraciones:**
+   - Proyecto Supabase vinculado: `tnwrewghcowayuudvxey`.
+   - Migración 0005: `supabase/migrations/0005_reparacion_y_stock.sql`.
+   - Si se trabaja en un *git worktree* aislado, copiar la carpeta `supabase/.temp/` desde la raíz del proyecto para que la CLI de Supabase reconozca el proyecto vinculado sin requerir nuevo login.
+   - Para verificar migraciones aplicadas: `npx supabase migration list`.
+3. **Reglas de la máquina de estados de taller (Trigger PostgreSQL):**
+   - Las transiciones de taller están protegidas por `validar_transicion_caso()` y rechazan mutaciones directas sin cumplir los requisitos:
+     - `ingresado -> en reparación`: requiere `reparacion_iniciada_at`.
+     - `en reparación -> esperando repuesto`: requiere texto no vacío en `repuesto_pendiente`.
+     - `esperando repuesto -> en reparación`: `repuesto_pendiente` debe limpiarse a `null`.
+     - `en reparación -> listo para firma`: todos los registros en `reparacion_danos` para el caso deben tener `reparado = true` y deben existir en Storage los 4 archivos finales: `casos/<id>/final-frente.webp`, `casos/<id>/final-atras.webp`, `casos/<id>/final-lateral-izquierdo.webp` y `casos/<id>/final-lateral-derecho.webp`.
+     - `listo para firma -> firmado`: debe existir en Storage el archivo `casos/<id>/orden-firmada.webp`.
+   - Si una transición falla con error SQL `23514` (`check_violation`), verificar que las fotos o el estado de los daños cumplan el guard respectivo.
+4. **Storage y RLS de fotos:**
+   - Formato requerido: los nombres de archivo deben respetar estrictamente el formato `casos/<caso_id>/<nombre>.webp` con exactamente 3 segmentos de ruta delimitados por `/`.
+   - Subidas permitidas para taller y dueño: `final-frente.webp`, `final-atras.webp`, `final-lateral-izquierdo.webp`, `final-lateral-derecho.webp`, `orden-firmada.webp`.
+5. **Comandos de verificación de calidad:**
+   - Tests: `npm test` (197 tests, Vitest con exclusión de `.worktrees`).
+   - Typecheck: `npx tsc -b`.
+   - Linter: `npx oxlint`.
+   - Build de producción: `npm run build`.
+
 ## Estado histórico: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
 
 La funcionalidad está implementada, la migración `0004` está aplicada en Supabase y el commit reconciliado `c097efd` fue desplegado correctamente por Vercel. El detalle y las evidencias están en la sección de Fase 3.
