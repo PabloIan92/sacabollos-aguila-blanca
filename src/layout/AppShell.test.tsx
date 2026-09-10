@@ -107,8 +107,11 @@ describe('AppShell', () => {
 
     renderShell()
 
+    const invitar = screen.getByText('Invitar')
+    expect(invitar.closest('a')).toBeNull()
+
     const facturacion = screen.getByText('Facturación')
-    expect(facturacion.closest('a')).toBeNull()
+    expect(facturacion.closest('a')).not.toBeNull()
   })
 
   it('Topbar renderiza nombre, chip de rol y cerrar sesión', () => {
