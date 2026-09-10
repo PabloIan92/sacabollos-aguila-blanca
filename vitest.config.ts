@@ -8,6 +8,6 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    exclude: [...configDefaults.exclude, '**/.worktrees/**'],
+    exclude: [...configDefaults.exclude, '.worktrees/**'],
   },
 })
