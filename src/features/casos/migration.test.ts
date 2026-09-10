@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import migration from '../../../supabase/migrations/0004_casos_particulares_y_transiciones.sql?raw'
 import repairMigration from '../../../supabase/migrations/0005_reparacion_y_stock.sql?raw'
 import billingMigration from '../../../supabase/migrations/0006_facturacion_y_cobros.sql?raw'
+import crmMigration from '../../../supabase/migrations/0007_crm_y_equipo.sql?raw'
 
 function migrationSql() {
   return migration.replace(/\r\n/g, '\n')
@@ -399,4 +400,59 @@ describe('migración 0006 de facturación y cobros', () => {
     expect(sql).toContain('Al reclamar a la compañía requiere motivo_reclamo')
   })
 })
+
+describe('migración 0007 de CRM y equipo', () => {
+  function crmSql() {
+    return crmMigration.replace(/\r\n/g, '\n')
+  }
+
+  it('crea las tablas clientes, aseguradoras y productores con sus restricciones y triggers', () => {
+    const sql = crmSql()
+
+    expect(sql).toContain('create table public.clientes')
+    expect(sql).toContain("check (trim(nombre) <> '')")
+    expect(sql).toContain('create trigger clientes_updated_at')
+
+    expect(sql).toContain('create table public.aseguradoras')
+    expect(sql).toContain('nombre text not null unique check (trim(nombre) <> \'\')')
+    expect(sql).toContain('activa boolean not null default true')
+    expect(sql).toContain('create trigger aseguradoras_updated_at')
+
+    expect(sql).toContain('create table public.productores')
+    expect(sql).toContain('create trigger productores_updated_at')
+  })
+
+  it('configura RLS correctamente para dueño, recepción y taller', () => {
+    const sql = crmSql()
+
+    expect(sql).toContain('alter table public.clientes enable row level security')
+    expect(sql).toContain('alter table public.aseguradoras enable row level security')
+    expect(sql).toContain('alter table public.productores enable row level security')
+
+    expect(sql).toContain('create policy clientes_dueno_recepcion_all')
+    expect(sql).toContain("using (public.current_user_role() in ('dueno', 'recepcion'))")
+    expect(sql).toContain('create policy clientes_taller_select')
+    expect(sql).toContain("using (public.current_user_role() = 'taller')")
+
+    expect(sql).toContain('create policy aseguradoras_dueno_recepcion_all')
+    expect(sql).toContain('create policy aseguradoras_taller_select')
+
+    expect(sql).toContain('create policy productores_dueno_recepcion_all')
+    expect(sql).not.toContain('create policy productores_taller_select')
+  })
+
+  it('incluye las semillas iniciales de aseguradoras históricas', () => {
+    const sql = crmSql()
+
+    expect(sql).toContain('insert into public.aseguradoras')
+    expect(sql).toContain('San Cristóbal')
+    expect(sql).toContain('Federación Patronal')
+    expect(sql).toContain('Mercantil Andina')
+    expect(sql).toContain('Triunfo Seguros')
+    expect(sql).toContain('Sancor Seguros')
+    expect(sql).toContain('La Segunda')
+    expect(sql).toContain('on conflict (nombre) do nothing')
+  })
+})
+
 
