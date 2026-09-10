@@ -1,8 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { MemoryRouter, Routes, Route } from 'react-router'
+import { AuthContext } from '../../auth/AuthProvider'
 import { CasoDetailPage } from './CasoDetailPage'
 import { coordinateCasoTurno, getCaso, markSeguroApproved } from './api'
+import { iniciarReclamoAseguradora } from '../facturacion/api'
 import type { Caso } from './types'
 
 vi.mock('./api', () => ({
@@ -11,9 +13,14 @@ vi.mock('./api', () => ({
   markSeguroApproved: vi.fn(),
 }))
 
+vi.mock('../facturacion/api', () => ({
+  iniciarReclamoAseguradora: vi.fn(),
+}))
+
 const mockedGetCaso = vi.mocked(getCaso)
 const mockedMarkSeguroApproved = vi.mocked(markSeguroApproved)
 const mockedCoordinateCasoTurno = vi.mocked(coordinateCasoTurno)
+const mockedIniciarReclamo = vi.mocked(iniciarReclamoAseguradora)
 
 function caso(overrides: Partial<Caso> = {}): Caso {
   return {
@@ -59,8 +66,31 @@ function renderPage(id = 'caso-1') {
       <Routes>
         <Route path="/casos/:id" element={<CasoDetailPage />} />
         <Route path="/casos/:id/ficha-ingreso" element={<div>FICHA INGRESO PLACEHOLDER</div>} />
+        <Route path="/casos/:id/facturacion" element={<div>FACTURACION PLACEHOLDER</div>} />
       </Routes>
     </MemoryRouter>
+  )
+}
+
+function renderPageWithRole(id = 'caso-1', role: 'dueno' | 'recepcion' | 'taller' = 'recepcion') {
+  return render(
+    <AuthContext.Provider
+      value={{
+        session: {} as any,
+        profile: { id: 'u-1', full_name: 'Usuario Test', role },
+        loading: false,
+        profileError: false,
+        retryProfile: () => {},
+      }}
+    >
+      <MemoryRouter initialEntries={[`/casos/${id}`]}>
+        <Routes>
+          <Route path="/casos/:id" element={<CasoDetailPage />} />
+          <Route path="/casos/:id/ficha-ingreso" element={<div>FICHA INGRESO PLACEHOLDER</div>} />
+          <Route path="/casos/:id/facturacion" element={<div>FACTURACION PLACEHOLDER</div>} />
+        </Routes>
+      </MemoryRouter>
+    </AuthContext.Provider>
   )
 }
 
@@ -195,5 +225,67 @@ describe('CasoDetailPage', () => {
       screen.queryByRole('button', { name: 'Marcar orden de trabajo recibida' })
     ).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Turno')).not.toBeInTheDocument()
+  })
+
+  it('para un caso de seguro en facturado, permite a recepción iniciar reclamo con motivo', async () => {
+    mockedGetCaso.mockResolvedValue(
+      caso({ canal: 'seguro', estado: 'facturado' })
+    )
+    mockedIniciarReclamo.mockResolvedValue(
+      caso({ canal: 'seguro', estado: 'reclamo a la compañía', motivo_reclamo: 'Demora en pago' })
+    )
+
+    renderPageWithRole('caso-1', 'recepcion')
+
+    const btnIniciar = await screen.findByRole('button', { name: /iniciar reclamo a aseguradora/i })
+    fireEvent.click(btnIniciar)
+
+    const inputMotivo = screen.getByLabelText(/motivo del reclamo/i)
+    fireEvent.change(inputMotivo, { target: { value: 'Demora en pago' } })
+
+    const btnConfirmar = screen.getByRole('button', { name: /confirmar reclamo/i })
+    fireEvent.click(btnConfirmar)
+
+    await waitFor(() => {
+      expect(mockedIniciarReclamo).toHaveBeenCalledWith('caso-1', 'Demora en pago')
+    })
+  })
+
+  it('para un caso en reclamo a la compañía, muestra el motivo del reclamo', async () => {
+    mockedGetCaso.mockResolvedValue(
+      caso({
+        canal: 'seguro',
+        estado: 'reclamo a la compañía',
+        motivo_reclamo: 'Falta liquidar deducible',
+      })
+    )
+
+    renderPageWithRole('caso-1', 'recepcion')
+
+    expect(await screen.findByText(/Falta liquidar deducible/i)).toBeInTheDocument()
+    expect(screen.getByText(/Caso en reclamo a la aseguradora/i)).toBeInTheDocument()
+  })
+
+  it('para rol dueño, muestra botón a Gestión de Facturación y navega', async () => {
+    mockedGetCaso.mockResolvedValue(caso({ estado: 'firmado' }))
+
+    renderPageWithRole('caso-1', 'dueno')
+
+    const btnFacturacion = await screen.findByRole('button', { name: /gestión de facturación y cobranza/i })
+    fireEvent.click(btnFacturacion)
+
+    await screen.findByText('FACTURACION PLACEHOLDER')
+  })
+
+  it('para rol taller, no muestra controles de reclamo ni facturación', async () => {
+    mockedGetCaso.mockResolvedValue(
+      caso({ canal: 'seguro', estado: 'facturado' })
+    )
+
+    renderPageWithRole('caso-1', 'taller')
+
+    await screen.findByText('Caso AA123BB')
+    expect(screen.queryByRole('button', { name: /iniciar reclamo a aseguradora/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /gestión de facturación/i })).not.toBeInTheDocument()
   })
 })

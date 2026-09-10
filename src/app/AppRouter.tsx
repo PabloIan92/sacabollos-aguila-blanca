@@ -13,6 +13,7 @@ import { FichaTrabajoPage } from '../features/casos/FichaTrabajoPage'
 import { CierreReparacionPage } from '../features/casos/CierreReparacionPage'
 import { StockPage } from '../features/stock/StockPage'
 import { FacturacionPage } from '../features/facturacion/FacturacionPage'
+import { FichaFacturacionPage } from '../features/facturacion/FichaFacturacionPage'
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
             element: <RequireRole roles={['dueno']} />,
             children: [
               { path: '/facturacion', element: <FacturacionPage /> },
+              { path: '/casos/:id/facturacion', element: <FichaFacturacionPage /> },
             ],
           },
           {
