@@ -2,12 +2,31 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-3%20Caso%20Particular-blue)
-![Status](https://img.shields.io/badge/Status-Fase%203%20completa-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-4%20Reparaci%C3%B3n%20y%20Stock-blue)
+![Status](https://img.shields.io/badge/Status-Fase%204%20en%20progreso%20(Tasks%201--3%20completas)-orange)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-122%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-184%20passed-brightgreen)
 
-## Estado actual: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
+## Estado actual: Fase 4 - Reparación y Stock — **en progreso** (2026-09-10)
+
+Se está ejecutando el plan `docs/superpowers/plans/2026-09-10-fase-4-reparacion-stock.md` en la rama `feat/phase4-workflow`. Se completaron las tareas 1, 2 y 3 con 184 tests en verde:
+
+- **Task 1: Persistencia y máquina de estados de reparación** (`209a94f`, `48b2988`, `2d15d66`):
+  - Migración `0005_reparacion_y_stock.sql` con ampliación de `validar_transicion_caso()`.
+  - Tablas `reparacion_danos` y `stock_items` con RLS para taller, dueño y recepción.
+  - RPC `iniciar_reparacion()` atómica para copiar daños normalizados.
+  - Políticas de storage para fotos finales (`final-*.webp`) y orden firmada (`orden-firmada.webp`).
+- **Task 2: Tipos de dominio y APIs Supabase** (`472d649`, `e19a34b`):
+  - APIs tipadas: `startRepair`, `listRepairDamages`, `createRepairDamage`, `updateRepairDamage`, `deleteRepairDamage`, `waitForPart`, `resumeRepair`.
+  - Whitelist estricta de payloads para proteger campos controlados por DB.
+  - APIs de stock: `listStockItems`, `createStockItem`, `updateStockItem`, `deleteStockItem`.
+- **Task 3: Croquis y ficha de trabajo del Taller** (`b7b458c`):
+  - Croquis táctil interactivo en canvas (`konva@10.5.0` y `react-konva@19.2.7`) en `VehicleDamageMap.tsx` con coordenadas normalizadas `(0..1)` y lista accesible de daños debajo del dibujo.
+  - Pantalla `FichaTrabajoPage.tsx` accesible para roles `taller` y `dueno` en la ruta `/casos/:id/ficha-trabajo`.
+  - Soporte de prop `caseHref` en `CasosList.tsx` y vinculación directa desde `TallerHome.tsx`.
+  - Integración en `AppRouter.tsx` protegida por `RequireRole`.
+
+## Estado histórico: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
 
 La funcionalidad está implementada, la migración `0004` está aplicada en Supabase y el commit reconciliado `c097efd` fue desplegado correctamente por Vercel. El detalle y las evidencias están en la sección de Fase 3.
 

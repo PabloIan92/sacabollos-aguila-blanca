@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 3 complete in production; Phase 4 planning next
-last_updated: "2026-09-09T22:25:00.000-03:00"
-last_activity: 2026-09-09 — Fase 3 desplegada; migración 0004 y Vercel verificados
+status: executing
+stopped_at: Phase 4 — Tasks 1 to 3 completed on feat/phase4-workflow; moving to Task 4 (Cierre fotográfico)
+last_updated: "2026-09-10T12:00:00.000-03:00"
+last_activity: 2026-09-10 — Fase 4 en ejecución; Tasks 1, 2 y 3 completadas y testeadas (b7b458c)
 progress:
   total_phases: 6
   completed_phases: 3
@@ -21,15 +21,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel.
-**Current focus:** Phase 4 — Reparación y Stock
+**Current focus:** Phase 4 — Reparación y Stock (Tasks 1-3 completadas: DB 0005, APIs y Croquis Ficha Trabajo)
 
 ## Current Position
 
-Phase: 3 of 6 (Caso Particular) — complete in production
-Next: diseñar y planificar la Fase 4 — Reparación y Stock
-Last activity: 2026-09-09 - Fase 3 desplegada; 0004 registrada en Supabase, 122 tests y Vercel verificados
+Phase: 4 of 6 (Reparación y Stock) — en ejecución en rama `feat/phase4-workflow`
+Next: Task 4 — Cierre fotográfico y orden firmada (`CierreReparacionPage.tsx`)
+Last activity: 2026-09-10 — Migración 0005, APIs domain, VehicleDamageMap con Konva y FichaTrabajoPage implementados y testeados (commit `b7b458c`)
 
-Progress: [█████░░░░░] 50% de planes
+Progress: [██████░░░░] 60% de tareas totales
 
 ## Performance Metrics
 
