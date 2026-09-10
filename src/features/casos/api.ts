@@ -110,9 +110,18 @@ export async function listRepairDamages(casoId: string) {
 }
 
 export async function createRepairDamage(casoId: string, input: CreateReparacionDanoInput) {
+  const payload = {
+    caso_id: casoId,
+    zona: input.zona,
+    x: input.x,
+    y: input.y,
+    descripcion: input.descripcion,
+    reparado: false,
+    origen_inspeccion: false,
+  }
   const { data, error } = await supabase
     .from('reparacion_danos')
-    .insert({ ...input, caso_id: casoId, reparado: false, origen_inspeccion: false })
+    .insert(payload)
     .select()
     .single()
   if (error) throw error
@@ -120,9 +129,16 @@ export async function createRepairDamage(casoId: string, input: CreateReparacion
 }
 
 export async function updateRepairDamage(id: string, patch: UpdateReparacionDanoInput) {
+  const payload: UpdateReparacionDanoInput = {
+    ...(patch.zona === undefined ? {} : { zona: patch.zona }),
+    ...(patch.x === undefined ? {} : { x: patch.x }),
+    ...(patch.y === undefined ? {} : { y: patch.y }),
+    ...(patch.descripcion === undefined ? {} : { descripcion: patch.descripcion }),
+    ...(patch.reparado === undefined ? {} : { reparado: patch.reparado }),
+  }
   const { data, error } = await supabase
     .from('reparacion_danos')
-    .update(patch)
+    .update(payload)
     .eq('id', id)
     .select()
     .single()

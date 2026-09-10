@@ -47,8 +47,13 @@ describe('stock api', () => {
 
   it('createStockItem normaliza nombre y unidad y devuelve el item', async () => {
     const item = { id: 's1', nombre: 'Masilla', unidad: 'kg' }
+    const input = {
+      nombre: '  Masilla ', cantidad: 2, unidad: ' kg ', observaciones: null,
+      id: 'stock-cliente', updated_by: 'usuario-cliente',
+    }
     single.mockResolvedValue({ data: item, error: null })
-    await expect(createStockItem({ nombre: '  Masilla ', cantidad: 2, unidad: ' kg ', observaciones: null })).resolves.toEqual(item)
+    await expect(createStockItem(input)).resolves.toEqual(item)
+    expect(from).toHaveBeenCalledWith('stock_items')
     expect(insert).toHaveBeenCalledWith({ nombre: 'Masilla', cantidad: 2, unidad: 'kg', observaciones: null })
   })
 
@@ -70,8 +75,13 @@ describe('stock api', () => {
 
   it('updateStockItem normaliza y limita el patch permitido', async () => {
     const item = { id: 's1', nombre: 'Masilla fina', cantidad: 3 }
+    const patch = {
+      nombre: ' Masilla fina ', cantidad: 3, observaciones: ' nueva ',
+      id: 'stock-cliente', updated_at: '2026-01-01T00:00:00.000Z', updated_by: 'usuario-cliente',
+    }
     single.mockResolvedValue({ data: item, error: null })
-    await expect(updateStockItem('s1', { nombre: ' Masilla fina ', cantidad: 3, observaciones: ' nueva ' })).resolves.toEqual(item)
+    await expect(updateStockItem('s1', patch)).resolves.toEqual(item)
+    expect(from).toHaveBeenCalledWith('stock_items')
     expect(update).toHaveBeenCalledWith({ nombre: 'Masilla fina', cantidad: 3, observaciones: ' nueva ' })
     expect(eq).toHaveBeenCalledWith('id', 's1')
   })

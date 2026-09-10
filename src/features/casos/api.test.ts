@@ -189,6 +189,12 @@ describe('api', () => {
     expect(rpc).toHaveBeenCalledWith('iniciar_reparacion', { p_caso_id: 'abc' })
   })
 
+  it('startRepair devuelve el primer caso cuando el RPC responde una lista', async () => {
+    const caso = { id: 'abc', estado: 'en reparación' }
+    rpc.mockResolvedValue({ data: [caso], error: null })
+    await expect(startRepair('abc')).resolves.toEqual(caso)
+  })
+
   it('startRepair propaga el error del RPC', async () => {
     const error = new Error('no autorizado')
     rpc.mockResolvedValue({ data: null, error })
@@ -221,6 +227,19 @@ describe('api', () => {
     })
   })
 
+  it('createRepairDamage descarta campos extra de una entrada estructuralmente compatible', async () => {
+    const input = {
+      zona: 'capot', x: 0, y: 0, descripcion: null,
+      id: 'dano-cliente', origen_inspeccion: true, created_at: '2026-01-01T00:00:00.000Z',
+    }
+
+    await createRepairDamage('abc', input)
+
+    expect(insert).toHaveBeenCalledWith({
+      caso_id: 'abc', zona: 'capot', x: 0, y: 0, descripcion: null, reparado: false, origen_inspeccion: false,
+    })
+  })
+
   it('createRepairDamage propaga errores de Supabase', async () => {
     const error = new Error('falló alta')
     single.mockResolvedValue({ data: null, error })
@@ -234,6 +253,19 @@ describe('api', () => {
     expect(from).toHaveBeenCalledWith('reparacion_danos')
     expect(update).toHaveBeenCalledWith({ reparado: true, descripcion: null })
     expect(eq).toHaveBeenCalledWith('id', 'd1')
+  })
+
+  it('updateRepairDamage descarta extras y preserva false, cero y null', async () => {
+    const patch = {
+      zona: 'capot', x: 0, y: 0, descripcion: null, reparado: false,
+      id: 'dano-cliente', origen_inspeccion: true, created_at: '2026-01-01T00:00:00.000Z',
+    }
+
+    await updateRepairDamage('d1', patch)
+
+    expect(update).toHaveBeenCalledWith({
+      zona: 'capot', x: 0, y: 0, descripcion: null, reparado: false,
+    })
   })
 
   it('updateRepairDamage propaga errores de Supabase', async () => {
