@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { Link, useParams } from 'react-router'
 import { Ficha } from '../../ui/Ficha'
 import { TextField } from '../../ui/TextField'
 import { PrimaryButton } from '../../ui/PrimaryButton'
@@ -164,7 +164,17 @@ export function FichaTrabajoPage() {
             {caso.marca} {caso.modelo} {caso.color ? `· ${caso.color}` : ''}
           </p>
         </div>
-        <SemaforoBadge estado={caso.estado} />
+        <div className="flex items-center gap-3">
+          {caso.estado === 'en reparación' && (
+            <Link
+              to={`/casos/${caseId}/cierre-reparacion`}
+              className="px-3 py-1.5 text-xs font-mono font-semibold uppercase bg-navy text-white hover:bg-navy-dark rounded text-center inline-block"
+            >
+              Cierre de reparación
+            </Link>
+          )}
+          <SemaforoBadge estado={caso.estado} />
+        </div>
       </div>
 
       {errorAccion && (

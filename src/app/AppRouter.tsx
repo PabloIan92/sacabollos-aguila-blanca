@@ -10,6 +10,7 @@ import { FichaInspeccionPage } from '../features/casos/FichaInspeccionPage'
 import { CasoDetailPage } from '../features/casos/CasoDetailPage'
 import { FichaIngresoPage } from '../features/casos/FichaIngresoPage'
 import { FichaTrabajoPage } from '../features/casos/FichaTrabajoPage'
+import { CierreReparacionPage } from '../features/casos/CierreReparacionPage'
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
             element: <RequireRole roles={['taller', 'dueno']} />,
             children: [
               { path: '/casos/:id/ficha-trabajo', element: <FichaTrabajoPage /> },
+              { path: '/casos/:id/cierre-reparacion', element: <CierreReparacionPage /> },
             ],
           },
         ],

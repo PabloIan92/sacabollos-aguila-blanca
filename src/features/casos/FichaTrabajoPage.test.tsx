@@ -238,4 +238,12 @@ describe('FichaTrabajoPage', () => {
 
     expect(await screen.findByText('AA123BB')).toBeInTheDocument()
   })
+
+  it('en estado en reparación ofrece navegación al cierre de reparación', async () => {
+    mockedGetCaso.mockResolvedValue(caso({ estado: 'en reparación' }))
+    renderPage()
+
+    const link = await screen.findByRole('link', { name: /cierre de reparación/i })
+    expect(link).toHaveAttribute('href', '/casos/caso-1/cierre-reparacion')
+  })
 })
