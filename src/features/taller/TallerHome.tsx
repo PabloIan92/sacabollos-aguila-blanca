@@ -35,7 +35,10 @@ export function TallerHome() {
           body="Los autos en reparación o esperando repuesto van a aparecer acá."
         />
       ) : (
-        <CasosList casos={casosActivos} />
+        <CasosList
+          casos={casosActivos}
+          caseHref={(caso) => `/casos/${caso.id}/ficha-trabajo`}
+        />
       )}
     </div>
   )

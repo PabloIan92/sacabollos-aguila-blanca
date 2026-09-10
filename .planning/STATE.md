@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: planning
-stopped_at: Phase 3 complete in production; Phase 4 planning next
-last_updated: "2026-09-09T22:25:00.000-03:00"
-last_activity: 2026-09-09 — Fase 3 desplegada; migración 0004 y Vercel verificados
+status: complete
+stopped_at: Phase 4 (Reparación y Stock) complete at engineering level; 197 tests pass, build, lint & typecheck clean
+last_updated: "2026-09-10T12:55:00.000-03:00"
+last_activity: 2026-09-10 — Fase 4 completada; migración 0005, APIs, croquis táctil, cierre con fotos/orden firmada y stock compartido
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 18
-  completed_plans: 9
-  percent: 50
+  completed_plans: 12
+  percent: 66
 ---
 
 # Project State
@@ -21,15 +21,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel.
-**Current focus:** Phase 4 — Reparación y Stock
+**Current focus:** Phase 4 — Reparación y Stock (completa en `feat/phase4-workflow`)
 
 ## Current Position
 
-Phase: 3 of 6 (Caso Particular) — complete in production
-Next: diseñar y planificar la Fase 4 — Reparación y Stock
-Last activity: 2026-09-09 - Fase 3 desplegada; 0004 registrada en Supabase, 122 tests y Vercel verificados
+Phase: 4 of 6 (Reparación y Stock) — completa en rama `feat/phase4-workflow` (migración 0005 aplicada en Supabase)
+Next: Abrir PR de Phase 4 a `main`, mergear y verificar deploy en Vercel
+Last activity: 2026-09-10 — Migración 0005 aplicada en Supabase, APIs, VehicleDamageMap con Konva, FichaTrabajoPage, CierreReparacionPage, StockPage, 197 tests, build en 5.5s y lint limpio
 
-Progress: [█████░░░░░] 50% de planes
+Progress: [███████░░░] 66% de planes totales
 
 ## Performance Metrics
 

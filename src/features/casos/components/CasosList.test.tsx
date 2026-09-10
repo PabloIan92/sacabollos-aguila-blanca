@@ -29,6 +29,10 @@ function caso(overrides: Partial<Caso> = {}): Caso {
     turno_fecha: null,
     orden_ingreso_numero: null,
     ingresado_at: null,
+    repuesto_pendiente: null,
+    reparacion_iniciada_at: null,
+    reparacion_lista_at: null,
+    firmado_at: null,
     estado: 'en reparación',
     created_at: '2026-01-01',
     updated_at: '2026-01-01',
@@ -93,5 +97,18 @@ describe('CasosList', () => {
   it('no marca alerta un caso con menos de 5 días en la etapa', () => {
     renderList([caso({ estado_changed_at: haceNDias(2) })])
     expect(screen.queryByText(/⚠/)).not.toBeInTheDocument()
+  })
+
+  it('permite personalizar el destino del link mediante caseHref', () => {
+    render(
+      <MemoryRouter>
+        <CasosList
+          casos={[caso({ id: 'caso-99' })]}
+          caseHref={(c) => `/casos/${c.id}/ficha-trabajo`}
+        />
+      </MemoryRouter>
+    )
+    const link = screen.getByRole('link', { name: 'AA123BB' })
+    expect(link).toHaveAttribute('href', '/casos/caso-99/ficha-trabajo')
   })
 })

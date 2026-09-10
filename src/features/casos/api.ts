@@ -1,5 +1,13 @@
 import { supabase } from '../../lib/supabaseClient'
-import type { Caso, CreateCasoInput, ModalidadContacto, ZonaDano } from './types'
+import type {
+  Caso,
+  CreateCasoInput,
+  CreateReparacionDanoInput,
+  ModalidadContacto,
+  ReparacionDano,
+  UpdateReparacionDanoInput,
+  ZonaDano,
+} from './types'
 
 export async function listCasos() {
   const { data, error } = await supabase.from('casos').select('*')
@@ -83,4 +91,80 @@ export function registerCasoIngreso(
     ingresado_at: ingresadoAt,
     estado: 'ingresado',
   })
+}
+
+export async function startRepair(id: string) {
+  const { data, error } = await supabase.rpc('iniciar_reparacion', { p_caso_id: id })
+  if (error) throw error
+  return (Array.isArray(data) ? data[0] : data) as Caso
+}
+
+export async function listRepairDamages(casoId: string) {
+  const { data, error } = await supabase
+    .from('reparacion_danos')
+    .select('*')
+    .eq('caso_id', casoId)
+    .order('created_at', { ascending: true })
+  if (error) throw error
+  return data as ReparacionDano[]
+}
+
+export async function createRepairDamage(casoId: string, input: CreateReparacionDanoInput) {
+  const payload = {
+    caso_id: casoId,
+    zona: input.zona,
+    x: input.x,
+    y: input.y,
+    descripcion: input.descripcion,
+    reparado: false,
+    origen_inspeccion: false,
+  }
+  const { data, error } = await supabase
+    .from('reparacion_danos')
+    .insert(payload)
+    .select()
+    .single()
+  if (error) throw error
+  return data as ReparacionDano
+}
+
+export async function updateRepairDamage(id: string, patch: UpdateReparacionDanoInput) {
+  const payload: UpdateReparacionDanoInput = {
+    ...(patch.zona === undefined ? {} : { zona: patch.zona }),
+    ...(patch.x === undefined ? {} : { x: patch.x }),
+    ...(patch.y === undefined ? {} : { y: patch.y }),
+    ...(patch.descripcion === undefined ? {} : { descripcion: patch.descripcion }),
+    ...(patch.reparado === undefined ? {} : { reparado: patch.reparado }),
+  }
+  const { data, error } = await supabase
+    .from('reparacion_danos')
+    .update(payload)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data as ReparacionDano
+}
+
+export async function deleteRepairDamage(id: string) {
+  const { error } = await supabase.from('reparacion_danos').delete().eq('id', id)
+  if (error) throw error
+}
+
+export async function waitForPart(id: string, part: string) {
+  const repuestoPendiente = part.trim()
+  if (!repuestoPendiente) throw new Error('El repuesto es obligatorio')
+  return updateCaso(id, { estado: 'esperando repuesto', repuesto_pendiente: repuestoPendiente })
+}
+
+export function resumeRepair(id: string) {
+  return updateCaso(id, { estado: 'en reparación', repuesto_pendiente: null })
+}
+
+export function markReadyForSignature(id: string) {
+  return updateCaso(id, { estado: 'listo para firma' })
+}
+
+export function markSigned(id: string) {
+  return updateCaso(id, { estado: 'firmado' })
 }

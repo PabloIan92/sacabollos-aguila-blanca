@@ -2,12 +2,48 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-3%20Caso%20Particular-blue)
-![Status](https://img.shields.io/badge/Status-Fase%203%20completa-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-4%20Reparaci%C3%B3n%20y%20Stock-blue)
+![Status](https://img.shields.io/badge/Status-Fase%204%20migraci%C3%B3n%20aplicada-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-122%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-197%20passed-brightgreen)
 
-## Estado actual: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
+## Estado actual: Fase 4 - Reparación y Stock — **migración 0005 aplicada en Supabase** (2026-09-10)
+
+Se completaron las 5 tareas del plan `docs/superpowers/plans/2026-09-10-fase-4-reparacion-stock.md` en la rama `feat/phase4-workflow`. Se encuentran los 197 tests en verde, typecheck limpio, build pasando y lint sin errores:
+
+- **Task 1: Persistencia y máquina de estados de reparación** (`209a94f`, `48b2988`, `2d15d66`):
+  - Migración `0005_reparacion_y_stock.sql` con ampliación de `validar_transicion_caso()` para todas las etapas de taller.
+  - Tablas `reparacion_danos` y `stock_items` con RLS para taller, dueño y recepción.
+  - Guards estrictos:
+    - `ingresado -> en reparación`: taller/dueño; `reparacion_iniciada_at` obligatorio.
+    - `en reparación -> esperando repuesto`: taller/dueño; `repuesto_pendiente` no vacío.
+    - `esperando repuesto -> en reparación`: taller/dueño; limpia `repuesto_pendiente`.
+    - `en reparación -> listo para firma`: taller/dueño; todos los daños `reparado = true` y 4 fotos finales existentes en storage.
+    - `listo para firma -> firmado`: taller/dueño; `orden-firmada.webp` existente en storage.
+  - RPC `iniciar_reparacion()` atómica para copiar daños de inspección con coordenadas normalizadas.
+  - Políticas de storage para fotos finales (`final-frente.webp`, `final-atras.webp`, `final-lateral-izquierdo.webp`, `final-lateral-derecho.webp`) y orden firmada (`orden-firmada.webp`).
+- **Task 2: Tipos de dominio y APIs Supabase** (`472d649`, `e19a34b`):
+  - APIs tipadas de reparación: `startRepair`, `listRepairDamages`, `createRepairDamage`, `updateRepairDamage`, `deleteRepairDamage`, `waitForPart`, `resumeRepair`, `markReadyForSignature`, `markSigned`.
+  - Whitelist estricta de payloads para proteger campos controlados por triggers de base de datos.
+  - APIs de stock compartido: `listStockItems`, `createStockItem`, `updateStockItem`, `deleteStockItem`.
+- **Task 3: Croquis y ficha de trabajo del Taller** (`b7b458c`):
+  - Croquis táctil interactivo en canvas (`konva@10.5.0` y `react-konva@19.2.7`) en `VehicleDamageMap.tsx` con coordenadas normalizadas `(0..1)` y lista accesible de daños debajo del dibujo.
+  - Pantalla `FichaTrabajoPage.tsx` accesible para roles `taller` y `dueno` en la ruta `/casos/:id/ficha-trabajo`.
+  - Soporte de prop `caseHref` en `CasosList.tsx` y vinculación directa desde `TallerHome.tsx`.
+  - Integración en `AppRouter.tsx` protegida por `RequireRole`.
+- **Task 4: Cierre fotográfico y orden firmada** (`05ad9ef`):
+  - Pantalla `CierreReparacionPage.tsx` en `/casos/:id/cierre-reparacion` para roles `taller` y `dueno`.
+  - Reutilización de `FotoUploader` con los 4 ángulos de fotos finales (`FINAL_PHOTO_ANGLES`) como compuerta para avanzar a `listo para firma`.
+  - Reutilización de `FotoUploader` para `SIGNED_ORDER_ANGLES` (`orden-firmada.webp`) como compuerta para avanzar a `firmado`.
+  - Enlace y navegación cruzada fluida desde `FichaTrabajoPage`.
+- **Task 5: Stock compartido y navegación unificada**:
+  - Pantalla `StockPage.tsx` en `/stock` accesible para `dueno`, `recepcion` y `taller`.
+  - Formulario unificado de alta y edición con validación de cantidad no negativa antes de consultar a Supabase.
+  - Tabla accesible de insumos con eliminación tras confirmación explícita del usuario.
+  - Ítem de navegación «Stock» agregado al menú principal (`BottomTabBar`, `Sidebar`) para los tres roles autenticados.
+  - Cobertura de tests: 197 tests aprobados (23 suites), typecheck limpio, build de producción en 5.53s (198 kB) y lint sin errores.
+
+## Estado histórico: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
 
 La funcionalidad está implementada, la migración `0004` está aplicada en Supabase y el commit reconciliado `c097efd` fue desplegado correctamente por Vercel. El detalle y las evidencias están en la sección de Fase 3.
 

@@ -1,4 +1,4 @@
-import { ClipboardList, Calendar, Receipt, UserPlus, type LucideIcon } from 'lucide-react'
+import { ClipboardList, Calendar, Receipt, UserPlus, Package, type LucideIcon } from 'lucide-react'
 import type { Profile } from '../auth/AuthProvider'
 
 export type NavItem = {
@@ -13,6 +13,7 @@ export const navItems: NavItem[] = [
   { to: '/', label: 'Casos', icon: ClipboardList, roles: ['dueno', 'taller'], available: true },
   { to: '/', label: 'Turnos', icon: Calendar, roles: ['recepcion'], available: true },
   { to: '/casos', label: 'Casos', icon: ClipboardList, roles: ['recepcion'], available: true },
+  { to: '/stock', label: 'Stock', icon: Package, roles: ['dueno', 'recepcion', 'taller'], available: true },
   { to: '/facturacion', label: 'Facturación', icon: Receipt, roles: ['dueno'], available: false },
   { to: '/invitar', label: 'Invitar', icon: UserPlus, roles: ['dueno', 'recepcion'], available: false },
 ]
