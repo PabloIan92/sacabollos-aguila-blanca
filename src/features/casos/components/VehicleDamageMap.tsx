@@ -1,4 +1,3 @@
-import React from 'react'
 import { Stage, Layer, Rect, Circle, Text, Group, Line } from 'react-konva'
 import type { ReparacionDano, ZonaDano } from '../types'
 

@@ -11,6 +11,7 @@ import { CasoDetailPage } from '../features/casos/CasoDetailPage'
 import { FichaIngresoPage } from '../features/casos/FichaIngresoPage'
 import { FichaTrabajoPage } from '../features/casos/FichaTrabajoPage'
 import { CierreReparacionPage } from '../features/casos/CierreReparacionPage'
+import { StockPage } from '../features/stock/StockPage'
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
         element: <AppShell />,
         children: [
           { index: true, element: <RoleHome /> },
+          { path: '/stock', element: <StockPage /> },
           {
             element: <RequireRole roles={['recepcion']} />,
             children: [

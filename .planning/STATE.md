@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 4 — Tasks 1 to 3 completed on feat/phase4-workflow; moving to Task 4 (Cierre fotográfico)
-last_updated: "2026-09-10T12:00:00.000-03:00"
-last_activity: 2026-09-10 — Fase 4 en ejecución; Tasks 1, 2 y 3 completadas y testeadas (b7b458c)
+status: complete
+stopped_at: Phase 4 (Reparación y Stock) complete at engineering level; 197 tests pass, build, lint & typecheck clean
+last_updated: "2026-09-10T12:55:00.000-03:00"
+last_activity: 2026-09-10 — Fase 4 completada; migración 0005, APIs, croquis táctil, cierre con fotos/orden firmada y stock compartido
 progress:
   total_phases: 6
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 18
-  completed_plans: 9
-  percent: 50
+  completed_plans: 12
+  percent: 66
 ---
 
 # Project State
@@ -21,15 +21,15 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel.
-**Current focus:** Phase 4 — Reparación y Stock (Tasks 1-3 completadas: DB 0005, APIs y Croquis Ficha Trabajo)
+**Current focus:** Phase 4 — Reparación y Stock (completa en `feat/phase4-workflow`)
 
 ## Current Position
 
-Phase: 4 of 6 (Reparación y Stock) — en ejecución en rama `feat/phase4-workflow`
-Next: Task 4 — Cierre fotográfico y orden firmada (`CierreReparacionPage.tsx`)
-Last activity: 2026-09-10 — Migración 0005, APIs domain, VehicleDamageMap con Konva y FichaTrabajoPage implementados y testeados (commit `b7b458c`)
+Phase: 4 of 6 (Reparación y Stock) — completa en rama `feat/phase4-workflow`
+Next: Preparar PR / merge de Phase 4 a `main`, push de migración 0005 a Supabase y verificación productiva
+Last activity: 2026-09-10 — Migración 0005, APIs, VehicleDamageMap con Konva, FichaTrabajoPage, CierreReparacionPage, StockPage, 197 tests, build en 5.5s y lint limpio
 
-Progress: [██████░░░░] 60% de tareas totales
+Progress: [███████░░░] 66% de planes totales
 
 ## Performance Metrics
 

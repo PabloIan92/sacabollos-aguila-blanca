@@ -3,28 +3,45 @@
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
 ![Phase](https://img.shields.io/badge/Phase-4%20Reparaci%C3%B3n%20y%20Stock-blue)
-![Status](https://img.shields.io/badge/Status-Fase%204%20en%20progreso%20(Tasks%201--3%20completas)-orange)
+![Status](https://img.shields.io/badge/Status-Fase%204%20completa%20local-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-184%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-197%20passed-brightgreen)
 
-## Estado actual: Fase 4 - Reparación y Stock — **en progreso** (2026-09-10)
+## Estado actual: Fase 4 - Reparación y Stock — **completa a nivel de ingeniería** (2026-09-10)
 
-Se está ejecutando el plan `docs/superpowers/plans/2026-09-10-fase-4-reparacion-stock.md` en la rama `feat/phase4-workflow`. Se completaron las tareas 1, 2 y 3 con 184 tests en verde:
+Se completaron las 5 tareas del plan `docs/superpowers/plans/2026-09-10-fase-4-reparacion-stock.md` en la rama `feat/phase4-workflow`. Se encuentran los 197 tests en verde, typecheck limpio, build pasando y lint sin errores:
 
 - **Task 1: Persistencia y máquina de estados de reparación** (`209a94f`, `48b2988`, `2d15d66`):
-  - Migración `0005_reparacion_y_stock.sql` con ampliación de `validar_transicion_caso()`.
+  - Migración `0005_reparacion_y_stock.sql` con ampliación de `validar_transicion_caso()` para todas las etapas de taller.
   - Tablas `reparacion_danos` y `stock_items` con RLS para taller, dueño y recepción.
-  - RPC `iniciar_reparacion()` atómica para copiar daños normalizados.
-  - Políticas de storage para fotos finales (`final-*.webp`) y orden firmada (`orden-firmada.webp`).
+  - Guards estrictos:
+    - `ingresado -> en reparación`: taller/dueño; `reparacion_iniciada_at` obligatorio.
+    - `en reparación -> esperando repuesto`: taller/dueño; `repuesto_pendiente` no vacío.
+    - `esperando repuesto -> en reparación`: taller/dueño; limpia `repuesto_pendiente`.
+    - `en reparación -> listo para firma`: taller/dueño; todos los daños `reparado = true` y 4 fotos finales existentes en storage.
+    - `listo para firma -> firmado`: taller/dueño; `orden-firmada.webp` existente en storage.
+  - RPC `iniciar_reparacion()` atómica para copiar daños de inspección con coordenadas normalizadas.
+  - Políticas de storage para fotos finales (`final-frente.webp`, `final-atras.webp`, `final-lateral-izquierdo.webp`, `final-lateral-derecho.webp`) y orden firmada (`orden-firmada.webp`).
 - **Task 2: Tipos de dominio y APIs Supabase** (`472d649`, `e19a34b`):
-  - APIs tipadas: `startRepair`, `listRepairDamages`, `createRepairDamage`, `updateRepairDamage`, `deleteRepairDamage`, `waitForPart`, `resumeRepair`.
-  - Whitelist estricta de payloads para proteger campos controlados por DB.
-  - APIs de stock: `listStockItems`, `createStockItem`, `updateStockItem`, `deleteStockItem`.
+  - APIs tipadas de reparación: `startRepair`, `listRepairDamages`, `createRepairDamage`, `updateRepairDamage`, `deleteRepairDamage`, `waitForPart`, `resumeRepair`, `markReadyForSignature`, `markSigned`.
+  - Whitelist estricta de payloads para proteger campos controlados por triggers de base de datos.
+  - APIs de stock compartido: `listStockItems`, `createStockItem`, `updateStockItem`, `deleteStockItem`.
 - **Task 3: Croquis y ficha de trabajo del Taller** (`b7b458c`):
   - Croquis táctil interactivo en canvas (`konva@10.5.0` y `react-konva@19.2.7`) en `VehicleDamageMap.tsx` con coordenadas normalizadas `(0..1)` y lista accesible de daños debajo del dibujo.
   - Pantalla `FichaTrabajoPage.tsx` accesible para roles `taller` y `dueno` en la ruta `/casos/:id/ficha-trabajo`.
   - Soporte de prop `caseHref` en `CasosList.tsx` y vinculación directa desde `TallerHome.tsx`.
   - Integración en `AppRouter.tsx` protegida por `RequireRole`.
+- **Task 4: Cierre fotográfico y orden firmada** (`05ad9ef`):
+  - Pantalla `CierreReparacionPage.tsx` en `/casos/:id/cierre-reparacion` para roles `taller` y `dueno`.
+  - Reutilización de `FotoUploader` con los 4 ángulos de fotos finales (`FINAL_PHOTO_ANGLES`) como compuerta para avanzar a `listo para firma`.
+  - Reutilización de `FotoUploader` para `SIGNED_ORDER_ANGLES` (`orden-firmada.webp`) como compuerta para avanzar a `firmado`.
+  - Enlace y navegación cruzada fluida desde `FichaTrabajoPage`.
+- **Task 5: Stock compartido y navegación unificada**:
+  - Pantalla `StockPage.tsx` en `/stock` accesible para `dueno`, `recepcion` y `taller`.
+  - Formulario unificado de alta y edición con validación de cantidad no negativa antes de consultar a Supabase.
+  - Tabla accesible de insumos con eliminación tras confirmación explícita del usuario.
+  - Ítem de navegación «Stock» agregado al menú principal (`BottomTabBar`, `Sidebar`) para los tres roles autenticados.
+  - Cobertura de tests: 197 tests aprobados (23 suites), typecheck limpio, build de producción en 5.53s (198 kB) y lint sin errores.
 
 ## Estado histórico: Fase 3 - Caso Particular — **completa en producción** (2026-09-09)
 
