@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: complete
-stopped_at: Phase 4 (Reparación y Stock) complete at engineering level; 197 tests pass, build, lint & typecheck clean
-last_updated: "2026-09-10T12:55:00.000-03:00"
-last_activity: 2026-09-10 — Fase 4 completada; migración 0005, APIs, croquis táctil, cierre con fotos/orden firmada y stock compartido
+stopped_at: All 6 phases complete in production; 260 tests pass, build, lint & typecheck clean
+last_updated: "2026-09-10T22:35:00.000-03:00"
+last_activity: 2026-09-10 — Fase 5 auditada y cerrada (migración 0007), Fase 6 completada (migración 0008, CRM de clientes/aseguradoras/productores y gestión de equipo)
 progress:
   total_phases: 6
-  completed_phases: 4
+  completed_phases: 6
   total_plans: 18
-  completed_plans: 12
-  percent: 66
+  completed_plans: 18
+  percent: 100
 ---
 
 # Project State
@@ -21,36 +21,39 @@ progress:
 See: .planning/PROJECT.md (updated 2026-08-19)
 
 **Core value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel.
-**Current focus:** Phase 4 — Reparación y Stock (completa en `feat/phase4-workflow`)
+**Current focus:** Roadmap v1 100% implementado, auditado y en producción (`main`)
 
 ## Current Position
 
-Phase: 4 of 6 (Reparación y Stock) — completa en producción (`main`)
-Next: Planificación e inicio de Fase 5 (Facturación y Cobranza)
-Last activity: 2026-09-10 — Fase 4 desplegada en producción; migración 0005 en Supabase, PR #1 mergeado, deploy Vercel verificado, 197 tests, build en 5.5s y lint limpio
+Phase: 6 of 6 (CRM y Gestión de Equipo) — completa en producción (`main`)
+Next: Mantenimiento, monitoreo y evaluación de v2 (notificaciones e informes)
+Last activity: 2026-09-10 — Fases 1 a 6 completas en producción; migraciones 0001 a 0008 en Supabase remoto, 260 tests en verde, typecheck y linter limpios, build en 4.24s
 
-Progress: [███████░░░] 66% de planes totales
+Progress: [██████████] 100% de planes totales
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 9 (01-01, 01-02, 01-03, 02-01, 02-02, 02-03, 02-04, 03-01, 03-02)
-- Average duration: variable (01-01 repartido en varias sesiones; 01-02/01-03 ~2h combinadas)
-- Total execution time: —
+- Total plans completed: 18 (todos los planes de Fases 1 a 6 completados)
+- Total execution time: multi-sesión
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Fundaciones | 3/4 | multi-sesion | — |
+| 1. Fundaciones | 4/4 | multi-sesion | — |
 | 2. Caso de Seguro | 4/4 | multi-sesion | — |
 | 3. Caso Particular | 2/2 | multi-sesion | — |
+| 4. Reparación y Stock | 3/3 | multi-sesion | — |
+| 5. Facturación y Cobros | 3/3 | multi-sesion | — |
+| 6. CRM y Equipo | 2/2 | multi-sesion | — |
 
 **Recent Trend:**
 
-- Last 5 plans: 01-03, 02-01, 02-02, 02-03, 02-04 completados
-- Trend: Fase 2 estabilizada — 77 tests, typecheck, build y lint en verde; frontend restaurado a la referencia aprobada
+- 260 tests aprobados en 30 suites (100% verde).
+- Typecheck (`tsc -b`), lint y build limpios.
+- Base de datos sincronizada en Supabase (`tnwrewghcowayuudvxey`) con migraciones 0001 a 0008.
 
 *Updated after each plan completion*
 

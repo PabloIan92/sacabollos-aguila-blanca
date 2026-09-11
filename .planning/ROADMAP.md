@@ -4,6 +4,12 @@
 
 El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase entrega algo end-to-end que se puede probar de verdad, no una capa técnica aislada. Se arranca por las fundaciones de acceso (login + roles + que la app funcione bien en tablet y PC), después se resuelve el flujo más largo y completo (un caso de Seguro de punta a punta hasta que el auto entra al taller), luego el flujo más corto que reutiliza esa base (caso Particular), después la reparación en el taller con repuestos y stock, luego facturación y cobros (con el control de acceso al diferencial facturado/cobrado), y se cierra con el CRM que se apoya en el historial de casos ya generado por las fases anteriores.
 
+# Roadmap: Sistema de Gestión — Sacabollos Aguila Blanca
+
+## Overview
+
+El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase entrega algo end-to-end que se puede probar de verdad, no una capa técnica aislada. Se arranca por las fundaciones de acceso (login + roles + que la app funcione bien en tablet y PC), después se resuelve el flujo más largo y completo (un caso de Seguro de punta a punta hasta que el auto entra al taller), luego el flujo más corto que reutiliza esa base (caso Particular), después la reparación en el taller con repuestos y stock, luego facturación y cobros (con el control de acceso al diferencial facturado/cobrado), y se cierra con el CRM que se apoya en el historial de casos ya generado por las fases anteriores.
+
 ## Phases
 
 **Phase Numbering:**
@@ -13,9 +19,9 @@ El proyecto se construye como una serie de rebanadas verticales (MVP): cada fase
 - [x] **Phase 1: Fundaciones** - Login con roles y app usable en tablet y PC
 - [x] **Phase 2: Caso de Seguro** - Flujo completo desde denuncia hasta ingreso del auto al taller
 - [x] **Phase 3: Caso Particular** - Flujo completo desplegado en producción
-- [ ] **Phase 4: Reparación y Stock** - Ficha de trabajo, repuestos faltantes y listado de materiales
-- [ ] **Phase 5: Facturación y Cobros** - Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora
-- [ ] **Phase 6: CRM** - Clientes, aseguradoras y productores con historial de casos
+- [x] **Phase 4: Reparación y Stock** - Ficha de trabajo, repuestos faltantes y listado de materiales
+- [x] **Phase 5: Facturación y Cobros** - Facturado vs. cobrado (solo dueño) y reclamo a la aseguradora (auditada y cerrada)
+- [x] **Phase 6: CRM y Gestión de Equipo** - Clientes, aseguradoras, productores y gestión de invitaciones
 
 ## Phase Details
 
@@ -34,7 +40,7 @@ Plans:
 - [x] 01-01-PLAN.md — Esqueleto caminante: proyecto Supabase nuevo con `profiles`+RLS, login real con email+contraseña y app desplegada en Vercel
 - [x] 01-02-PLAN.md — Shell responsive: routing con guardia de rol, sidebar en PC y barra inferior táctil en tablet
 - [x] 01-03-PLAN.md — Pantallas de inicio por rol (dueño, recepción, taller) con sus estados vacíos
-- [ ] 01-04-PLAN.md — Alta de usuarios desde la app: Edge Function `invite-user` con re-validación de rol del lado del servidor (diferido, no bloquea Fase 2)
+- [x] 01-04-PLAN.md — Alta de usuarios e invitaciones (implementado en Fase 6 en `/invitar`)
 
 ### Phase 2: Caso de Seguro
 **Goal**: Un caso de seguro se puede seguir de punta a punta, desde la denuncia hasta que el auto ingresa al taller
@@ -82,9 +88,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 04-01: Ficha de trabajo de reparación
-- [ ] 04-02: Estado "esperando repuesto" reflejado en el semáforo
-- [ ] 04-03: Firma de orden de trabajo con fotos + listado de stock
+- [x] 04-01: Ficha de trabajo de reparación (croquis Konva interactivo)
+- [x] 04-02: Estado "esperando repuesto" reflejado en el semáforo y ficha de trabajo
+- [x] 04-03: Firma de orden de trabajo con 4 fotos finales + listado de stock compartido
 
 ### Phase 5: Facturación y Cobros
 **Goal**: El dueño puede controlar qué se facturó formalmente y qué se cobró realmente por cada caso, sin que otros roles accedan a ese diferencial
@@ -98,24 +104,25 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 05-01: Modelo de facturación (facturado vs. cobrado) con permisos por rol a nivel de base de datos
-- [ ] 05-02: Pantalla de facturación (solo dueño)
-- [ ] 05-03: Reclamo a la compañía
+- [x] 05-01: Modelo de facturación (facturado vs. cobrado) con RLS exclusivo dueño (migraciones 0006 y 0007)
+- [x] 05-02: Pantalla de facturación (/facturacion y /casos/:id/facturacion para dueño con RPCs atómicas)
+- [x] 05-03: Reclamo a la compañía con permisos para recepción/dueño
 
-### Phase 6: CRM
-**Goal**: Dueño y recepción tienen una vista de cliente/aseguradora con todo su historial de casos
+### Phase 6: CRM y Gestión de Equipo
+**Goal**: Dueño y recepción tienen una vista de cliente/aseguradora con todo su historial de casos y gestión de colaboradores
 **Mode:** mvp
 **Depends on**: Phase 2, Phase 3
 **Requirements**: CRM-01, CRM-02, CRM-03
 **Success Criteria** (what must be TRUE):
-  1. Usuario ve y edita la ficha de un cliente particular con su historial de casos
-  2. Usuario ve y edita la ficha de una compañía de seguro (San Cristóbal, Federación Patronal, Mercantil Andes, Triunfo, Sancor, Cooperativa de Seguros) con su historial de casos
+  1. Usuario ve y edita la ficha de un cliente particular con su historial de casos y WhatsApp
+  2. Usuario ve y edita la ficha de una compañía de seguro con su historial de casos
   3. Usuario registra los datos de un productor/asesor asociado a un caso
+  4. Gestión de equipo e invitaciones en /invitar
 **Plans**: 2 plans
 
 Plans:
-- [ ] 06-01: CRM de clientes particulares y aseguradoras (con historial de casos)
-- [ ] 06-02: Productores/asesores asociados a un caso
+- [x] 06-01: CRM de clientes particulares, aseguradoras y productores (con historial y métricas)
+- [x] 06-02: Gestión de equipo y colaboradores (/invitar)
 
 ## Progress
 
@@ -124,9 +131,9 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 
 | Phase | Plans Complete | Status | Completed |
 |-------|-----------------|--------|-----------|
-| 1. Fundaciones | 3/4 | Complete (01-04 diferido) | 2026-08-25 |
+| 1. Fundaciones | 4/4 | Complete | 2026-08-25 |
 | 2. Caso de Seguro | 4/4 | Complete | 2026-09-08 |
-| 3. Caso Particular | 2/2 | Engineering complete; rollout pending | - |
-| 4. Reparación y Stock | 0/3 | Not started | - |
-| 5. Facturación y Cobros | 0/3 | Not started | - |
-| 6. CRM | 0/2 | Not started | - |
+| 3. Caso Particular | 2/2 | Complete | 2026-09-09 |
+| 4. Reparación y Stock | 3/3 | Complete | 2026-09-10 |
+| 5. Facturación y Cobros | 3/3 | Complete (auditada con 0007) | 2026-09-10 |
+| 6. CRM y Equipo | 2/2 | Complete (migración 0008) | 2026-09-10 |

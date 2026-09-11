@@ -1,19 +1,20 @@
 # Requirements: Sistema de Gestión — Sacabollos Aguila Blanca
+# Requirements: Sistema de Gestión — Sacabollos Aguila Blanca
 
 **Defined:** 2026-08-19
 **Core Value:** Que ningún auto, ficha, presupuesto o pago se pierda o se demore por depender de papel — todo el circuito (ingreso → reparación → cobro) queda registrado y visible en un solo lugar para dueño, recepción y taller.
 
 ## v1 Requirements
 
-### Autenticación y Roles
+#### Autenticación y Roles
 
 - [x] **AUTH-01**: Usuario inicia sesión y ve solo las secciones que corresponden a su rol (dueño, recepción o taller)
-- [ ] **AUTH-02**: Solo el rol dueño puede ver el diferencial entre monto facturado y total cobrado; recepción y taller no lo ven en ninguna pantalla ni pueden acceder a él
+- [x] **AUTH-02**: Solo el rol dueño puede ver el diferencial entre monto facturado y total cobrado; recepción y taller no lo ven en ninguna pantalla ni pueden acceder a él
 
 ### Casos
 
 - [x] **CASOS-01**: Recepción puede crear un caso nuevo eligiendo canal Seguro o Particular
-- [ ] **CASOS-02**: Un caso de canal Seguro registra denuncia, número de siniestro y datos del productor/asesor, y avanza por sus estados (enviado a la aseguradora → orden de trabajo recibida → turno → ingresado al taller → en reparación → firmado → facturado → cobrado o reclamo a la compañía)
+- [x] **CASOS-02**: Un caso de canal Seguro registra denuncia, número de siniestro y datos del productor/asesor, y avanza por sus estados (enviado a la aseguradora → orden de trabajo recibida → turno → ingresado al taller → en reparación → firmado → facturado → cobrado o reclamo a la compañía)
 - [x] **CASOS-03**: Un caso de canal Particular registra presupuesto y fotos; si el cliente acepta pasa a turno, si no acepta se guarda la modalidad de contacto para seguimiento futuro
 - [x] **CASOS-04**: Cada caso muestra un semáforo de estado visual que refleja en qué etapa está, actualizado sin necesidad de recargar la página
 - [x] **CASOS-05**: Recepción puede coordinar el turno del cliente, quedando registrada la fecha/hora de ingreso del auto
@@ -22,28 +23,28 @@
 
 - [x] **FICHAS-01**: Usuario completa la ficha de inspección pre-ingreso con datos del auto, del cliente, del seguro (si aplica), fotos y un bosquejo del auto para marcar daños
 - [x] **FICHAS-02**: Usuario completa la ficha de inspección de ingreso al momento real de entrar el auto al taller, con fotos y orden de ingreso
-- [ ] **FICHAS-03**: Usuario completa la ficha de trabajo de reparación con la figura del auto, daños marcados y patente
-- [ ] **FICHAS-04**: El sistema no permite guardar ninguna ficha sin sus campos obligatorios completos (patente, fotos mínimas requeridas, etc.)
+- [x] **FICHAS-03**: Usuario completa la ficha de trabajo de reparación con la figura del auto, daños marcados y patente
+- [x] **FICHAS-04**: El sistema no permite guardar ninguna ficha sin sus campos obligatorios completos (patente, fotos mínimas requeridas, etc.)
 
 ### Reparación
 
-- [ ] **REPARACION-01**: Taller puede marcar un caso como "esperando repuesto" indicando qué repuesto falta, y esto se refleja en el semáforo de estado
-- [ ] **REPARACION-02**: Taller puede registrar la firma de la orden de trabajo con fotos al finalizar la reparación
+- [x] **REPARACION-01**: Taller puede marcar un caso como "esperando repuesto" indicando qué repuesto falta, y esto se refleja en el semáforo de estado
+- [x] **REPARACION-02**: Taller puede registrar la firma de la orden de trabajo con fotos al finalizar la reparación
 
 ### Facturación
 
-- [ ] **FACTURACION-01**: Dueño registra, por caso, el monto facturado formalmente y el total realmente cobrado, viendo el diferencial entre ambos
-- [ ] **FACTURACION-02**: Usuario puede marcar un caso como "reclamo a la compañía" cuando la aseguradora no paga
+- [x] **FACTURACION-01**: Dueño registra, por caso, el monto facturado formalmente y el total realmente cobrado, viendo el diferencial entre ambos
+- [x] **FACTURACION-02**: Usuario puede marcar un caso como "reclamo a la compañía" cuando la aseguradora no paga
 
 ### CRM
 
-- [ ] **CRM-01**: Usuario ve y edita la ficha de un cliente particular, incluyendo su historial de casos
-- [ ] **CRM-02**: Usuario ve y edita la ficha de una compañía de seguro (San Cristóbal, Federación Patronal, Mercantil Andes, Triunfo, Sancor, Cooperativa de Seguros) con su historial de casos
-- [ ] **CRM-03**: Usuario registra los datos de un productor/asesor de seguro asociado a un caso
+- [x] **CRM-01**: Usuario ve y edita la ficha de un cliente particular, incluyendo su historial de casos
+- [x] **CRM-02**: Usuario ve y edita la ficha de una compañía de seguro (San Cristóbal, Federación Patronal, Mercantil Andes, Triunfo, Sancor, Cooperativa de Seguros) con su historial de casos
+- [x] **CRM-03**: Usuario registra los datos de un productor/asesor de seguro asociado a un caso
 
 ### Stock
 
-- [ ] **STOCK-01**: Usuario ve y actualiza un listado simple de materiales y repuestos disponibles
+- [x] **STOCK-01**: Usuario ve y actualiza un listado simple de materiales y repuestos disponibles
 
 ### Dispositivos
 
@@ -87,23 +88,23 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-01 | Phase 1 | Complete |
 | DISPOSITIVO-01 | Phase 1 | Complete (navegador responsive; tablet física pendiente no bloqueante) |
 | CASOS-01 | Phase 2, Phase 3 | Complete |
-| CASOS-02 | Phase 2, Phase 4, Phase 5 | Partial (completo hasta ingreso al taller) |
+| CASOS-02 | Phase 2, Phase 4, Phase 5 | Complete |
 | CASOS-04 | Phase 2 | Complete |
 | CASOS-05 | Phase 2 | Complete |
 | FICHAS-01 | Phase 2 | Complete |
 | FICHAS-02 | Phase 2 | Complete |
-| FICHAS-04 | Phase 2, Phase 3, Phase 4 | Partial (Fases 2-3 validadas; Fase 4 pendiente) |
+| FICHAS-04 | Phase 2, Phase 3, Phase 4 | Complete |
 | CASOS-03 | Phase 3 | Complete |
-| FICHAS-03 | Phase 4 | Pending |
-| REPARACION-01 | Phase 4 | Pending |
-| REPARACION-02 | Phase 4 | Pending |
-| STOCK-01 | Phase 4 | Pending |
-| FACTURACION-01 | Phase 5 | Pending |
-| FACTURACION-02 | Phase 5 | Pending |
-| AUTH-02 | Phase 5 | Pending |
-| CRM-01 | Phase 6 | Pending |
-| CRM-02 | Phase 6 | Pending |
-| CRM-03 | Phase 6 | Pending |
+| FICHAS-03 | Phase 4 | Complete |
+| REPARACION-01 | Phase 4 | Complete |
+| REPARACION-02 | Phase 4 | Complete |
+| STOCK-01 | Phase 4 | Complete |
+| FACTURACION-01 | Phase 5 | Complete |
+| FACTURACION-02 | Phase 5 | Complete |
+| AUTH-02 | Phase 5 | Complete |
+| CRM-01 | Phase 6 | Complete |
+| CRM-02 | Phase 6 | Complete |
+| CRM-03 | Phase 6 | Complete |
 
 **Coverage:**
 - v1 requirements: 20 total
@@ -112,4 +113,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-08-19*
-*Last updated: 2026-09-09 after Phase 3 production rollout*
+*Last updated: 2026-09-10 after Phase 6 completion and full roadmap rollout*
