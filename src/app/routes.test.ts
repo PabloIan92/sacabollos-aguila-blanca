@@ -8,14 +8,14 @@ vi.mock('../auth/useAuth', () => ({
 }))
 
 describe('navItemsForRole', () => {
-  it('devuelve Casos, Stock, Facturación e Invitar para dueno', () => {
+  it('devuelve Casos, Stock, Facturación, CRM e Invitar para dueno', () => {
     const labels = navItemsForRole('dueno').map((item) => item.label)
-    expect(labels).toEqual(['Casos', 'Stock', 'Facturación', 'Invitar'])
+    expect(labels).toEqual(['Casos', 'Stock', 'Facturación', 'CRM', 'Invitar'])
   })
 
-  it('devuelve Turnos, Casos, Stock e Invitar para recepcion', () => {
+  it('devuelve Turnos, Casos, Stock, CRM e Invitar para recepcion', () => {
     const labels = navItemsForRole('recepcion').map((item) => item.label)
-    expect(labels).toEqual(['Turnos', 'Casos', 'Stock', 'Invitar'])
+    expect(labels).toEqual(['Turnos', 'Casos', 'Stock', 'CRM', 'Invitar'])
   })
 
   it('devuelve Casos y Stock para taller', () => {
@@ -31,19 +31,22 @@ describe('navItemsForRole', () => {
     }
   })
 
-  it('ningún rol recibe más de 4 items', () => {
+  it('ningún rol recibe más de 5 items', () => {
     for (const role of ['dueno', 'recepcion', 'taller'] as const) {
-      expect(navItemsForRole(role).length).toBeLessThanOrEqual(4)
+      expect(navItemsForRole(role).length).toBeLessThanOrEqual(5)
     }
   })
 
-  it('marca Facturación como disponible para dueño e Invitar como no disponible todavía; Casos de recepción ya está disponible', () => {
+  it('marca Facturación, CRM e Invitar como disponibles para dueño y recepción', () => {
     const dueno = navItemsForRole('dueno')
     expect(dueno.find((item) => item.label === 'Facturación')?.available).toBe(true)
-    expect(dueno.find((item) => item.label === 'Invitar')?.available).toBe(false)
+    expect(dueno.find((item) => item.label === 'CRM')?.available).toBe(true)
+    expect(dueno.find((item) => item.label === 'Invitar')?.available).toBe(true)
 
     const recepcion = navItemsForRole('recepcion')
     expect(recepcion.find((item) => item.to === '/casos')?.available).toBe(true)
+    expect(recepcion.find((item) => item.label === 'CRM')?.available).toBe(true)
+    expect(recepcion.find((item) => item.label === 'Invitar')?.available).toBe(true)
   })
 
   it('en TallerHome los casos enlazan a /casos/:id/ficha-trabajo', async () => {

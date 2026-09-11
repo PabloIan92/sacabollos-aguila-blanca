@@ -95,7 +95,7 @@ describe('AppShell', () => {
     expect(screen.queryByLabelText('Navegación principal')).not.toBeInTheDocument()
   })
 
-  it('un item no disponible se renderiza deshabilitado y no navegable', () => {
+  it('los items de navegación para dueño se renderizan como enlaces navegables', () => {
     mockMatchMedia(false)
     mockedUseAuth.mockReturnValue({
       session: {},
@@ -108,7 +108,10 @@ describe('AppShell', () => {
     renderShell()
 
     const invitar = screen.getByText('Invitar')
-    expect(invitar.closest('a')).toBeNull()
+    expect(invitar.closest('a')).not.toBeNull()
+
+    const crm = screen.getByText('CRM')
+    expect(crm.closest('a')).not.toBeNull()
 
     const facturacion = screen.getByText('Facturación')
     expect(facturacion.closest('a')).not.toBeNull()
