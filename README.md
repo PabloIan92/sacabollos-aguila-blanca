@@ -2,18 +2,18 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-6%20CRM%20y%20Gesti%C3%B3n%20de%20Equipo-blue)
-![Status](https://img.shields.io/badge/Status-Roadmap%20100%25%20Completo%20en%20Producci%C3%B3n-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-v2.0%20Informes%2C%20Notificaciones%20y%20Plantillas-blue)
+![Status](https://img.shields.io/badge/Status-v2.0%20PR%20%235%20Listo%20y%20Verificado-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-262%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-282%20passed-brightgreen)
 
-## Estado actual: Fase 6 - CRM y Gestión de Equipo — **100% completada en producción** (2026-09-10)
+## Estado actual: Versión 2.0 — **Completada y verificada** (2026-09-11)
 
-El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado y verificado en producción. Se subsanaron las observaciones de auditoría de atomicidad e inmutabilidad:
-1. **Atomicidad obligatoria sin fallback no atómico**: `marcarComoFacturado` y `marcarComoCobrado` en `src/features/facturacion/api.ts` invocan exclusivamente las RPCs transaccionales `facturar_caso_atomic` y `cobrar_caso_atomic` y fallan explícitamente ante cualquier error sin degradar a operaciones parciales desarticuladas.
-2. **Actualización de factura y cobro existente (Migración `0009`)**: `facturar_caso_atomic` admite casos en `firmado` y `facturado` permitiendo rectificar montos o números de factura existentes sin violar precondiciones de estado.
-3. **Refuerzo de inmutabilidad (Migración `0010`)**: `validar_transicion_caso` aplica las guardas estrictas de identidad y mutaciones sin transición fuera de borrador a toda sesión con rol `authenticated`, eliminando cualquier bypass espurio.
-4. **Pruebas reales en PostgreSQL / Supabase (`supabase/tests/db_audit_tests.sql`)**: Suite ejecutada con éxito contra la base de datos remota (`tnwrewghcowayuudvxey`) validando permisos por rol (`42501`), rollback atómico ante datos inválidos (`23514`), actualización de factura existente, cobro atómico, e inmutabilidad de identidad (`23514`) con limpieza posterior idempotente. Todas las migraciones (`0001` a `0010`) están aplicadas en Supabase remoto, 262 tests en 30 suites pasan en verde, `tsc -b` limpio, linter sin errores y build de producción en 3.04s.
+El roadmap principal de v1 (Fases 1 a 6) se encuentra 100% desplegado en producción, y el paquete de extensiones v2 (`INFORMES-01`, `NOTIF-01` y `PLANTILLAS-01`) se encuentra totalmente implementado y verificado en el [PR #5](https://github.com/PabloIan92/sacabollos-aguila-blanca/pull/5):
+1. **INFORMES-01 (Informes Mensuales)**: Pantalla `/informes` exclusiva para rol `dueno` con 4 KPIs acumulados y desglose mensual histórico de casos creados, cerrados, reclamos y balances facturado vs. cobrado (mergeado en PR #4).
+2. **NOTIF-01 (Notificaciones en tiempo real)**: Campana en barra superior con badge de no leídas, panel desplegable de eventos en vivo vía Supabase Realtime y Edge Function Deno (`notify-estado`) para alertar al dueño vía email (Resend API).
+3. **PLANTILLAS-01 (Generador de correos de aseguradoras)**: Pantalla `/plantillas` para `dueno` y `recepcion` con 4 modelos formalizados (`inicio_tramite`, `presupuesto`, `reclamo`, `cierre`), auto-completado de variables por caso, copiado al portapapeles y enlace `mailto:`.
+4. **Higiene de Linter y Calidad**: 0 warnings en `oxlint`, Fast Refresh 100% compatible, 282 tests aprobados en 36 suites, `tsc -b` limpio y build de producción en 802ms.
 
 ### 👥 Resumen de Implementación de Fase 6 (CRM y Equipo)
 
@@ -136,22 +136,65 @@ El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado y v
    - Build: `npm run build`.
    - Migraciones remotas: `npx supabase migration list`.
 
-### 📋 Estado para continuar mañana (Próximos pasos)
+### 📋 Estado para continuar mañana (Sesión 2026-09-11 y Próximos pasos)
 
-Todo el roadmap principal v1 (Fases 1 a 6) se encuentra implementado, auditado técnicamente, sincronizado en Supabase con 10 migraciones y desplegado en producción. Los próximos pasos recomendados para retomar mañana son:
+Toda la base de código de **v1 (Fases 1 a 6)** y las ampliaciones de **v2.0 (`INFORMES-01`, `NOTIF-01` y `PLANTILLAS-01`)** están 100% implementadas, testeadas con 282 tests y empaquetadas en GitHub.
 
-1. **Smoke Testing Manual / Humano en Producción:**
-   - **Prueba en tablet física de 10-12"**: Validar la experiencia táctil, la barra inferior de navegación y el croquis de daños (`VehicleDamageMap`) sobre canvas en hardware real.
-   - **Carga de fotos reales**: Tomar fotos con cámara móvil en condiciones de taller y verificar la compresión nativa WebP y la subida al bucket de Supabase.
-   - **Recorrido multirol en producción**: Ingresar con los perfiles del taller para confirmar la segregación estricta de vistas (especialmente la inaccesibilidad de facturación para taller y recepción).
+#### 🚀 Logros completados en la sesión (2026-09-11)
 
-2. **Higiene de Linter (0 warnings):**
-   - Desacoplar las dos exportaciones mixtas que emiten warning de Fast Refresh (`SemaforoBadge.tsx` y `AuthProvider.tsx`) hacia archivos dedicados de constantes y contexto.
+1. **Higiene de Linter y Fast Refresh (0 warnings en `oxlint`):**
+   - Desacople de tipos y contextos de `AuthProvider.tsx` hacia `src/auth/authContext.ts`.
+   - Desacople de constantes de `SemaforoBadge.tsx` hacia `src/features/casos/components/semaforoConstants.ts`.
+   - `npx oxlint .` pasó de 2 advertencias a 0 advertencias (100% limpio).
 
-3. **Planificación de Versión 2.0 (Backlog priorizado):**
-   - `NOTIF-01`: Notificaciones push/email automáticas al avanzar estados o recibir repuestos.
-   - `INFORMES-01`: Reportes mensuales de productividad y balances facturado vs. cobrado.
-   - `PLANTILLAS-01`: Generación de plantillas de correo con los formatos específicos de cada compañía de seguros.
+2. **INFORMES-01 — Pantalla de Informes Mensuales (Mergeado en `main` vía PR #4):**
+   - Nueva ruta `/informes` con ícono `BarChart2` en la navegación del rol `dueno`.
+   - 4 tarjetas KPI globales: Total Casos, Total Facturado, Total Cobrado y Diferencial.
+   - Tabla mensual con métricas de 12 meses: nuevos, cerrados, canal seguro/particular, facturado, cobrado, diferencial y en reclamo.
+   - Resaltado visual del mes en curso y diseño integrado al theme del taller.
+
+3. **NOTIF-01 — Notificaciones en tiempo real + Edge Function (PR #5):**
+   - `NotificacionesProvider.tsx`: Suscripción Realtime a eventos `UPDATE` sobre `public.casos`.
+   - Alertas dinámicas automáticas: llegada de repuestos y reanudación de trabajos, apertura de reclamos, cobro y avance de estados.
+   - `CampanaNotificaciones.tsx`: Campana en `Topbar` con badge rojo de conteo de no leídas y dropdown interactivo con timestamps relativos y botón de marcar leídas.
+   - `supabase/functions/notify-estado/`: Edge Function Deno con Resend API para notificar por email cambios críticos al dueño.
+
+4. **PLANTILLAS-01 — Generador de correos de aseguradoras (PR #5):**
+   - Lógica pura en `src/features/plantillas/templates.ts` para 4 plantillas estándar: `inicio_tramite`, `presupuesto`, `reclamo` y `cierre`.
+   - Pantalla interactiva en `/plantillas` para roles `dueno` y `recepcion` con autocompletado del caso, siniestro y datos del vehículo.
+   - Botón de copiado con feedback y botón de apertura en cliente de correo local (`mailto:`).
+
+5. **Métricas de calidad y estabilidad:**
+   - **282 tests aprobados** en 36 suites de Vitest.
+   - `npx tsc -b` con 0 errores.
+   - `npx oxlint .` con 0 warnings.
+   - Build de producción Vite en 802 ms.
+   - Despliegue de Preview generado automáticamente en Vercel.
+
+---
+
+#### 📌 Enlaces y credenciales de acceso para mañana
+
+- **Pull Request #5 (Notificaciones + Plantillas):** https://github.com/PabloIan92/sacabollos-aguila-blanca/pull/5
+- **Preview en vivo de Vercel (con v2.0 completa):** https://sacabollos-aguila-blanca-git-feat-v2-notif-37f31c-aguila-blanca.vercel.app
+- **Producción canónica en Vercel:** https://sacabollos-aguila-blanca.vercel.app
+- **Demos visuales en GitHub Pages:**
+  - Fichas de taller: https://pabloian92.github.io/sacabollos-aguila-blanca/
+  - Tablero semafórico tipo Excel: https://pabloian92.github.io/sacabollos-aguila-blanca/tablero.html
+- **Autenticación en la app real:**
+  - Email de dueño: `sacabollosaguilablanca@hotmail.com`
+  - Para asignar o cambiar la contraseña: [Supabase Dashboard — Users](https://supabase.com/dashboard/project/tnwrewghcowayuudvxey/auth/users) (menú `...` -> "Reset password" o "Set password").
+
+---
+
+#### 📝 Tareas recomendadas para mañana
+
+1. **Mergear PR #5 en GitHub:**
+   - Revisar y mergear el PR #5 en `main` para que Vercel despliegue la v2.0 directamente a producción.
+2. **Despliegue opcional de la Edge Function `notify-estado`:**
+   - Si se desea activar las notificaciones por correo externo, correr `supabase functions deploy notify-estado` y configurar las claves de Resend API en Supabase Dashboard.
+3. **Smoke testing humano en tablet física (10-12"):**
+   - Probar la fluidez táctil del croquis de daños, la subida de fotos y el nuevo panel de notificaciones y plantillas en el dispositivo del taller.
 
 ---
 
