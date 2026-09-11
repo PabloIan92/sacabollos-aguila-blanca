@@ -2,14 +2,48 @@
 
 Sistema de gestión para taller de sacabollos — Aguila Blanca.
 
-![Phase](https://img.shields.io/badge/Phase-5%20Facturaci%C3%B3n%20y%20Cobranza-blue)
-![Status](https://img.shields.io/badge/Status-Fase%205%20auditada%20y%20cerrada%20(OK)-brightgreen)
+![Phase](https://img.shields.io/badge/Phase-6%20CRM%20y%20Gesti%C3%B3n%20de%20Equipo-blue)
+![Status](https://img.shields.io/badge/Status-Roadmap%20100%25%20Completo%20en%20Producci%C3%B3n-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-232%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-260%20passed-brightgreen)
 
-## Estado actual: Fase 5 - Facturación y Cobranza — **100% cerrada y auditada en producción** (2026-09-10)
+## Estado actual: Fase 6 - CRM y Gestión de Equipo — **100% completada en producción** (2026-09-10)
 
-La funcionalidad de Facturación, Cobranza y Reclamos a Aseguradoras está 100% verificada, auditada y en producción. Los 6 hallazgos de la auditoría fueron subsanados mediante la migración `0007_correccion_facturacion_y_transiciones.sql`, aplicada exitosamente en el Supabase remoto (`tnwrewghcowayuudvxey`). Los 232 tests en 26 suites pasan en verde, `tsc -b` limpio, build en 4.69s y linter sin errores.
+El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado, auditado y en producción. La Fase 6 incorpora el CRM integral del taller (Directorio de Clientes, Compañías Aseguradoras y Productores/Asesores de seguros) junto al módulo de Gestión de Equipo e Invitaciones en `/invitar`. Todas las migraciones (0001 a 0008) están aplicadas en Supabase (`tnwrewghcowayuudvxey`), 260 tests en 30 suites pasan en verde, `tsc -b` limpio, linter sin errores y build de producción en 4.24s.
+
+### 👥 Resumen de Implementación de Fase 6 (CRM y Equipo)
+
+- **Task 1: Base de datos, RLS estricto y semillas (`39ba0d7`, `d712099`)**:
+  - Migración `0008_crm_y_equipo.sql` con las tablas:
+    - `public.clientes`: `id`, `nombre`, `telefono`, `email`, `direccion`, `notas`, timestamps.
+    - `public.aseguradoras`: `id`, `nombre` (único), `email_siniestros`, `telefono_contacto`, `contacto_nombre`, `notas`, `activa`, timestamps.
+    - `public.productores`: `id`, `nombre`, `telefono`, `email`, `aseguradora`, `notas`, timestamps.
+  - **Seguridad RLS**:
+    - Roles `dueno` y `recepcion`: control total CRUD en `clientes`, `aseguradoras` y `productores`.
+    - Rol `taller`: acceso `SELECT` en `clientes` y `aseguradoras` (para asistencia en taller); denegación total de acceso a `productores` (información comercial/comisiones protegida).
+  - Triggers de actualización automáticos con `public.set_row_updated_at()`.
+  - Semillas iniciales de 8 aseguradoras históricas del taller con `on conflict do nothing`.
+  - Tests de migración en `src/features/casos/migration.test.ts` (34 tests pasando).
+
+- **Task 2: Capa API tipada de CRM (`6a4a1be`)**:
+  - `src/features/crm/types.ts`: interfaces `Cliente`, `Aseguradora`, `Productor`, `CreateClientePayload`, `CreateAseguradoraPayload`, `CreateProductorPayload`, `CRMTab`.
+  - `src/features/crm/api.ts`: funciones CRUD tipadas conectadas a Supabase con agregación de métricas sobre `casos` (vehículos/patentes asociadas, conteo de casos activos, siniestros derivados y casos en reclamo).
+  - Sanitización de teléfonos para formato internacional de WhatsApp (`549...`).
+  - Tests unitarios en `src/features/crm/api.test.ts` (10 tests pasando).
+
+- **Task 3: Pantalla Principal de CRM (`0d0853f`)**:
+  - `src/features/crm/CRMPage.tsx` con navegación por pestañas:
+    - **Pestaña Clientes**: buscador en vivo, conteo total, tarjetas con datos de contacto, enlaces directos a llamada y WhatsApp (`https://wa.me/549...`), lista de patentes y vehículos atendidos.
+    - **Pestaña Aseguradoras**: directorio de compañías, contactos de siniestros, métricas de casos activos y en reclamo.
+    - **Pestaña Productores**: registro de asesores aliados, teléfono directo y aseguradora asociada.
+    - Modales interactivos de creación y edición rápida para cada entidad con validación en tiempo real.
+  - Tests en `src/features/crm/CRMPage.test.tsx` (7 tests pasando).
+
+- **Task 4: Gestión de Equipo e Invitaciones y Rutas (`d636744`)**:
+  - `src/features/equipo/InvitarPage.tsx`: formulario de invitación de colaboradores con validación de nombre, email y rol (`recepción` o `taller`), junto con visualización del equipo activo (`profiles`).
+  - `src/features/equipo/api.ts` y tests en `InvitarPage.test.tsx` y `api.test.ts`.
+  - Rutas `/crm` y `/invitar` habilitadas para `dueno` y `recepcion` en `src/app/routes.ts` y `src/app/AppRouter.tsx`.
+  - Tests de navegación y permisos en `src/app/routes.test.ts` y `src/layout/AppShell.test.tsx`.
 
 ### ✅ Resolución y Cierre de Auditoría Fase 5 (Migración `0007`)
 
