@@ -115,6 +115,9 @@ describe('AppShell', () => {
 
     const facturacion = screen.getByText('Facturación')
     expect(facturacion.closest('a')).not.toBeNull()
+
+    const informes = screen.getByText('Informes')
+    expect(informes.closest('a')).not.toBeNull()
   })
 
   it('Topbar renderiza nombre, chip de rol y cerrar sesión', () => {

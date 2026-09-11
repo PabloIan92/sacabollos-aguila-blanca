@@ -8,9 +8,9 @@ vi.mock('../auth/useAuth', () => ({
 }))
 
 describe('navItemsForRole', () => {
-  it('devuelve Casos, Stock, Facturación, CRM e Invitar para dueno', () => {
+  it('devuelve Casos, Stock, Facturación, Informes, CRM e Invitar para dueno', () => {
     const labels = navItemsForRole('dueno').map((item) => item.label)
-    expect(labels).toEqual(['Casos', 'Stock', 'Facturación', 'CRM', 'Invitar'])
+    expect(labels).toEqual(['Casos', 'Stock', 'Facturación', 'Informes', 'CRM', 'Invitar'])
   })
 
   it('devuelve Turnos, Casos, Stock, CRM e Invitar para recepcion', () => {
@@ -31,9 +31,9 @@ describe('navItemsForRole', () => {
     }
   })
 
-  it('ningún rol recibe más de 5 items', () => {
+  it('ningún rol recibe más de 6 items', () => {
     for (const role of ['dueno', 'recepcion', 'taller'] as const) {
-      expect(navItemsForRole(role).length).toBeLessThanOrEqual(5)
+      expect(navItemsForRole(role).length).toBeLessThanOrEqual(6)
     }
   })
 
@@ -47,6 +47,19 @@ describe('navItemsForRole', () => {
     expect(recepcion.find((item) => item.to === '/casos')?.available).toBe(true)
     expect(recepcion.find((item) => item.label === 'CRM')?.available).toBe(true)
     expect(recepcion.find((item) => item.label === 'Invitar')?.available).toBe(true)
+  })
+
+  it('el ítem Informes aparece solo para dueno y no para recepcion ni taller', () => {
+    const dueno = navItemsForRole('dueno')
+    const informesItem = dueno.find((item) => item.to === '/informes')
+    expect(informesItem).toBeDefined()
+    expect(informesItem?.label).toBe('Informes')
+    expect(informesItem?.available).toBe(true)
+
+    for (const role of ['recepcion', 'taller'] as const) {
+      const items = navItemsForRole(role)
+      expect(items.find((item) => item.to === '/informes')).toBeUndefined()
+    }
   })
 
   it('en TallerHome los casos enlazan a /casos/:id/ficha-trabajo', async () => {

@@ -16,6 +16,7 @@ import { FacturacionPage } from '../features/facturacion/FacturacionPage'
 import { FichaFacturacionPage } from '../features/facturacion/FichaFacturacionPage'
 import { CRMPage } from '../features/crm/CRMPage'
 import { InvitarPage } from '../features/equipo/InvitarPage'
+import { InformesPage } from '../features/informes/InformesPage'
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
             children: [
               { path: '/facturacion', element: <FacturacionPage /> },
               { path: '/casos/:id/facturacion', element: <FichaFacturacionPage /> },
+              { path: '/informes', element: <InformesPage /> },
             ],
           },
           {
