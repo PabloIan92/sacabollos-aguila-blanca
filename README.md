@@ -62,13 +62,16 @@ El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado y v
 3. **Corrección de autorización para Recepción al resolver reclamos**:
    - Se evaluó por transición exacta: la transición `reclamo a la compañía -> facturado` ahora autoriza explícitamente a `dueno` y `recepcion`.
 
-4. **Operaciones transaccionales atómicas para facturar y cobrar**:
+4. **Operaciones transaccionales atómicas obligatorias (sin fallback no atómico)**:
    - Se crearon las funciones PostgreSQL `public.facturar_caso_atomic()` y `public.cobrar_caso_atomic()`, con bloqueo de fila `for update`, validación de precondiciones, upsert de `caso_facturacion` y actualización de `casos` en una única transacción atómica con permisos para usuarios autenticados.
-   - `src/features/facturacion/api.ts` invoca prioritariamente las RPCs atómicas con fallback seguro.
+   - `src/features/facturacion/api.ts` invoca exclusiva y obligatoriamente las RPCs atómicas, eliminando cualquier degradación a operaciones no atómicas desarticuladas y propagando errores explícitamente.
+   - **Migración `0009_actualizacion_factura_y_cobro_existente.sql`**: amplió `facturar_caso_atomic` y `cobrar_caso_atomic` para admitir la actualización rectificatoria de facturas y cobros de casos existentes sin violar precondiciones de estado.
+   - **Migración `0010_reforzar_inmutabilidad_trigger.sql`**: aseguró que toda sesión autenticada aplique sin bypass las guardas de inmutabilidad y mutaciones sin transición fuera de borrador.
+   - **Pruebas reales en PostgreSQL / Supabase (`supabase/tests/db_audit_tests.sql`)**: suite ejecutada con éxito contra Supabase remoto (`tnwrewghcowayuudvxey`) validando permisos por rol (`42501`), rollback (`23514`), actualización de factura existente, cobro atómico e inmutabilidad estricta (`23514`).
 
 5. **Ampliación de cobertura de pruebas**:
-   - Se añadieron tests en `src/features/casos/migration.test.ts` validando la estructura de la migración `0007`.
-   - Se añadieron tests unitarios para las RPCs atómicas en `src/features/facturacion/api.test.ts`.
+   - Se añadieron tests en `src/features/casos/migration.test.ts` validando la estructura de las migraciones `0007`, `0008`, `0009` y `0010`.
+   - Se añadieron tests unitarios para las RPCs atómicas en `src/features/facturacion/api.test.ts` validando la propagación de errores sin fallback.
    - Se añadieron tests de denegación de rutas para `/facturacion` y `/casos/:id/facturacion` para roles `recepcion` y `taller` en `src/app/routes.test.ts`.
 
 6. **Detalles numéricos y consistencia de KPIs**:
@@ -133,7 +136,22 @@ El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado y v
    - Build: `npm run build`.
    - Migraciones remotas: `npx supabase migration list`.
 
-**Próximo bloque en desarrollo**: **Fase 6 — CRM (Clientes, Aseguradoras y Productores)**.
+### 📋 Estado para continuar mañana (Próximos pasos)
+
+Todo el roadmap principal v1 (Fases 1 a 6) se encuentra implementado, auditado técnicamente, sincronizado en Supabase con 10 migraciones y desplegado en producción. Los próximos pasos recomendados para retomar mañana son:
+
+1. **Smoke Testing Manual / Humano en Producción:**
+   - **Prueba en tablet física de 10-12"**: Validar la experiencia táctil, la barra inferior de navegación y el croquis de daños (`VehicleDamageMap`) sobre canvas en hardware real.
+   - **Carga de fotos reales**: Tomar fotos con cámara móvil en condiciones de taller y verificar la compresión nativa WebP y la subida al bucket de Supabase.
+   - **Recorrido multirol en producción**: Ingresar con los perfiles del taller para confirmar la segregación estricta de vistas (especialmente la inaccesibilidad de facturación para taller y recepción).
+
+2. **Higiene de Linter (0 warnings):**
+   - Desacoplar las dos exportaciones mixtas que emiten warning de Fast Refresh (`SemaforoBadge.tsx` y `AuthProvider.tsx`) hacia archivos dedicados de constantes y contexto.
+
+3. **Planificación de Versión 2.0 (Backlog priorizado):**
+   - `NOTIF-01`: Notificaciones push/email automáticas al avanzar estados o recibir repuestos.
+   - `INFORMES-01`: Reportes mensuales de productividad y balances facturado vs. cobrado.
+   - `PLANTILLAS-01`: Generación de plantillas de correo con los formatos específicos de cada compañía de seguros.
 
 ---
 
