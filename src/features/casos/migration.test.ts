@@ -4,9 +4,19 @@ import repairMigration from '../../../supabase/migrations/0005_reparacion_y_stoc
 import billingMigration from '../../../supabase/migrations/0006_facturacion_y_cobros.sql?raw'
 import fixBillingMigration from '../../../supabase/migrations/0007_correccion_facturacion_y_transiciones.sql?raw'
 import crmMigration from '../../../supabase/migrations/0008_crm_y_equipo.sql?raw'
+import updateInvoiceMigration from '../../../supabase/migrations/0009_actualizacion_factura_y_cobro_existente.sql?raw'
+import immutableTriggerMigration from '../../../supabase/migrations/0010_reforzar_inmutabilidad_trigger.sql?raw'
 
 function migrationSql() {
   return migration.replace(/\r\n/g, '\n')
+}
+
+function updateInvoiceSql() {
+  return updateInvoiceMigration.replace(/\r\n/g, '\n')
+}
+
+function immutableTriggerSql() {
+  return immutableTriggerMigration.replace(/\r\n/g, '\n')
 }
 
 describe('migración 0004 de casos particulares', () => {
@@ -494,5 +504,35 @@ describe('migración 0008 de CRM y equipo', () => {
     expect(sql).toContain('Sancor Seguros')
     expect(sql).toContain('La Segunda')
     expect(sql).toContain('on conflict (nombre) do nothing')
+  })
+})
+
+describe('migración 0009 de actualización de factura y cobro existente', () => {
+  it('permite facturar_caso_atomic sobre casos en estado firmado y facturado', () => {
+    const sql = updateInvoiceSql()
+    expect(sql).toContain('create or replace function public.facturar_caso_atomic')
+    expect(sql).toContain("if v_caso.estado not in ('firmado', 'facturado') then")
+    expect(sql).toContain('on conflict (caso_id) do update set')
+    expect(sql).toContain("if v_caso.estado = 'firmado' then")
+    expect(sql).toContain("set estado = 'facturado'")
+  })
+
+  it('permite cobrar_caso_atomic sobre casos en estado facturado, reclamo o cobrado', () => {
+    const sql = updateInvoiceSql()
+    expect(sql).toContain('create or replace function public.cobrar_caso_atomic')
+    expect(sql).toContain("if v_caso.estado not in ('facturado', 'reclamo a la compañía', 'cobrado') then")
+    expect(sql).toContain('on conflict (caso_id) do update set')
+    expect(sql).toContain("if v_caso.estado in ('facturado', 'reclamo a la compañía') then")
+    expect(sql).toContain("set estado = 'cobrado'")
+  })
+})
+
+describe('migración 0010 de refuerzo de inmutabilidad', () => {
+  it('no permite bypass de validación para sesiones autenticadas', () => {
+    const sql = immutableTriggerSql()
+    expect(sql).toContain('create or replace function public.validar_transicion_caso()')
+    expect(sql).toContain("session_user in ('postgres', 'supabase_admin') and coalesce(auth.role(), '') <> 'authenticated'")
+    expect(sql).toContain('No se pueden cambiar campos de identidad, creación, canal o presupuesto inicial')
+    expect(sql).toContain('Una actualización sin transición solo puede cambiar danos_zonas e inspeccion_guardada_at en borrador')
   })
 })

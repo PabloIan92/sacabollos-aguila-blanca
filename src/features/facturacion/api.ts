@@ -59,39 +59,21 @@ export async function marcarComoFacturado(
     throw new Error('Para facturar, el número de factura no puede estar vacío')
   }
 
-  // Operación atómica vía RPC transaccional
-  if (typeof (supabase as any).rpc === 'function') {
-    const rpcRes = await (supabase as any).rpc('facturar_caso_atomic', {
-      p_caso_id: casoId,
-      p_monto_facturado: Number(payload.monto_facturado),
-      p_numero_factura: payload.numero_factura.trim(),
-      p_fecha_factura: payload.fecha_factura || new Date().toISOString().split('T')[0],
-      p_notas_cobranza: payload.notas_cobranza?.trim() || null,
-    })
+  // Operación atómica obligatoria vía RPC transaccional (sin fallback no atómico)
+  const { data, error } = await supabase.rpc('facturar_caso_atomic', {
+    p_caso_id: casoId,
+    p_monto_facturado: Number(payload.monto_facturado),
+    p_numero_factura: payload.numero_factura.trim(),
+    p_fecha_factura: payload.fecha_factura || new Date().toISOString().split('T')[0],
+    p_notas_cobranza: payload.notas_cobranza?.trim() || null,
+  })
 
-    if (rpcRes && !rpcRes.error && rpcRes.data) {
-      return rpcRes.data as Caso
-    }
-    if (rpcRes?.error && !rpcRes.error.message?.includes('function') && !rpcRes.error.message?.includes('not found')) {
-      throw rpcRes.error
-    }
+  if (error) {
+    throw error
   }
-
-  // 1. Guardar facturación
-  await saveFacturacion(casoId, payload)
-
-  // 2. Transicionar caso a facturado
-  const { data, error } = await supabase
-    .from('casos')
-    .update({
-      estado: 'facturado',
-      facturado_at: new Date().toISOString(),
-    })
-    .eq('id', casoId)
-    .select('*')
-    .single()
-
-  if (error) throw error
+  if (!data) {
+    throw new Error('No se recibió la respuesta del caso al facturar')
+  }
   return data as Caso
 }
 
@@ -106,39 +88,21 @@ export async function marcarComoCobrado(
     throw new Error('Para marcar como cobrado, debe indicar la fecha de cobro')
   }
 
-  // Operación atómica vía RPC transaccional
-  if (typeof (supabase as any).rpc === 'function') {
-    const rpcRes = await (supabase as any).rpc('cobrar_caso_atomic', {
-      p_caso_id: casoId,
-      p_monto_cobrado: Number(payload.monto_cobrado),
-      p_fecha_cobro: payload.fecha_cobro,
-      p_metodo_pago: payload.metodo_pago || 'otro',
-      p_notas_cobranza: payload.notas_cobranza?.trim() || null,
-    })
+  // Operación atómica obligatoria vía RPC transaccional (sin fallback no atómico)
+  const { data, error } = await supabase.rpc('cobrar_caso_atomic', {
+    p_caso_id: casoId,
+    p_monto_cobrado: Number(payload.monto_cobrado),
+    p_fecha_cobro: payload.fecha_cobro,
+    p_metodo_pago: payload.metodo_pago || 'otro',
+    p_notas_cobranza: payload.notas_cobranza?.trim() || null,
+  })
 
-    if (rpcRes && !rpcRes.error && rpcRes.data) {
-      return rpcRes.data as Caso
-    }
-    if (rpcRes?.error && !rpcRes.error.message?.includes('function') && !rpcRes.error.message?.includes('not found')) {
-      throw rpcRes.error
-    }
+  if (error) {
+    throw error
   }
-
-  // 1. Guardar facturación
-  await saveFacturacion(casoId, payload)
-
-  // 2. Transicionar caso a cobrado
-  const { data, error } = await supabase
-    .from('casos')
-    .update({
-      estado: 'cobrado',
-      cobrado_at: new Date().toISOString(),
-    })
-    .eq('id', casoId)
-    .select('*')
-    .single()
-
-  if (error) throw error
+  if (!data) {
+    throw new Error('No se recibió la respuesta del caso al cobrar')
+  }
   return data as Caso
 }
 

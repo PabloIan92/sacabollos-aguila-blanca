@@ -77,49 +77,8 @@ describe('facturacion api', () => {
     )
   })
 
-  it('marcarComoFacturado valida datos y transiciona estado', async () => {
-    const mockSingleFact = vi.fn().mockResolvedValue({
-      data: { caso_id: 'c-1', monto_facturado: 250000, numero_factura: 'A-001' },
-      error: null,
-    })
-    const mockUpsert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({ single: mockSingleFact }),
-    })
-
-    const mockSingleCaso = vi.fn().mockResolvedValue({
-      data: { id: 'c-1', estado: 'facturado', facturado_at: '2026-09-10T12:00:00Z' },
-      error: null,
-    })
-    const mockUpdate = vi.fn().mockReturnValue({
-      eq: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({ single: mockSingleCaso }),
-      }),
-    })
-
-    vi.mocked(supabase.from).mockImplementation((table: string) => {
-      if (table === 'caso_facturacion') return { upsert: mockUpsert } as any
-      if (table === 'casos') return { update: mockUpdate } as any
-      return {} as any
-    })
-
-    const caso = await marcarComoFacturado('c-1', {
-      monto_facturado: 250000,
-      numero_factura: 'A-001',
-    })
-
-    expect(caso.estado).toBe('facturado')
-  })
-
-  it('marcarComoCobrado valida fecha_cobro y monto_cobrado mayor a 0', async () => {
-    await expect(marcarComoCobrado('c-1', { monto_facturado: 100, numero_factura: 'F-1', monto_cobrado: 0 }))
-      .rejects.toThrow('Para marcar como cobrado, el monto cobrado debe ser mayor a 0')
-
-    await expect(marcarComoCobrado('c-1', { monto_facturado: 100, numero_factura: 'F-1', monto_cobrado: 100 }))
-      .rejects.toThrow('Para marcar como cobrado, debe indicar la fecha de cobro')
-  })
-
-  it('marcarComoFacturado utiliza RPC atómico si está disponible', async () => {
-    vi.mocked(supabase.rpc).mockResolvedValue({
+  it('marcarComoFacturado utiliza RPC atómico y propaga errores explícitamente', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({
       data: { id: 'c-1', estado: 'facturado' },
       error: null,
     } as any)
@@ -135,10 +94,29 @@ describe('facturacion api', () => {
       p_monto_facturado: 250000,
       p_numero_factura: 'A-001',
     }))
+
+    // Falla explícitamente ante error de RPC (sin degradar a fallback no atómico)
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      data: null,
+      error: new Error('Error en transacción de base de datos'),
+    } as any)
+
+    await expect(marcarComoFacturado('c-1', {
+      monto_facturado: 250000,
+      numero_factura: 'A-001',
+    })).rejects.toThrow('Error en transacción de base de datos')
   })
 
-  it('marcarComoCobrado utiliza RPC atómico si está disponible', async () => {
-    vi.mocked(supabase.rpc).mockResolvedValue({
+  it('marcarComoCobrado valida fecha_cobro y monto_cobrado mayor a 0', async () => {
+    await expect(marcarComoCobrado('c-1', { monto_facturado: 100, numero_factura: 'F-1', monto_cobrado: 0 }))
+      .rejects.toThrow('Para marcar como cobrado, el monto cobrado debe ser mayor a 0')
+
+    await expect(marcarComoCobrado('c-1', { monto_facturado: 100, numero_factura: 'F-1', monto_cobrado: 100 }))
+      .rejects.toThrow('Para marcar como cobrado, debe indicar la fecha de cobro')
+  })
+
+  it('marcarComoCobrado utiliza RPC atómico y propaga errores explícitamente', async () => {
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({
       data: { id: 'c-1', estado: 'cobrado' },
       error: null,
     } as any)
@@ -158,6 +136,19 @@ describe('facturacion api', () => {
       p_fecha_cobro: '2026-09-10',
       p_metodo_pago: 'transferencia',
     }))
+
+    // Falla explícitamente ante error de RPC
+    vi.mocked(supabase.rpc).mockResolvedValueOnce({
+      data: null,
+      error: new Error('Fallo al cobrar caso'),
+    } as any)
+
+    await expect(marcarComoCobrado('c-1', {
+      monto_facturado: 250000,
+      numero_factura: 'A-001',
+      monto_cobrado: 250000,
+      fecha_cobro: '2026-09-10',
+    })).rejects.toThrow('Fallo al cobrar caso')
   })
 
   it('iniciarReclamoAseguradora valida motivo no vacío y actualiza estado', async () => {

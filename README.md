@@ -5,11 +5,15 @@ Sistema de gestión para taller de sacabollos — Aguila Blanca.
 ![Phase](https://img.shields.io/badge/Phase-6%20CRM%20y%20Gesti%C3%B3n%20de%20Equipo-blue)
 ![Status](https://img.shields.io/badge/Status-Roadmap%20100%25%20Completo%20en%20Producci%C3%B3n-brightgreen)
 ![Build](https://img.shields.io/badge/Build-passing-brightgreen)
-![Tests](https://img.shields.io/badge/Tests-260%20passed-brightgreen)
+![Tests](https://img.shields.io/badge/Tests-262%20passed-brightgreen)
 
 ## Estado actual: Fase 6 - CRM y Gestión de Equipo — **100% completada en producción** (2026-09-10)
 
-El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado, auditado y en producción. La Fase 6 incorpora el CRM integral del taller (Directorio de Clientes, Compañías Aseguradoras y Productores/Asesores de seguros) junto al módulo de Gestión de Equipo e Invitaciones en `/invitar`. Todas las migraciones (0001 a 0008) están aplicadas en Supabase (`tnwrewghcowayuudvxey`), 260 tests en 30 suites pasan en verde, `tsc -b` limpio, linter sin errores y build de producción en 4.24s.
+El roadmap completo del sistema (Fases 1 a 6) se encuentra 100% implementado y verificado en producción. Se subsanaron las observaciones de auditoría de atomicidad e inmutabilidad:
+1. **Atomicidad obligatoria sin fallback no atómico**: `marcarComoFacturado` y `marcarComoCobrado` en `src/features/facturacion/api.ts` invocan exclusivamente las RPCs transaccionales `facturar_caso_atomic` y `cobrar_caso_atomic` y fallan explícitamente ante cualquier error sin degradar a operaciones parciales desarticuladas.
+2. **Actualización de factura y cobro existente (Migración `0009`)**: `facturar_caso_atomic` admite casos en `firmado` y `facturado` permitiendo rectificar montos o números de factura existentes sin violar precondiciones de estado.
+3. **Refuerzo de inmutabilidad (Migración `0010`)**: `validar_transicion_caso` aplica las guardas estrictas de identidad y mutaciones sin transición fuera de borrador a toda sesión con rol `authenticated`, eliminando cualquier bypass espurio.
+4. **Pruebas reales en PostgreSQL / Supabase (`supabase/tests/db_audit_tests.sql`)**: Suite ejecutada con éxito contra la base de datos remota (`tnwrewghcowayuudvxey`) validando permisos por rol (`42501`), rollback atómico ante datos inválidos (`23514`), actualización de factura existente, cobro atómico, e inmutabilidad de identidad (`23514`) con limpieza posterior idempotente. Todas las migraciones (`0001` a `0010`) están aplicadas en Supabase remoto, 262 tests en 30 suites pasan en verde, `tsc -b` limpio, linter sin errores y build de producción en 3.04s.
 
 ### 👥 Resumen de Implementación de Fase 6 (CRM y Equipo)
 
