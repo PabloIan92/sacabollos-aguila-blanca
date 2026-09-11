@@ -8,6 +8,9 @@ vi.mock('../auth/useAuth')
 vi.mock('../lib/supabaseClient', () => ({
   supabase: { auth: { signOut: vi.fn() } },
 }))
+vi.mock('../features/notificaciones/CampanaNotificaciones', () => ({
+  CampanaNotificaciones: () => null
+}))
 
 const mockedUseAuth = vi.mocked(useAuth)
 
@@ -118,6 +121,9 @@ describe('AppShell', () => {
 
     const informes = screen.getByText('Informes')
     expect(informes.closest('a')).not.toBeNull()
+
+    const plantillas = screen.getByText('Plantillas')
+    expect(plantillas.closest('a')).not.toBeNull()
   })
 
   it('Topbar renderiza nombre, chip de rol y cerrar sesión', () => {

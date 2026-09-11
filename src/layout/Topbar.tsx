@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import type { Profile } from '../auth/AuthProvider'
+import { CampanaNotificaciones } from '../features/notificaciones/CampanaNotificaciones'
 
 const ROLE_LABELS: Record<Profile['role'], string> = {
   dueno: 'Dueño',
@@ -32,6 +33,8 @@ export function Topbar({ profile }: { profile: Profile }) {
       </div>
 
       <div className="flex items-center justify-end gap-2.5 flex-wrap">
+        <CampanaNotificaciones />
+        
         <span className="font-mono text-xs border border-white/35 bg-white/10 px-2.5 py-2">
           {ROLE_LABELS[profile.role]}
         </span>

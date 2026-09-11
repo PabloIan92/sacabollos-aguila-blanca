@@ -8,14 +8,14 @@ vi.mock('../auth/useAuth', () => ({
 }))
 
 describe('navItemsForRole', () => {
-  it('devuelve Casos, Stock, Facturación, Informes, CRM e Invitar para dueno', () => {
+  it('devuelve Casos, Stock, Facturación, Informes, CRM, Plantillas e Invitar para dueno', () => {
     const labels = navItemsForRole('dueno').map((item) => item.label)
-    expect(labels).toEqual(['Casos', 'Stock', 'Facturación', 'Informes', 'CRM', 'Invitar'])
+    expect(labels).toEqual(['Casos', 'Stock', 'Facturación', 'Informes', 'CRM', 'Plantillas', 'Invitar'])
   })
 
-  it('devuelve Turnos, Casos, Stock, CRM e Invitar para recepcion', () => {
+  it('devuelve Turnos, Casos, Stock, CRM, Plantillas e Invitar para recepcion', () => {
     const labels = navItemsForRole('recepcion').map((item) => item.label)
-    expect(labels).toEqual(['Turnos', 'Casos', 'Stock', 'CRM', 'Invitar'])
+    expect(labels).toEqual(['Turnos', 'Casos', 'Stock', 'CRM', 'Plantillas', 'Invitar'])
   })
 
   it('devuelve Casos y Stock para taller', () => {
@@ -31,21 +31,23 @@ describe('navItemsForRole', () => {
     }
   })
 
-  it('ningún rol recibe más de 6 items', () => {
+  it('ningún rol recibe más de 8 items', () => {
     for (const role of ['dueno', 'recepcion', 'taller'] as const) {
-      expect(navItemsForRole(role).length).toBeLessThanOrEqual(6)
+      expect(navItemsForRole(role).length).toBeLessThanOrEqual(8)
     }
   })
 
-  it('marca Facturación, CRM e Invitar como disponibles para dueño y recepción', () => {
+  it('marca Facturación, CRM, Plantillas e Invitar como disponibles para dueño y recepción', () => {
     const dueno = navItemsForRole('dueno')
     expect(dueno.find((item) => item.label === 'Facturación')?.available).toBe(true)
     expect(dueno.find((item) => item.label === 'CRM')?.available).toBe(true)
+    expect(dueno.find((item) => item.label === 'Plantillas')?.available).toBe(true)
     expect(dueno.find((item) => item.label === 'Invitar')?.available).toBe(true)
 
     const recepcion = navItemsForRole('recepcion')
     expect(recepcion.find((item) => item.to === '/casos')?.available).toBe(true)
     expect(recepcion.find((item) => item.label === 'CRM')?.available).toBe(true)
+    expect(recepcion.find((item) => item.label === 'Plantillas')?.available).toBe(true)
     expect(recepcion.find((item) => item.label === 'Invitar')?.available).toBe(true)
   })
 
