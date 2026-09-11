@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
-import { SemaforoBadge, STATE_MAPPING } from './SemaforoBadge'
+import { SemaforoBadge } from './SemaforoBadge'
+import { STATE_MAPPING } from './semaforoConstants'
 import { ESTADOS_CASO, type CasoEstado } from '../types'
 
 const LABEL_POR_IDX: Record<number, string> = {
