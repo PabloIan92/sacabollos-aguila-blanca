@@ -1,36 +1,25 @@
-import { createContext, useCallback, useEffect, useState, type ReactNode } from 'react'
+﻿import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabaseClient'
+import { AuthContext } from './authContext'
 
-export type Profile = {
-  id: string
-  full_name: string
-  role: 'dueno' | 'recepcion' | 'taller'
-}
+// Re-export types and context so existing imports keep working without changes.
+export type { Profile, AuthContextValue } from './authContext'
+export { AuthContext } from './authContext'
 
-export type AuthContextValue = {
-  session: Session | null
-  profile: Profile | null
-  loading: boolean
-  profileError: boolean
-  retryProfile: () => void
-}
-
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined)
-
-async function loadProfile(userId: string): Promise<Profile | null> {
+async function loadProfile(userId: string) {
   const { data } = await supabase
     .from('profiles')
     .select('id, full_name, role')
     .eq('id', userId)
     .single()
 
-  return data as Profile | null
+  return data as import('./authContext').Profile | null
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [profile, setProfile] = useState<import('./authContext').Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [profileError, setProfileError] = useState(false)
 
